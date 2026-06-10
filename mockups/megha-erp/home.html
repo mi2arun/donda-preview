@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Megha ERP — Home</title>
+<link rel="stylesheet" href="megha-ui.css">
+<style>
+  .home{padding:16px 20px}
+  .banner{background:linear-gradient(135deg,var(--blue-banner1),var(--blue-banner2));color:#fff;border-radius:13px;padding:22px 24px;margin-bottom:18px}
+  .banner h2{font-size:1.4rem;font-weight:700}
+  .banner p{opacity:.85;font-size:.86rem;margin-top:3px}
+  .sec{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink);margin:6px 0 12px}
+  .apps{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:18px;margin-bottom:18px}
+  .app{display:flex;flex-direction:column;align-items:center;gap:7px;text-decoration:none;cursor:pointer;padding:8px 4px;border-radius:10px}
+  .app:hover{background:var(--bg)}
+  .app.on{background:var(--blue-soft)}
+  .app .ic{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;box-shadow:0 4px 10px rgba(31,39,51,.12)}
+  .app .lb{font-size:.76rem;color:var(--ink);text-align:center;line-height:1.15;font-weight:500}
+  .app.soon .ic{filter:grayscale(.25);opacity:.92}
+  .cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:16px 18px}
+  .panel h3{display:flex;align-items:center;gap:8px;font-size:.92rem;color:var(--ink);margin-bottom:12px}
+  .act{display:flex;align-items:flex-start;gap:11px;padding:9px 0;border-bottom:1px solid var(--line-soft)}
+  .act:last-child{border-bottom:none}
+  .act .ai{width:30px;height:30px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .act .at{flex:1}
+  .act .at b{display:block;font-size:.83rem;color:var(--ink)}
+  .act .at span{font-size:.77rem;color:var(--muted)}
+  .act .ago{font-size:.74rem;color:var(--muted);white-space:nowrap}
+  .qa{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+  .qa a{display:flex;align-items:center;gap:9px;color:var(--blue-d);font-size:.84rem;font-weight:500;text-decoration:none}
+  .qa a:hover{text-decoration:underline}
+  .st{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:.84rem;color:var(--text)}
+  .st:last-child{border-bottom:none}
+  .st .d{margin-left:auto;width:9px;height:9px;border-radius:50%}
+  .st .g{background:var(--green)}.st .a{background:var(--amber)}
+  @media(max-width:900px){.cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="tb-grid">▦</div>
+  <div class="brand"><b>Megha</b><span>ERP</span></div>
+  <div class="tb-spacer"></div>
+  <div class="tb-ico">⋯</div>
+  <div class="tb-search">🔍 <span>Search</span> <kbd>⌘K</kbd></div>
+  <div class="tb-ico">💎</div><div class="tb-ico">?</div><div class="tb-ico">✉</div>
+  <div class="avatar">SA</div>
+</div>
+
+<div class="home">
+  <div class="banner">
+    <h2>Welcome, System Administrator</h2>
+    <p>Wed, Jun 10 · 02:29 PM</p>
+  </div>
+
+  <div class="sec">▦ Applications</div>
+  <div class="apps">
+    <a class="app on" href="purchase-invoice.html"><div class="ic" style="background:#22a06b">📈</div><div class="lb">Trading</div></a>
+    <a class="app" href="masters.html"><div class="ic" style="background:#2f6fed">🗄️</div><div class="lb">Masters</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#6b7280">🧊</div><div class="lb">3D Printing</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#22a06b">📒</div><div class="lb">Accounts</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#6b7280">🗒️</div><div class="lb">My Tasks</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#e8590c">🏭</div><div class="lb">Manufacturing</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#2f6fed">📊</div><div class="lb">Reports</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#6b7280">⚙️</div><div class="lb">Setup</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#6b7280">📤</div><div class="lb">Import Wizard</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#7c3aed">🛡️</div><div class="lb">Administration</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#e64980">⚡</div><div class="lb">Demo</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#4263eb">✏️</div><div class="lb">Dynamic Fields</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#6b7280">⟨⟩</div><div class="lb">Business Rules</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#6b7280">📖</div><div class="lb">Help Content</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#4263eb">🔀</div><div class="lb">Workflow Engine</div></a>
+    <a class="app soon" onclick="soon()"><div class="ic" style="background:#2f6fed">🛡️</div><div class="lb">Audit Trail</div></a>
+  </div>
+
+  <div class="cards">
+    <div class="panel">
+      <h3>🕑 Recent Activity</h3>
+      <div class="act"><div class="ai">🧾</div><div class="at"><b>Purchase invoice confirmed</b><span>Lot 1-26 · 3 sub-lots · $122,697</span></div><div class="ago">2m ago</div></div>
+      <div class="act"><div class="ai">🏆</div><div class="at"><b>Won lot received</b><span>WL-1305 from Bonas Couzyn</span></div><div class="ago">22m ago</div></div>
+      <div class="act"><div class="ai">💎</div><div class="at"><b>Rough stock updated</b><span>257.34 ct added (1-26-A/B/C)</span></div><div class="ago">1h ago</div></div>
+      <div class="act"><div class="ai">🚚</div><div class="at"><b>Supplier added</b><span>Surat Diam Traders</span></div><div class="ago">2h ago</div></div>
+      <div class="act"><div class="ai">✈️</div><div class="at"><b>Inbound shipment delivered</b><span>HAWB 340567 · Ferrari</span></div><div class="ago">3h ago</div></div>
+    </div>
+
+    <div class="panel">
+      <h3>⚡ Quick Actions</h3>
+      <div class="qa">
+        <a href="purchase-invoice.html">⊕ New Purchase Invoice</a>
+        <a href="m-supplier.html">＋ Add Supplier</a>
+        <a href="m-customer.html">＋ Add Customer</a>
+        <a href="masters.html">🗄️ Masters</a>
+        <a href="m-currency.html">💱 Currencies</a>
+        <a href="m-mine.html">⛏️ Mines</a>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>📡 System Status</h3>
+      <div class="st">Backend API <span class="d g"></span></div>
+      <div class="st">Database <span class="d g"></span></div>
+      <div class="st">Cache <span class="d g"></span></div>
+      <div class="st">Queue <span class="d a"></span></div>
+      <div style="font-size:.74rem;color:var(--muted);margin-top:10px">Last checked: Just now</div>
+    </div>
+  </div>
+</div>
+
+<div class="statusbar">
+  <div class="s">💠 <b>Megha ERP</b></div><div class="s">👤 SUPER_ADMIN</div>
+  <div class="s">🏢 4 companies</div><div class="s"><span class="dot"></span> Connected</div>
+  <div class="spacer"></div><div class="s">🕑 02:29</div><div class="s">v0.1.0 (Build #10)</div><div class="s">Last Build: Today at 11:54 AM</div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+function soon(){const t=document.getElementById('toast');t.textContent='Module coming soon';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500);}
+</script>
+</body>
+</html>

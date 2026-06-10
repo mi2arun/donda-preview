@@ -25,7 +25,7 @@
   // ── chrome ──
   const chrome = `
     <div class="topbar">
-      <div class="tb-grid">▦</div>
+      <a class="tb-grid" href="home.html" style="text-decoration:none" title="Home">▦</a>
       <div class="brand"><b>Megha</b><span>ERP</span></div>
       <div class="tabs">
         <a class="tab" href="masters.html" style="text-decoration:none"><span class="ic">▦</span> Masters <span class="x">✕</span></a>
