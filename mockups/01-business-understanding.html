@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donda ERP — Business Understanding Document</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2b6cb0;
+            --accent: #e53e3e;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #2d3748;
+            --text-light: #718096;
+            --success: #38a169;
+            --warning: #d69e2e;
+            --info: #3182ce;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        .header h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 8px; }
+        .header .subtitle { font-size: 1.1rem; opacity: 0.85; }
+        .header .version {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 12px;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+        .toc {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 40px;
+        }
+        .toc h2 { font-size: 1.3rem; margin-bottom: 16px; color: var(--primary); }
+        .toc ol { padding-left: 24px; }
+        .toc li { margin-bottom: 8px; }
+        .toc a { color: var(--primary-light); text-decoration: none; font-weight: 500; }
+        .toc a:hover { text-decoration: underline; }
+
+        .section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+        .section h2 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+        .section h3 {
+            font-size: 1.1rem;
+            color: var(--primary-light);
+            margin: 20px 0 12px;
+        }
+        .section p { margin-bottom: 12px; color: var(--text); }
+
+        .entity-card {
+            background: #f0f5ff;
+            border: 1px solid #bee3f8;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        .entity-card h4 {
+            color: var(--primary);
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .entity-card .badge {
+            font-size: 0.7rem;
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin: 12px 0;
+        }
+        table th {
+            background: var(--primary);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        table tr:nth-child(even) { background: #f7fafc; }
+        table tr:hover { background: #edf2f7; }
+
+        .field-required { color: var(--accent); font-weight: 700; }
+        .field-auto { color: var(--success); font-size: 0.75rem; font-weight: 600; }
+        .field-optional { color: var(--text-light); font-size: 0.75rem; }
+
+        .stakeholder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .stakeholder {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid var(--primary-light);
+        }
+        .stakeholder h4 { color: var(--primary); margin-bottom: 8px; }
+        .stakeholder p { font-size: 0.9rem; color: var(--text-light); margin-bottom: 4px; }
+
+        .note {
+            background: #fffff0;
+            border: 1px solid #fefcbf;
+            border-left: 4px solid var(--warning);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+            font-size: 0.9rem;
+        }
+        .note strong { color: var(--warning); }
+
+        .info-box {
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
+            border-left: 4px solid var(--info);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+            font-size: 0.9rem;
+        }
+
+        .doc-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .doc-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        .doc-item .icon { font-size: 2rem; margin-bottom: 8px; }
+        .doc-item h5 { color: var(--primary); margin-bottom: 4px; }
+        .doc-item p { font-size: 0.8rem; color: var(--text-light); }
+
+        .example-data {
+            background: #f0fff4;
+            border: 1px solid #c6f6d5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        .example-data h4 { color: var(--success); margin-bottom: 12px; }
+
+        ul.bullet-list { padding-left: 20px; margin: 8px 0; }
+        ul.bullet-list li { margin-bottom: 6px; font-size: 0.9rem; }
+
+        .status-flow {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            flex-wrap: wrap;
+            margin: 16px 0;
+        }
+        .status-step {
+            background: var(--primary-light);
+            color: white;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .status-step:first-child { border-radius: 6px 0 0 6px; }
+        .status-step:last-child { border-radius: 0 6px 6px 0; }
+        .status-arrow {
+            width: 0; height: 0;
+            border-top: 18px solid transparent;
+            border-bottom: 18px solid transparent;
+            border-left: 12px solid var(--primary-light);
+            margin-right: -1px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        @media print {
+            .header { padding: 20px 0; }
+            .section { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>DONDA ERP — Business Understanding</h1>
+    <div class="subtitle">Diamond Manufacturing ERP — Transport & Logistics Module</div>
+    <div class="version">Version 1.0 | May 2026 | For User Acceptance Review</div>
+</div>
+
+<div class="container">
+
+    <!-- TABLE OF CONTENTS -->
+    <div class="toc">
+        <h2>Table of Contents</h2>
+        <ol>
+            <li><a href="#overview">Business Overview</a></li>
+            <li><a href="#stakeholders">Key Stakeholders & Entities</a></li>
+            <li><a href="#flow-summary">Business Flow Summary</a></li>
+            <li><a href="#won-lots">Module 1: Won Lots Register</a></li>
+            <li><a href="#transport-in">Module 2: Inbound Transport / Shipment Tracking</a></li>
+            <li><a href="#purchase">Module 3: Purchase Invoice & Rough Lot Master</a></li>
+            <li><a href="#sales">Module 4: Sales Invoice & Outbound Transfer</a></li>
+            <li><a href="#transport-out">Module 5: Outbound Transport / Shipment</a></li>
+            <li><a href="#documents">Supporting Documents</a></li>
+            <li><a href="#masters">Master Data</a></li>
+        </ol>
+    </div>
+
+    <!-- 1. BUSINESS OVERVIEW -->
+    <div class="section" id="overview">
+        <h2>1. Business Overview</h2>
+        <p>Donda ERP serves <strong>diamond manufacturers</strong> who purchase rough diamonds from international expos and tenders, import them, and either process them in-house or transfer/sell them to sister companies or third parties.</p>
+
+        <h3>The Business Cycle</h3>
+        <p>The management team attends <strong>diamond expos</strong> held in various countries (Belgium, Botswana, South Africa, Canada, etc.). Each expo showcases approximately <strong>600 lots</strong>, where each lot contains a single rough diamond or a parcel (group) of rough diamonds identified by a lot/parcel number with its carat weight and price.</p>
+
+        <p>The expo runs over <strong>multiple weeks</strong>. Each day:</p>
+        <ul class="bullet-list">
+            <li>The team inspects lots and <strong>submits bids</strong> on hand-picked lots (not all 600)</li>
+            <li>The expo management <strong>announces winners</strong></li>
+            <li>Winners <strong>pay on the spot</strong></li>
+            <li>Won diamonds are <strong>handed to courier/transport companies</strong> (e.g., Ferrari Belgium BVBA, Malca-Amit, Brinks) with the winning party's address</li>
+        </ul>
+
+        <div class="note">
+            <strong>Note:</strong> The bidding module itself is out of scope for the current phase. We start from the point where a lot is WON and needs to be tracked through transport → purchase → sales.
+        </div>
+
+        <h3>Post-Winning Flow</h3>
+        <p>Once a lot is won at the expo:</p>
+        <ul class="bullet-list">
+            <li><strong>Record the win</strong> — Lot details, supplier, parcel numbers, carats, price paid, origin</li>
+            <li><strong>Track inbound shipment</strong> — Courier, airway bill, route, expected delivery, KPC certificate</li>
+            <li><strong>Create purchase entry</strong> — Import invoice with line items, expenses (freight, duty), auto-create Rough Lot Master records</li>
+            <li><strong>Sell or transfer</strong> — Create sales invoice to sister company (inter-company) or third party, with outbound shipment tracking</li>
+        </ul>
+    </div>
+
+    <!-- 2. STAKEHOLDERS -->
+    <div class="section" id="stakeholders">
+        <h2>2. Key Stakeholders & Entities</h2>
+
+        <div class="stakeholder-grid">
+            <div class="stakeholder">
+                <h4>Expo / Tender Supplier</h4>
+                <p><strong>Example:</strong> Bonas Couzyn (Antwerp) NV</p>
+                <p>Sells rough diamonds through expos/tenders. Issues supplier invoices with parcel details, mining origin, and KPC documentation.</p>
+            </div>
+            <div class="stakeholder">
+                <h4>Buying Company</h4>
+                <p><strong>Example:</strong> Rainbow Gems (HK) Ltd</p>
+                <p>The primary buyer. Receives import shipments, creates purchase entries, holds rough diamond inventory.</p>
+            </div>
+            <div class="stakeholder">
+                <h4>Sister Company</h4>
+                <p><strong>Example:</strong> Donda Exports</p>
+                <p>Same owner, different country. Receives inter-company transfers with sales invoices. May also sell to third parties.</p>
+            </div>
+            <div class="stakeholder">
+                <h4>Transport / Courier</h4>
+                <p><strong>Example:</strong> Ferrari Belgium BVBA</p>
+                <p>Handles secure diamond logistics. Issues House Airway Bills, manages sealed parcels with KPC compliance.</p>
+            </div>
+            <div class="stakeholder">
+                <h4>Mining Companies</h4>
+                <p><strong>Examples:</strong> Mountain Province, Petra Diamonds, KAO/Storm Mountain</p>
+                <p>Original source of rough diamonds. Their mine and country determine the origin tracking and KPC requirements.</p>
+            </div>
+            <div class="stakeholder">
+                <h4>Third-Party Buyers</h4>
+                <p>External companies purchasing rough or polished diamonds. Standard sales invoices apply.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. FLOW SUMMARY -->
+    <div class="section" id="flow-summary">
+        <h2>3. Business Flow Summary</h2>
+
+        <h3>Overall Status Flow</h3>
+        <div class="status-flow">
+            <div class="status-step" style="background:#805ad5;">Bid Won</div>
+            <div class="status-arrow" style="border-left-color:#805ad5;"></div>
+            <div class="status-step" style="background:#dd6b20;">In Transit</div>
+            <div class="status-arrow" style="border-left-color:#dd6b20;"></div>
+            <div class="status-step" style="background:#38a169;">Received</div>
+            <div class="status-arrow" style="border-left-color:#38a169;"></div>
+            <div class="status-step" style="background:#3182ce;">Purchase Invoiced</div>
+            <div class="status-arrow" style="border-left-color:#3182ce;"></div>
+            <div class="status-step" style="background:#1a365d;">In Rough Stock</div>
+            <div class="status-arrow" style="border-left-color:#1a365d;"></div>
+            <div class="status-step" style="background:#e53e3e;">Sold / Transferred</div>
+            <div class="status-arrow" style="border-left-color:#e53e3e;"></div>
+            <div class="status-step" style="background:#2d3748;">Shipped Out</div>
+        </div>
+
+        <h3>Key Business Rules</h3>
+        <ul class="bullet-list">
+            <li>A single <strong>shipment</strong> can contain parcels from <strong>multiple supplier invoices</strong> and <strong>multiple mining origins</strong></li>
+            <li>Each parcel becomes a <strong>Rough Lot</strong> in inventory with a system-generated lot number</li>
+            <li>Expenses (freight, import duty, other) are <strong>allocated proportionally</strong> to rough lots based on value</li>
+            <li>Inventory valuation = Purchase price + Allocated expenses</li>
+            <li>Each shipment must have a <strong>Kimberley Process Certificate (KPC)</strong> for compliance</li>
+            <li>Payment to supplier is typically within <strong>5 working days</strong> from invoice date</li>
+            <li>Currency is primarily <strong>USD</strong> but the system must support multiple currencies with exchange rates</li>
+            <li>Sales can be to <strong>sister companies</strong> (inter-company transfer) or <strong>third parties</strong> (regular sale)</li>
+        </ul>
+    </div>
+
+    <!-- 4. WON LOTS REGISTER -->
+    <div class="section" id="won-lots">
+        <h2>4. Module 1: Won Lots Register</h2>
+        <p>Records lots won at diamond expos. This is the entry point of the entire flow — data captured here flows into transport, purchase, and inventory.</p>
+
+        <div class="entity-card">
+            <h4>Won Lot Entry <span class="badge">HEADER</span></h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Source</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Won Lot ID</strong></td>
+                        <td><span class="field-auto">AUTO</span></td>
+                        <td>System</td>
+                        <td>System-generated unique identifier</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Expo Name</strong> <span class="field-required">*</span></td>
+                        <td>Dropdown</td>
+                        <td>Master</td>
+                        <td>Name of the diamond expo/tender (e.g., "Bonas Antwerp March 2026")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tender/Supplier</strong> <span class="field-required">*</span></td>
+                        <td>Dropdown</td>
+                        <td>Master</td>
+                        <td>Supplier running the tender (e.g., Bonas Couzyn NV)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bid Date</strong> <span class="field-required">*</span></td>
+                        <td>Date</td>
+                        <td>Manual</td>
+                        <td>Date the bid was submitted</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Win Date</strong> <span class="field-required">*</span></td>
+                        <td>Date</td>
+                        <td>Manual</td>
+                        <td>Date the win was announced</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Payment Date</strong></td>
+                        <td>Date</td>
+                        <td>Manual</td>
+                        <td>Date payment was made at expo</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Payment Reference</strong></td>
+                        <td>Text</td>
+                        <td>Manual</td>
+                        <td>Bank transfer ref / receipt number</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Currency</strong> <span class="field-required">*</span></td>
+                        <td>Dropdown</td>
+                        <td>Master</td>
+                        <td>Transaction currency (default: USD)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Status</strong></td>
+                        <td><span class="field-auto">AUTO</span></td>
+                        <td>System</td>
+                        <td>Won → Handed to Courier → In Transit → Received → Invoiced</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Remarks</strong></td>
+                        <td>Text</td>
+                        <td>Manual</td>
+                        <td>Any additional notes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="entity-card">
+            <h4>Won Lot Lines <span class="badge">DETAIL</span></h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Source</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Parcel No</strong> <span class="field-required">*</span></td>
+                        <td>Text</td>
+                        <td>Expo label</td>
+                        <td>Expo-assigned parcel/lot number (e.g., KAO-2602-070)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stone Type</strong> <span class="field-required">*</span></td>
+                        <td>Dropdown</td>
+                        <td>Manual</td>
+                        <td>Single / Parcel</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mining Origin</strong> <span class="field-required">*</span></td>
+                        <td>Dropdown</td>
+                        <td>Expo info</td>
+                        <td>Country/mine of origin (e.g., Lesotho — KAO Mine)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Carats</strong> <span class="field-required">*</span></td>
+                        <td>Decimal (2)</td>
+                        <td>Expo label</td>
+                        <td>Weight in carats (e.g., 170.43)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Price Per Carat</strong> <span class="field-required">*</span></td>
+                        <td>Decimal (2)</td>
+                        <td>Bid price</td>
+                        <td>Winning bid price per carat (e.g., 651.81 USD)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Amount</strong></td>
+                        <td><span class="field-auto">CALC</span></td>
+                        <td>System</td>
+                        <td>= Carats × Price Per Carat</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Description 1</strong></td>
+                        <td>Text</td>
+                        <td>Expo</td>
+                        <td>Supplier/tender description of the stone</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Description 2</strong></td>
+                        <td>Text</td>
+                        <td>Manual</td>
+                        <td>Donda's internal description</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="example-data">
+            <h4>Real Example (from Invoice #20260645)</h4>
+            <table>
+                <thead>
+                    <tr><th>Parcel No</th><th>Type</th><th>Origin</th><th>Carats</th><th>Pr./Ct.</th><th>Total USD</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>KAO-2602-070</td><td>Parcel</td><td>Lesotho</td><td>170.43</td><td>651.81</td><td>111,087.97</td></tr>
+                    <tr><td>KAO-2602-085</td><td>Parcel</td><td>Lesotho</td><td>82.31</td><td>108.00</td><td>8,889.48</td></tr>
+                    <tr><td>KAO-2602-086</td><td>Single</td><td>Lesotho</td><td>4.60</td><td>561.00</td><td>2,580.60</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 5. INBOUND TRANSPORT -->
+    <div class="section" id="transport-in">
+        <h2>5. Module 2: Inbound Transport / Shipment Tracking</h2>
+        <p>Tracks the physical movement of won diamonds from expo location to the buyer's address. A single shipment can consolidate parcels from multiple won lots and multiple supplier invoices.</p>
+
+        <div class="entity-card">
+            <h4>Inbound Shipment <span class="badge">HEADER</span></h4>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Source</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Shipment ID</strong></td>
+                        <td><span class="field-auto">AUTO</span></td>
+                        <td>System</td>
+                        <td>System-generated shipment reference</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Shipment Type</strong></td>
+                        <td>Fixed</td>
+                        <td>System</td>
+                        <td>Inbound</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Courier / Transport Company</strong> <span class="field-required">*</span></td>
+                        <td>Dropdown</td>
+                        <td>Master</td>
+                        <td>e.g., Ferrari Belgium BVBA, Malca-Amit, Brinks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>House Airway Bill No</strong> <span class="field-required">*</span></td>
+                        <td>Text</td>
+                        <td>AWB Doc</td>
+                        <td>e.g., 340567</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Master Airway Bill No</strong></td>
+                        <td>Text</td>
+                        <td>AWB Doc</td>
+                        <td>e.g., 724-87924664</td>
+                    </tr>
+                    <tr>
+                        <td><strong>KPC Number</strong> <span class="field-required">*</span></td>
+                        <td>Text</td>
+                        <td>KPC Doc</td>
+                        <td>Kimberley Process Certificate No (e.g., EU 00979933)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>KPC Expiry Date</strong></td>
+                        <td>Date</td>
+                        <td>KPC Doc</td>
+                        <td>Certificate expiry date</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Origin Country</strong> <span class="field-required">*</span></td>
+                        <td>Text</td>
+                        <td>KPC</td>
+                        <td>Mining origin countries (e.g., CA, LS, ZA)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Provenance</strong></td>
+                        <td>Text</td>
+                        <td>KPC</td>
+                        <td>Country of provenance (e.g., Belgium)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Departure Airport</strong></td>
+                        <td>Text</td>
+                        <td>AWB</td>
+                        <td>e.g., Brussels</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Destination Airport</strong></td>
+                        <td>Text</td>
+                        <td>AWB</td>
+                        <td>e.g., HKG</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Routing</strong></td>
+                        <td>Text</td>
+                        <td>AWB</td>
+                        <td>e.g., Brussels → ZRH (LX) → HKG (LX)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flight Numbers</strong></td>
+                        <td>Text</td>
+                        <td>AWB</td>
+                        <td>e.g., SN2729/6, LX138/6</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Seal Numbers</strong></td>
+                        <td>Text</td>
+                        <td>AWB</td>
+                        <td>e.g., .M2461456 / .M2461456 / .M2461456</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Declared Value</strong></td>
+                        <td>Decimal</td>
+                        <td>AWB</td>
+                        <td>Declared value for carriage (e.g., 235,541.77 USD)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Carats</strong></td>
+                        <td><span class="field-auto">CALC</span></td>
+                        <td>System</td>
+                        <td>Sum of all parcel carats in shipment</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Weight (KG)</strong></td>
+                        <td>Decimal</td>
+                        <td>AWB</td>
+                        <td>Physical weight in KG</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Shipment Date</strong> <span class="field-required">*</span></td>
+                        <td>Date</td>
+                        <td>AWB</td>
+                        <td>Date shipped from origin</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Expected Delivery Date</strong></td>
+                        <td>Date</td>
+                        <td>Manual</td>
+                        <td>Expected arrival date</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Actual Delivery Date</strong></td>
+                        <td>Date</td>
+                        <td>Manual</td>
+                        <td>Actual date received</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Received By</strong></td>
+                        <td>Text</td>
+                        <td>Manual</td>
+                        <td>Person who received the shipment</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Status</strong></td>
+                        <td><span class="field-auto">AUTO</span></td>
+                        <td>System</td>
+                        <td>Booked → Picked Up → In Transit → Arrived → Delivered → Verified</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Payment Method</strong></td>
+                        <td>Dropdown</td>
+                        <td>AWB</td>
+                        <td>e.g., EXW, CIF, FOB</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="entity-card">
+            <h4>Shipment Parcels <span class="badge">DETAIL — linked to Won Lots</span></h4>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Source</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Won Lot Line Ref</strong></td><td>Lookup</td><td>Won Lots</td><td>Links to the won lot line item</td></tr>
+                    <tr><td><strong>Parcel No</strong></td><td><span class="field-auto">AUTO</span></td><td>Won Lot</td><td>Auto-filled from linked won lot</td></tr>
+                    <tr><td><strong>Supplier Invoice No</strong></td><td>Text</td><td>Invoice</td><td>Supplier's invoice number (e.g., 20260645)</td></tr>
+                    <tr><td><strong>Carats</strong></td><td><span class="field-auto">AUTO</span></td><td>Won Lot</td><td>Auto-filled carat weight</td></tr>
+                    <tr><td><strong>Declared Value</strong></td><td>Decimal</td><td>AWB</td><td>Customs declared value for this parcel</td></tr>
+                    <tr><td><strong>HS Code</strong></td><td>Dropdown</td><td>KPC</td><td>e.g., 7102.10, 7102.21, 7102.31</td></tr>
+                    <tr><td><strong>Weight (KG)</strong></td><td>Decimal</td><td>AWB</td><td>Physical weight</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Shipment Status Flow</h3>
+        <div class="status-flow">
+            <div class="status-step" style="background:#805ad5;">Booked</div>
+            <div class="status-arrow" style="border-left-color:#805ad5;"></div>
+            <div class="status-step" style="background:#dd6b20;">Picked Up</div>
+            <div class="status-arrow" style="border-left-color:#dd6b20;"></div>
+            <div class="status-step" style="background:#d69e2e;">In Transit</div>
+            <div class="status-arrow" style="border-left-color:#d69e2e;"></div>
+            <div class="status-step" style="background:#38a169;">Arrived</div>
+            <div class="status-arrow" style="border-left-color:#38a169;"></div>
+            <div class="status-step" style="background:#3182ce;">Delivered</div>
+            <div class="status-arrow" style="border-left-color:#3182ce;"></div>
+            <div class="status-step" style="background:#1a365d;">Verified</div>
+        </div>
+    </div>
+
+    <!-- 6. PURCHASE INVOICE -->
+    <div class="section" id="purchase">
+        <h2>6. Module 3: Purchase Invoice & Rough Lot Master</h2>
+        <p>When diamonds are received and verified, a purchase invoice (import invoice) is created. This automatically generates Rough Lot Master records for inventory tracking.</p>
+
+        <div class="entity-card">
+            <h4>Import / Purchase Invoice <span class="badge">HEADER</span></h4>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Source</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Purchase Invoice No</strong></td><td><span class="field-auto">AUTO</span></td><td>System</td><td>System-generated invoice number</td></tr>
+                    <tr><td><strong>Supplier Name</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Master</td><td>e.g., Bonas Couzyn (Antwerp) NV</td></tr>
+                    <tr><td><strong>Supplier Address</strong></td><td><span class="field-auto">AUTO</span></td><td>Master</td><td>Auto-filled from supplier master</td></tr>
+                    <tr><td><strong>Supplier Invoice No</strong> <span class="field-required">*</span></td><td>Text</td><td>Invoice Doc</td><td>Supplier's own invoice number (e.g., 20260645)</td></tr>
+                    <tr><td><strong>Invoice Date</strong> <span class="field-required">*</span></td><td>Date</td><td>Invoice Doc</td><td>Date on supplier's invoice</td></tr>
+                    <tr><td><strong>Received Date</strong> <span class="field-required">*</span></td><td>Date</td><td>Manual</td><td>Date goods were received</td></tr>
+                    <tr><td><strong>Mining Origin</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Invoice</td><td>Country/mine of origin</td></tr>
+                    <tr><td><strong>KPC No</strong></td><td>Text</td><td>KPC</td><td>Kimberley Process Certificate number</td></tr>
+                    <tr><td><strong>Currency</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Invoice</td><td>Invoice currency (e.g., USD)</td></tr>
+                    <tr><td><strong>Exchange Rate</strong> <span class="field-required">*</span></td><td>Decimal</td><td>Manual</td><td>Exchange rate to base currency</td></tr>
+                    <tr><td><strong>Payment Terms</strong></td><td>Dropdown</td><td>Invoice</td><td>e.g., "5 working days from invoice date"</td></tr>
+                    <tr><td><strong>Due Date</strong></td><td><span class="field-auto">CALC</span></td><td>System</td><td>Auto-calculated from invoice date + payment terms</td></tr>
+                    <tr><td><strong>Shipment Ref</strong></td><td>Lookup</td><td>Shipment</td><td>Link to inbound shipment record</td></tr>
+                    <tr><td><strong>Remarks</strong></td><td>Text</td><td>Manual</td><td>Additional notes</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="entity-card">
+            <h4>Invoice Line Items <span class="badge">DETAIL</span></h4>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Source</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Line No</strong></td><td><span class="field-auto">AUTO</span></td><td>System</td><td>Sequential line number</td></tr>
+                    <tr><td><strong>Parcel No</strong> <span class="field-required">*</span></td><td>Text</td><td>Invoice</td><td>Supplier's parcel number (e.g., KAO-2602-070)</td></tr>
+                    <tr><td><strong>Rough Lot No</strong></td><td><span class="field-auto">AUTO</span></td><td>System</td><td>System-generated rough lot number</td></tr>
+                    <tr><td><strong>Stone Type</strong></td><td>Dropdown</td><td>Manual</td><td>Single / Parcel</td></tr>
+                    <tr><td><strong>Description 1</strong></td><td>Text</td><td>Invoice</td><td>Tender/supplier description</td></tr>
+                    <tr><td><strong>Description 2</strong></td><td>Text</td><td>Manual</td><td>Donda's internal description</td></tr>
+                    <tr><td><strong>Carats</strong> <span class="field-required">*</span></td><td>Decimal (2)</td><td>Invoice</td><td>Weight in carats</td></tr>
+                    <tr><td><strong>Price Per Carat</strong> <span class="field-required">*</span></td><td>Decimal (2)</td><td>Invoice</td><td>Price per carat in invoice currency</td></tr>
+                    <tr><td><strong>Total Amount</strong></td><td><span class="field-auto">CALC</span></td><td>System</td><td>= Carats × Price Per Carat</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="entity-card">
+            <h4>Expenses <span class="badge">DYNAMIC — can add more at any time</span></h4>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Source</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Expense Type</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Master</td><td>e.g., Freight Charges, Import Duty, Insurance, Brokerage, Other</td></tr>
+                    <tr><td><strong>Amount</strong> <span class="field-required">*</span></td><td>Decimal</td><td>Manual</td><td>Expense amount in invoice currency</td></tr>
+                    <tr><td><strong>Remarks</strong></td><td>Text</td><td>Manual</td><td>Notes about the expense</td></tr>
+                </tbody>
+            </table>
+            <div class="info-box">
+                <strong>Expense Allocation:</strong> Expenses are allocated proportionally across line items based on their total amount. Each Rough Lot's inventory value = Line Amount + Proportional Expense Share.
+            </div>
+        </div>
+
+        <div class="entity-card">
+            <h4>Invoice Summary <span class="badge">CALCULATED</span></h4>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Calculation</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Total Invoice Carats</strong></td><td>Sum of all line item carats</td></tr>
+                    <tr><td><strong>Sub Total (Goods)</strong></td><td>Sum of all line item amounts</td></tr>
+                    <tr><td><strong>Total Expenses</strong></td><td>Sum of all expense amounts</td></tr>
+                    <tr><td><strong>Grand Total</strong></td><td>Sub Total + Total Expenses</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="entity-card">
+            <h4>Rough Lot Master <span class="badge">AUTO-CREATED per line item</span></h4>
+            <p style="margin-bottom:12px; font-size:0.9rem; color:var(--text-light);">One Rough Lot record is auto-created for each invoice line item when the purchase invoice is confirmed.</p>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Source</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Rough Lot No</strong></td><td>System</td><td>Auto-generated unique lot number</td></tr>
+                    <tr><td><strong>Parcel No</strong></td><td>Invoice Line</td><td>From supplier's parcel number</td></tr>
+                    <tr><td><strong>Stone Type</strong></td><td>Invoice Line</td><td>Single / Parcel</td></tr>
+                    <tr><td><strong>Commodity</strong></td><td>Fixed</td><td>Diamond</td></tr>
+                    <tr><td><strong>KPC No</strong></td><td>Invoice Header</td><td>Kimberley Process Certificate number</td></tr>
+                    <tr><td><strong>Description 1</strong></td><td>Invoice Line</td><td>Tender/supplier description</td></tr>
+                    <tr><td><strong>Description 2</strong></td><td>Invoice Line</td><td>Donda's internal description</td></tr>
+                    <tr><td><strong>Origin Country</strong></td><td>Invoice Header</td><td>Mining origin</td></tr>
+                    <tr><td><strong>Supplier</strong></td><td>Invoice Header</td><td>Supplier name</td></tr>
+                    <tr><td><strong>Carats</strong></td><td>Invoice Line</td><td>Weight in carats</td></tr>
+                    <tr><td><strong>Purchase Price</strong></td><td>Invoice Line</td><td>Line total amount</td></tr>
+                    <tr><td><strong>Allocated Expenses</strong></td><td>Calculated</td><td>Proportional share of invoice expenses</td></tr>
+                    <tr><td><strong>Inventory Value</strong></td><td>Calculated</td><td>Purchase Price + Allocated Expenses</td></tr>
+                    <tr><td><strong>Status</strong></td><td>System</td><td>In Stock / Allocated / Sold / Transferred</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Auto Accounting</h3>
+        <div class="info-box">
+            When a purchase invoice is confirmed, the system auto-generates accounting entries:
+            <ul class="bullet-list" style="margin-top:8px;">
+                <li><strong>Debit:</strong> Rough Diamond Purchase Account (goods value)</li>
+                <li><strong>Debit:</strong> Related Expense Accounts (freight, duty, etc.)</li>
+                <li><strong>Credit:</strong> Supplier / Accounts Payable</li>
+            </ul>
+            Inventory is added to <strong>Rough Stock</strong> at Purchase Value + Allocated Expenses.
+        </div>
+
+        <div class="example-data">
+            <h4>Real Example — Invoice #20260645 (KAO Mine, Lesotho)</h4>
+            <table>
+                <thead>
+                    <tr><th>Parcel</th><th>Carats</th><th>Pr./Ct.</th><th>Amount</th><th>Expense Share</th><th>Inventory Value</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>KAO-2602-070</td><td>170.43</td><td>651.81</td><td>111,087.97</td><td>126.00</td><td>111,213.97</td></tr>
+                    <tr><td>KAO-2602-085</td><td>82.31</td><td>108.00</td><td>8,889.48</td><td>10.09</td><td>8,899.57</td></tr>
+                    <tr><td>KAO-2602-086</td><td>4.60</td><td>561.00</td><td>2,580.60</td><td>2.93</td><td>2,583.53</td></tr>
+                    <tr style="font-weight:700;"><td>Total</td><td>257.34</td><td></td><td>122,558.05</td><td>139.02</td><td>122,697.07</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 7. SALES INVOICE -->
+    <div class="section" id="sales">
+        <h2>7. Module 4: Sales Invoice & Outbound Transfer</h2>
+        <p>Diamonds in rough stock can be sold to third-party buyers or transferred to sister companies (same owner, different country). Both generate a sales invoice.</p>
+
+        <div class="entity-card">
+            <h4>Sales Invoice <span class="badge">HEADER</span></h4>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Source</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Sales Invoice No</strong></td><td><span class="field-auto">AUTO</span></td><td>System</td><td>System-generated invoice number</td></tr>
+                    <tr><td><strong>Invoice Type</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Manual</td><td>Inter-Company Transfer / Third-Party Sale</td></tr>
+                    <tr><td><strong>Customer / Buyer</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Master</td><td>Buyer company (sister or third party)</td></tr>
+                    <tr><td><strong>Customer Address</strong></td><td><span class="field-auto">AUTO</span></td><td>Master</td><td>Auto-filled from customer master</td></tr>
+                    <tr><td><strong>Invoice Date</strong> <span class="field-required">*</span></td><td>Date</td><td>Manual</td><td>Date of sale</td></tr>
+                    <tr><td><strong>Currency</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Master</td><td>Sale currency</td></tr>
+                    <tr><td><strong>Exchange Rate</strong></td><td>Decimal</td><td>Manual</td><td>Exchange rate to base currency</td></tr>
+                    <tr><td><strong>Payment Terms</strong></td><td>Dropdown</td><td>Master</td><td>Payment terms for the buyer</td></tr>
+                    <tr><td><strong>Due Date</strong></td><td><span class="field-auto">CALC</span></td><td>System</td><td>Auto-calculated</td></tr>
+                    <tr><td><strong>KPC No</strong></td><td>Text</td><td>Rough Lot</td><td>KPC for export compliance</td></tr>
+                    <tr><td><strong>Remarks</strong></td><td>Text</td><td>Manual</td><td>Additional notes</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="entity-card">
+            <h4>Sales Invoice Lines <span class="badge">DETAIL — from Rough Stock</span></h4>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Source</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Rough Lot No</strong> <span class="field-required">*</span></td><td>Lookup</td><td>Stock</td><td>Select from available rough lots in stock</td></tr>
+                    <tr><td><strong>Parcel No</strong></td><td><span class="field-auto">AUTO</span></td><td>Rough Lot</td><td>Auto-filled from rough lot</td></tr>
+                    <tr><td><strong>Stone Type</strong></td><td><span class="field-auto">AUTO</span></td><td>Rough Lot</td><td>Auto-filled</td></tr>
+                    <tr><td><strong>Origin</strong></td><td><span class="field-auto">AUTO</span></td><td>Rough Lot</td><td>Auto-filled mining origin</td></tr>
+                    <tr><td><strong>Carats</strong></td><td><span class="field-auto">AUTO</span></td><td>Rough Lot</td><td>Auto-filled from rough lot</td></tr>
+                    <tr><td><strong>Selling Price Per Carat</strong> <span class="field-required">*</span></td><td>Decimal</td><td>Manual</td><td>Selling price per carat</td></tr>
+                    <tr><td><strong>Total Amount</strong></td><td><span class="field-auto">CALC</span></td><td>System</td><td>= Carats × Selling Price</td></tr>
+                    <tr><td><strong>Cost Price</strong></td><td><span class="field-auto">AUTO</span></td><td>Rough Lot</td><td>Inventory value (for margin calculation)</td></tr>
+                    <tr><td><strong>Margin</strong></td><td><span class="field-auto">CALC</span></td><td>System</td><td>= Total Amount − Cost Price</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="entity-card">
+            <h4>Sales Expenses <span class="badge">DYNAMIC</span></h4>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Source</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Expense Type</strong></td><td>Dropdown</td><td>Master</td><td>e.g., Freight, Insurance, Commission, Brokerage</td></tr>
+                    <tr><td><strong>Amount</strong></td><td>Decimal</td><td>Manual</td><td>Expense amount</td></tr>
+                    <tr><td><strong>Remarks</strong></td><td>Text</td><td>Manual</td><td>Notes</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="entity-card">
+            <h4>Sales Invoice Summary <span class="badge">CALCULATED</span></h4>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Calculation</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Total Carats</strong></td><td>Sum of all line carats</td></tr>
+                    <tr><td><strong>Sub Total (Goods)</strong></td><td>Sum of all line amounts</td></tr>
+                    <tr><td><strong>Total Expenses</strong></td><td>Sum of all expense amounts</td></tr>
+                    <tr><td><strong>Grand Total</strong></td><td>Sub Total + Expenses</td></tr>
+                    <tr><td><strong>Total Cost</strong></td><td>Sum of cost prices from rough lots</td></tr>
+                    <tr><td><strong>Net Margin</strong></td><td>Grand Total − Total Cost − Expenses</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Auto Accounting</h3>
+        <div class="info-box">
+            <ul class="bullet-list">
+                <li><strong>Debit:</strong> Customer / Accounts Receivable</li>
+                <li><strong>Credit:</strong> Diamond Sales Account</li>
+                <li><strong>Debit:</strong> Cost of Goods Sold (inventory value)</li>
+                <li><strong>Credit:</strong> Rough Stock / Inventory</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 8. OUTBOUND TRANSPORT -->
+    <div class="section" id="transport-out">
+        <h2>8. Module 5: Outbound Transport / Shipment</h2>
+        <p>When diamonds are sold or transferred, an outbound shipment is created to track logistics. Structure mirrors inbound shipment.</p>
+
+        <div class="entity-card">
+            <h4>Outbound Shipment <span class="badge">HEADER</span></h4>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Source</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Shipment ID</strong></td><td><span class="field-auto">AUTO</span></td><td>System</td><td>System-generated</td></tr>
+                    <tr><td><strong>Shipment Type</strong></td><td>Fixed</td><td>System</td><td>Outbound</td></tr>
+                    <tr><td><strong>Sales Invoice Ref</strong></td><td>Lookup</td><td>Sales Invoice</td><td>Link to sales invoice</td></tr>
+                    <tr><td><strong>Courier / Transport Company</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Master</td><td>Transport company</td></tr>
+                    <tr><td><strong>Consignee Name</strong></td><td><span class="field-auto">AUTO</span></td><td>Sales Invoice</td><td>Buyer name</td></tr>
+                    <tr><td><strong>Consignee Address</strong></td><td><span class="field-auto">AUTO</span></td><td>Sales Invoice</td><td>Buyer address</td></tr>
+                    <tr><td><strong>Airway Bill No</strong></td><td>Text</td><td>Manual</td><td>Outbound AWB number</td></tr>
+                    <tr><td><strong>KPC No</strong></td><td>Text</td><td>Manual</td><td>Export KPC number</td></tr>
+                    <tr><td><strong>Departure / Destination</strong></td><td>Text</td><td>Manual</td><td>Route details</td></tr>
+                    <tr><td><strong>Shipment Date</strong></td><td>Date</td><td>Manual</td><td>Date shipped</td></tr>
+                    <tr><td><strong>Status</strong></td><td><span class="field-auto">AUTO</span></td><td>System</td><td>Preparing → Shipped → In Transit → Delivered</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 9. DOCUMENTS -->
+    <div class="section" id="documents">
+        <h2>9. Supporting Documents</h2>
+        <p>Each transaction generates or requires specific documents. The system should support uploading/attaching scanned copies.</p>
+
+        <div class="doc-list">
+            <div class="doc-item">
+                <div class="icon">📄</div>
+                <h5>Supplier Invoice</h5>
+                <p>Original invoice from tender supplier with parcel details, carats, prices</p>
+            </div>
+            <div class="doc-item">
+                <div class="icon">✈️</div>
+                <h5>House Airway Bill</h5>
+                <p>Transport document with routing, weights, declared values, seal numbers</p>
+            </div>
+            <div class="doc-item">
+                <div class="icon">💎</div>
+                <h5>Kimberley Process Certificate</h5>
+                <p>Mandatory compliance document certifying conflict-free diamonds</p>
+            </div>
+            <div class="doc-item">
+                <div class="icon">🏦</div>
+                <h5>Payment Receipt</h5>
+                <p>Proof of payment to supplier at expo</p>
+            </div>
+            <div class="doc-item">
+                <div class="icon">📋</div>
+                <h5>Customs Declaration</h5>
+                <p>Import/export customs documentation</p>
+            </div>
+            <div class="doc-item">
+                <div class="icon">📑</div>
+                <h5>Sales Invoice</h5>
+                <p>Generated sales invoice for buyer (PDF)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 10. MASTERS -->
+    <div class="section" id="masters">
+        <h2>10. Master Data Required</h2>
+        <p>The following master tables need to be set up before transactions can be processed.</p>
+
+        <table>
+            <thead>
+                <tr><th>Master</th><th>Key Fields</th><th>Examples</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Supplier Master</strong></td><td>Name, Address, Country, VAT, Bank Details, Payment Terms</td><td>Bonas Couzyn (Antwerp) NV</td></tr>
+                <tr><td><strong>Customer Master</strong></td><td>Name, Address, Country, VAT, Type (Sister/Third-Party), Bank Details</td><td>Donda Exports, Rainbow Gems HK</td></tr>
+                <tr><td><strong>Expo / Tender Master</strong></td><td>Name, Location, Start/End Dates, Supplier</td><td>Bonas Antwerp March 2026</td></tr>
+                <tr><td><strong>Transport Company Master</strong></td><td>Name, Address, Contact, IATA Code</td><td>Ferrari Belgium BVBA, Malca-Amit</td></tr>
+                <tr><td><strong>Country / Origin Master</strong></td><td>Code, Name, Mines</td><td>CA-Canada, LS-Lesotho, ZA-South Africa</td></tr>
+                <tr><td><strong>Mine Master</strong></td><td>Name, Country, Company</td><td>Gahcho Kué (Canada), KAO (Lesotho), Cullinan (SA)</td></tr>
+                <tr><td><strong>Currency Master</strong></td><td>Code, Name, Symbol, Exchange Rates</td><td>USD, EUR, HKD, ZAR</td></tr>
+                <tr><td><strong>Expense Type Master</strong></td><td>Name, Default Account Code</td><td>Freight, Import Duty, Insurance, Brokerage</td></tr>
+                <tr><td><strong>Payment Terms Master</strong></td><td>Code, Description, Days</td><td>"NET5" = 5 working days</td></tr>
+                <tr><td><strong>HS Code Master</strong></td><td>Code, Description</td><td>7102.10, 7102.21, 7102.31</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<div class="footer">
+    <p><strong>DONDA ERP</strong> — Business Understanding Document v1.0</p>
+    <p>Prepared for User Acceptance Review | May 2026</p>
+    <p style="margin-top:8px; font-size:0.8rem;">Please review all modules, fields, and flows. Mark any corrections or additions needed.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integration API — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="04-api">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 04 · API · ERP-defined</div>
+      <h1>Integration API Specification</h1>
+      <p class="lead">REST/JSON over HTTPS, base path <code>/api/v1</code>. All requests authenticated; all writes accept an <code>Idempotency-Key</code>. Timestamps are ISO-8601 UTC. This is the ERP-proposed baseline, to be finalised with the app team.</p>
+    </div>
+
+    <section id="masters">
+      <h2>Read — Master Data <span style="font-weight:400;font-size:.8rem;color:var(--muted);">(app pulls)</span></h2>
+      <table>
+        <thead><tr><th style="width:64px;">Method</th><th>Endpoint</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><span class="method get">GET</span></td><td><code>/group-companies</code></td><td>List Donda entities</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/suppliers</code></td><td>Expo/tender &amp; third-party suppliers</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/expos</code></td><td>Expos/tenders (filter by status)</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/mines</code> · <code>/origins</code></td><td>Mines &amp; country origins</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/currencies</code></td><td>Currencies &amp; exchange rates</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="bidding">
+      <h2>Write / Read — Bidding Data <span style="font-weight:400;font-size:.8rem;color:var(--muted);">(app pushes, ERP stores)</span></h2>
+      <table>
+        <thead><tr><th style="width:64px;">Method</th><th>Endpoint</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><span class="method post">POST</span></td><td><code>/expos</code></td><td>Create an expo/tender</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/expos/{id}/lots</code></td><td>Upload lot catalog (bulk, ~600 lots)</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/expos/{id}/lots</code></td><td>Retrieve catalog (<code>updated_since</code>)</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/bids</code></td><td>Submit a bid on a lot</td></tr>
+          <tr><td><span class="method patch">PATCH</span></td><td><code>/bids/{id}</code></td><td>Update bid (withdraw / result)</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/lots/{id}/result</code></td><td>Mark Won/Lost (Won → creates Won Lot)</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/lots/{id}/payment</code></td><td>Record on-spot payment</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/won-lots</code></td><td>App reads won lots &amp; downstream status</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="valuation">
+      <h2>Stone Valuation &amp; Media <span class="tag-api">FROM APP</span></h2>
+      <p>To receive what the <a href="../../mockups/bidding-app/lot-capture.html">lot-capture screen</a> produces, the contract carries stone estimates and media. Stones may be embedded in the lot upload or sent separately.</p>
+      <table>
+        <thead><tr><th style="width:64px;">Method</th><th>Endpoint</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><span class="method post">POST</span></td><td><code>/lots/{id}/stones</code></td><td>Upsert stone estimates (shape/color/clarity, rough wt, yield, price, pieces)</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/lots/{id}/stones</code></td><td>Retrieve a lot's valuation breakdown</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/stones/{id}/media</code></td><td>Upload a photo/video for a stone (multipart)</td></tr>
+          <tr><td><span class="method patch">PATCH</span></td><td><code>/lots/{id}</code></td><td>Set bid $/ct and (separate) lot number + description</td></tr>
+        </tbody>
+      </table>
+      <div class="box note"><strong>Recommendation:</strong> the app should send <code>lot_number</code> and <code>description</code> as <strong>separate fields</strong> (the mockup currently combines them into one string). Confirm whether the full valuation breakdown persists in the ERP or only the final bid/ct.</div>
+    </section>
+
+    <section id="examples">
+      <h2>Examples</h2>
+      <h3>Submit a bid</h3>
+      <div class="codeblock"><span class="method post">POST</span> /api/v1/bids
+Authorization: Bearer &lt;token&gt;
+Idempotency-Key: 7c0e1f8a-...
+
+{
+  "expo_lot_id": 4821,
+  "bidder_user": "rahul",
+  "bid_price_per_carat": 651.81,
+  "bid_datetime": "2026-03-12T09:14:00Z",
+  "remarks": "good colour, slightly included"
+}
+
+→ 201 Created
+{ "bid_id": 99213, "bid_status": "Submitted", "expo_lot_id": 4821 }</div>
+
+      <h3>Mark a lot Won (creates Won Lot)</h3>
+      <div class="codeblock"><span class="method post">POST</span> /api/v1/lots/4821/result
+{
+  "result": "Won",
+  "winning_bid_id": 99213,
+  "win_date": "2026-03-12",
+  "win_price_per_carat": 651.81,
+  "payment": { "date": "2026-03-12", "reference": "TT-55129", "method": "Bank Transfer" }
+}
+
+→ 200 OK
+{ "lot_status": "Won", "won_lot_id": 1305, "won_lot_status": "Won" }</div>
+
+      <h3>Upload a lot with stone estimates</h3>
+      <div class="codeblock"><span class="method post">POST</span> /api/v1/expos/t1/lots
+{
+  "lot_number": "47",
+  "description": "FY+ SI1 24.45ct",
+  "mining_origin": "CA-Diavik",
+  "bid_per_carat": 3334,
+  "stones": [
+    { "shape": "RD", "color": "FY", "clarity": "VS1",
+      "rough_ct": 24.45, "yield_pct": 32, "price_per_ct": 8000, "pieces": 1 },
+    { "shape": "RD", "color": "FY", "clarity": "VS2",
+      "rough_ct": 24.45, "yield_pct": 24, "price_per_ct": 5500, "pieces": 1 }
+  ]
+}</div>
+      <div class="box api"><strong>To agree with the app team:</strong> final field names, pagination, error format, and webhook payloads. The contract above is the ERP-proposed baseline.</div>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

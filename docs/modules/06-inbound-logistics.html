@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inbound Logistics — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="06-inbound-logistics">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 06 (Module 2)</div>
+      <h1>Inbound Logistics / Shipment Tracking</h1>
+      <p class="lead">Tracks physical movement of won diamonds from expo to the buying company. One shipment can consolidate parcels from multiple won lots, supplier invoices and origins.</p>
+    </div>
+
+    <section id="header">
+      <h2>Shipment Header</h2>
+      <div class="card">
+        <h4>Inbound Shipment — Header <span class="badge">HEADER</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Shipment ID</strong></td><td><span class="auto">AUTO</span></td><td>Type = Inbound</td></tr>
+            <tr><td><strong>Courier / Transport Co.</strong> <span class="req">*</span></td><td>Dropdown</td><td>Ferrari, Malca-Amit, Brinks…</td></tr>
+            <tr><td><strong>House / Master AWB No</strong> <span class="req">*</span></td><td>Text</td><td>e.g., 340567 / 724-87924664</td></tr>
+            <tr><td><strong>KPC No &amp; Expiry</strong> <span class="req">*</span></td><td>Text / Date</td><td>Kimberley Process Cert, e.g., EU 00979933</td></tr>
+            <tr><td><strong>Origin Countries / Provenance</strong></td><td>Text</td><td>CA, LS, ZA / Belgium</td></tr>
+            <tr><td><strong>Routing, Flights, Seals</strong></td><td>Text</td><td>From airway bill</td></tr>
+            <tr><td><strong>Declared Value</strong></td><td>Decimal</td><td>For carriage</td></tr>
+            <tr><td><strong>Total Carats / Weight (KG)</strong></td><td>CALC / Decimal</td><td>Carats summed from parcels</td></tr>
+            <tr><td><strong>Shipment / Expected / Actual Delivery Date</strong></td><td>Date</td><td>Shipment date required</td></tr>
+            <tr><td><strong>Received By</strong></td><td>Text</td><td>On delivery</td></tr>
+            <tr><td><strong>Status</strong></td><td><span class="auto">AUTO</span></td><td>Booked → Picked Up → In Transit → Arrived → Delivered → Verified</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="parcels">
+      <h2>Parcels</h2>
+      <div class="card">
+        <h4>Shipment Parcels <span class="badge">DETAIL — linked to Won Lots</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Source</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Won Lot Line Ref</strong></td><td>Lookup</td><td>Links to won lot line</td></tr>
+            <tr><td><strong>Parcel No / Carats</strong></td><td><span class="auto">AUTO</span></td><td>From linked won lot</td></tr>
+            <tr><td><strong>Mining Origin</strong> <span class="tag-new">NEW</span></td><td><span class="auto">AUTO</span></td><td>Carried from won lot line (per-parcel origin)</td></tr>
+            <tr><td><strong>Supplier Invoice No</strong></td><td>Text</td><td>e.g., 20260645</td></tr>
+            <tr><td><strong>Declared Value / HS Code / Weight</strong></td><td>Mixed</td><td>Customs &amp; KPC data</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="box info">Every shipment must carry a valid <strong>Kimberley Process Certificate (KPC)</strong> for compliance.</div>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

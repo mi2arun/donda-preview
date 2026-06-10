@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bidding Data Model — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="03-bidding-data">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 03 · API</div>
+      <h1>Bidding Data Model — Expo · Lots · Bids · Wins</h1>
+      <p class="lead">These entities are owned by the ERP and populated by the bidding app through the API. A win feeds the <a href="05-won-lots.html">Won Lots Register</a>.</p>
+    </div>
+
+    <section id="expo">
+      <h2>Expo / Tender</h2>
+      <div class="card">
+        <h4>Expo / Tender <span class="badge">HEADER</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Expo ID</strong></td><td><span class="auto">AUTO</span></td><td>System reference</td></tr>
+            <tr><td><strong>Name</strong> <span class="req">*</span></td><td>Text</td><td>e.g., Bonas Antwerp March 2026</td></tr>
+            <tr><td><strong>Supplier</strong> <span class="req">*</span></td><td>Lookup</td><td>Tender supplier (master)</td></tr>
+            <tr><td><strong>Location / Country</strong></td><td>Text</td><td>Antwerp, Belgium</td></tr>
+            <tr><td><strong>Start / End Date</strong></td><td>Date</td><td>Runs multiple weeks</td></tr>
+            <tr><td><strong>Bidding Group Company</strong></td><td>Lookup</td><td>Which entity is bidding</td></tr>
+            <tr><td><strong>Currency</strong></td><td>Lookup</td><td>Default USD</td></tr>
+            <tr><td><strong>Status</strong></td><td>System</td><td>Upcoming → Active → Closed</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="lots">
+      <h2>Expo Lots (Catalog)</h2>
+      <div class="card">
+        <h4>Expo Lot — ~600 per expo <span class="badge">DETAIL</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Lot ID</strong></td><td><span class="auto">AUTO</span></td><td>System reference</td></tr>
+            <tr><td><strong>Expo Lot / Parcel No</strong> <span class="req">*</span></td><td>Text</td><td>Expo label, e.g., KAO-2602-070</td></tr>
+            <tr><td><strong>Stone Type</strong></td><td>Dropdown</td><td>Single / Parcel</td></tr>
+            <tr><td><strong>Mining Origin</strong></td><td>Lookup</td><td>Country / mine (per lot)</td></tr>
+            <tr><td><strong>Carats</strong> <span class="req">*</span></td><td>Decimal(2)</td><td>From expo label</td></tr>
+            <tr><td><strong>Asking / Reserve Price/Ct</strong></td><td>Decimal(2)</td><td>If published by expo</td></tr>
+            <tr><td><strong>Description</strong></td><td>Text</td><td>Supplier/tender description</td></tr>
+            <tr><td><strong>Lot Status</strong></td><td>System</td><td>Available → Bid → Won / Lost / Withdrawn</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="stones">
+      <h2>Lot Stones — Valuation Breakdown <span class="tag-api">FROM APP</span></h2>
+      <p>In the lot-capture screen each lot is broken into <strong>stone estimates</strong> — the appraiser's view of how the rough will polish, which justifies the bid. As the ERP stores full expo data, this breakdown persists here. See the <a href="../../mockups/bidding-app/lot-capture.html">lot-capture mockup</a> and the <a href="16-bidding-app-mapping.html">field mapping</a>.</p>
+      <div class="card">
+        <h4>Lot Stone / Sub-Estimate <span class="badge">DETAIL — per lot</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Stone / Sub ID</strong></td><td><span class="auto">AUTO</span></td><td>System reference</td></tr>
+            <tr><td><strong>Lot Ref</strong> <span class="req">*</span></td><td>Lookup</td><td>Parent expo lot</td></tr>
+            <tr><td><strong>Shape / Color / Clarity</strong> <span class="req">*</span></td><td>Coded</td><td>From masters, e.g. <span class="pill">RD FY VS1</span></td></tr>
+            <tr><td><strong>Rough Weight (ct)</strong> <span class="req">*</span></td><td>Decimal(2)</td><td>Rough carats for this estimate</td></tr>
+            <tr><td><strong>Polish Yield %</strong></td><td>Decimal</td><td>Expected polished yield</td></tr>
+            <tr><td><strong>Polished Price / ct</strong></td><td>Decimal</td><td>Estimated price of the polished stone</td></tr>
+            <tr><td><strong>Pieces</strong></td><td>Integer</td><td>Group of N similar stones (default 1)</td></tr>
+            <tr><td><strong>Polish Weight</strong></td><td><span class="auto">CALC</span></td><td>Rough × Yield %</td></tr>
+            <tr><td><strong>Estimated Value</strong></td><td><span class="auto">CALC</span></td><td>Polish Weight × Price/ct</td></tr>
+            <tr><td><strong>Media</strong></td><td>Attachments</td><td>Photos / videos captured per stone</td></tr>
+          </tbody>
+        </table>
+        <div class="box info"><strong>Bid math:</strong> stone estimates roll up to the lot — <code>R-PRICE = Σ value ÷ Σ rough</code>, <code>bid floor = R-PRICE × (1 − discount%)</code>, <code>bid total = bid/ct × Σ rough</code>. Only the chosen <strong>bid $/ct</strong> is the committed decision; the rest is decision support.</div>
+      </div>
+    </section>
+
+    <section id="bids">
+      <h2>Bids</h2>
+      <div class="card">
+        <h4>Bid <span class="badge">per lot, per bidder</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Bid ID</strong></td><td><span class="auto">AUTO</span></td><td>System reference</td></tr>
+            <tr><td><strong>Expo Lot Ref</strong> <span class="req">*</span></td><td>Lookup</td><td>Lot being bid on</td></tr>
+            <tr><td><strong>Bidder / User</strong> <span class="req">*</span></td><td>Lookup</td><td>Who submitted the bid</td></tr>
+            <tr><td><strong>Bid Price/Ct</strong> <span class="req">*</span></td><td>Decimal(2)</td><td>Submitted bid</td></tr>
+            <tr><td><strong>Bid Date/Time</strong> <span class="req">*</span></td><td>DateTime</td><td>When submitted</td></tr>
+            <tr><td><strong>Bid Status</strong></td><td>System</td><td>Submitted → Won / Lost / Withdrawn</td></tr>
+            <tr><td><strong>Remarks</strong></td><td>Text</td><td>Notes from the floor</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="wins">
+      <h2>Wins &amp; Payment</h2>
+      <div class="card">
+        <h4>Win &amp; Payment <span class="badge">on-spot</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Winning Bid Ref</strong></td><td>Lookup</td><td>The bid that won</td></tr>
+            <tr><td><strong>Win Date</strong> <span class="req">*</span></td><td>Date</td><td>Result announced</td></tr>
+            <tr><td><strong>Win Price/Ct &amp; Amount</strong></td><td>Decimal</td><td>Final winning price → Won Lot price</td></tr>
+            <tr><td><strong>Payment Date / Reference / Method</strong></td><td>Mixed</td><td>On-spot payment at expo</td></tr>
+          </tbody>
+        </table>
+        <div class="box info">When a bid is marked <strong>Won</strong>, the ERP creates (or links) a <strong>Won Lot</strong> automatically — carrying parcel, origin, carats and winning price into the post-bidding flow.</div>
+      </div>
+    </section>
+
+    <section id="codes">
+      <h2>Shape · Color · Clarity Codes</h2>
+      <p>The app captures grading with coded enums; these become shared master data (see <a href="14-master-data.html">Master Data</a>) so the ERP and app speak the same language.</p>
+      <table>
+        <thead><tr><th>Attribute</th><th>Codes (examples)</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Shape</strong></td><td><span class="pill">RD</span> <span class="pill">OV</span> <span class="pill">PR</span> <span class="pill">CU</span> <span class="pill">EM</span> <span class="pill">MQ</span> … + rough: <span class="pill">MC</span> <span class="pill">SW</span> <span class="pill">MKE</span> <span class="pill">IR</span></td></tr>
+          <tr><td><strong>Color</strong></td><td><span class="pill">D</span>–<span class="pill">Z</span> + fancy <span class="pill">FY</span> <span class="pill">FP</span> <span class="pill">FB</span> <span class="pill">FBR</span> <span class="pill">FG</span> <span class="pill">FO</span></td></tr>
+          <tr><td><strong>Clarity</strong></td><td><span class="pill">FL</span> <span class="pill">IF</span> <span class="pill">VVS1</span> <span class="pill">VVS2</span> <span class="pill">VS1</span> <span class="pill">VS2</span> <span class="pill">SI1</span>–<span class="pill">SI3</span> <span class="pill">I1</span>–<span class="pill">I3</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

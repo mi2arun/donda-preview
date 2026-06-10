@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bidding-App Field Mapping — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="16-bidding-app-mapping">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 16 · API</div>
+      <h1>Bidding-App ↔ ERP Field Mapping</h1>
+      <p class="lead">Maps every field captured by the bidding app's <a href="../../mockups/bidding-app/lot-capture.html">lot-capture screen</a> to its ERP entity / API field, and lists the gaps the contract must close. Hand this to the app team for alignment.</p>
+    </div>
+
+    <section id="hierarchy">
+      <h2>Hierarchy Mapping</h2>
+      <p>The app and the ERP use the same shape — only the naming differs.</p>
+      <div class="diagram">  BIDDING APP                         DONDA ERP (system of record)
+  ───────────                         ────────────────────────────
+  Tender            ───────────────▶  Expo / Tender            (module 03)
+   └─ Lot           ───────────────▶   └─ Expo Lot             (module 03)
+       └─ Stone/Sub ───────────────▶       └─ Lot Stone        (module 03 · NEW)
+           └─ Media ───────────────▶           └─ Stone Media  (module 04 · NEW)
+   Bid $/ct (per lot) ─────────────▶   Bid                     (module 03)</div>
+    </section>
+
+    <section id="fields">
+      <h2>Field-by-Field Mapping</h2>
+      <table>
+        <thead><tr><th>App field</th><th>ERP entity · field</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Tender (name, flag)</td><td>Expo / Tender · name</td><td><span class="badge calc">ALIGNED</span></td></tr>
+          <tr><td>Tender origin + mining</td><td>Expo / Lot · Mining Origin</td><td><span class="badge calc">ALIGNED</span></td></tr>
+          <tr><td>Lot name (number + desc combined)</td><td>Expo Lot · <code>lot_number</code> + <code>description</code></td><td><span class="badge new">SPLIT NEEDED</span></td></tr>
+          <tr><td>Lot bid $/ct</td><td>Bid · price_per_carat</td><td><span class="badge calc">ALIGNED</span></td></tr>
+          <tr><td>Stone shape / color / clarity</td><td>Lot Stone · shape/color/clarity (masters)</td><td><span class="badge api">ADD</span></td></tr>
+          <tr><td>Stone rough weight (ct)</td><td>Lot Stone · rough_ct</td><td><span class="badge api">ADD</span></td></tr>
+          <tr><td>Stone polish yield %</td><td>Lot Stone · yield_pct</td><td><span class="badge api">ADD</span></td></tr>
+          <tr><td>Stone polished price /ct</td><td>Lot Stone · price_per_ct</td><td><span class="badge api">ADD</span></td></tr>
+          <tr><td>Stone pieces (group of N)</td><td>Lot Stone · pieces</td><td><span class="badge api">ADD</span></td></tr>
+          <tr><td>Stone photos / videos</td><td>Stone Media · upload</td><td><span class="badge api">ADD</span></td></tr>
+          <tr><td>Polish wt, total, R-PRICE, bid floor, bid total</td><td>Derived (ERP recomputes)</td><td><span class="badge calc">DERIVED</span></td></tr>
+          <tr><td>Bid-discount % simulator</td><td>UI aid — not stored (only bid/ct saved)</td><td><span class="badge">UI ONLY</span></td></tr>
+        </tbody>
+      </table>
+      <div class="box info"><span class="badge api">ADD</span> = extend the API/data model · <span class="badge new">SPLIT NEEDED</span> = app should send as two fields · <span class="badge calc">DERIVED</span> = ERP recomputes from stored inputs.</div>
+    </section>
+
+    <section id="gaps">
+      <h2>Gaps &amp; Recommended Actions</h2>
+      <ol class="qlist">
+        <li><strong>Stone-level valuation breakdown</strong> — add the <em>Lot Stone</em> entity (<a href="03-bidding-data.html#stones">module 03</a>) and the <code>/lots/{id}/stones</code> endpoint (<a href="04-api.html#valuation">module 04</a>). Decide: does the full breakdown persist, or only the final bid/ct?</li>
+        <li><strong>Media</strong> — add stone photo/video upload (<code>/stones/{id}/media</code>) and storage. Confirm size/format limits and whether media is mandatory for sign-off.</li>
+        <li><strong>Grading masters</strong> — publish Shape / Color / Clarity master lists (<a href="14-master-data.html">module 14</a>) so the app validates against the same codes.</li>
+        <li><strong>Lot number vs description</strong> — app should capture them separately rather than one combined string, so the ERP maps cleanly to <a href="08-rough-lot-master.html">rough-lot numbering</a> later.</li>
+        <li><strong>Currency</strong> — confirm the app's "$" is the tender currency (USD default) so bid totals reconcile.</li>
+        <li><strong>Pieces semantics</strong> — a stone row may represent N similar pieces; confirm this maps to a sub-lot/parcel rather than N separate records.</li>
+      </ol>
+      <div class="box api"><strong>Outcome:</strong> once these are agreed, modules 03–04 become the frozen <code>/api/v1</code> contract the app builds against.</div>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

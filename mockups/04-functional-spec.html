@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donda ERP — Functional Specification</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2b6cb0;
+            --accent: #e53e3e;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #2d3748;
+            --text-light: #718096;
+            --success: #38a169;
+            --warning: #d69e2e;
+            --info: #3182ce;
+            --purple: #805ad5;
+            --teal: #319795;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        .header h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 8px; }
+        .header .subtitle { font-size: 1.1rem; opacity: 0.85; }
+        .header .version {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 12px;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+        .toc {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 40px;
+        }
+        .toc h2 { font-size: 1.3rem; margin-bottom: 16px; color: var(--primary); }
+        .toc ol { padding-left: 24px; columns: 2; }
+        .toc li { margin-bottom: 8px; }
+        .toc a { color: var(--primary-light); text-decoration: none; font-weight: 500; }
+        .toc a:hover { text-decoration: underline; }
+
+        .section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+        .section h2 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+        .section h3 { font-size: 1.1rem; color: var(--primary-light); margin: 24px 0 12px; }
+        .section h4 { font-size: 1rem; color: var(--primary); margin: 16px 0 8px; }
+        .section p { margin-bottom: 12px; color: var(--text); }
+
+        .entity-card {
+            background: #f0f5ff;
+            border: 1px solid #bee3f8;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        .entity-card h4 {
+            color: var(--primary); font-size: 1.05rem; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        }
+        .badge {
+            font-size: 0.7rem; background: var(--primary); color: white;
+            padding: 2px 8px; border-radius: 10px; font-weight: 600;
+        }
+        .badge.new { background: var(--accent); }
+        .badge.future { background: var(--purple); }
+        .badge.calc { background: var(--success); }
+        .badge.api { background: var(--teal); }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 12px 0; }
+        table th {
+            background: var(--primary); color: white; padding: 10px 14px; text-align: left;
+            font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        table tr:nth-child(even) { background: #f7fafc; }
+        table tr:hover { background: #edf2f7; }
+
+        .field-required { color: var(--accent); font-weight: 700; }
+        .field-auto { color: var(--success); font-size: 0.72rem; font-weight: 600; }
+        .tag-new { color: var(--accent); font-size: 0.68rem; font-weight: 700; background:#fff5f5; border:1px solid #fed7d7; padding:1px 6px; border-radius:8px; white-space:nowrap; }
+        .tag-api { color: var(--teal); font-size: 0.68rem; font-weight: 700; background:#e6fffa; border:1px solid #b2f5ea; padding:1px 6px; border-radius:8px; white-space:nowrap; }
+
+        .note {
+            background: #fffff0; border: 1px solid #fefcbf; border-left: 4px solid var(--warning);
+            padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 0.9rem;
+        }
+        .note strong { color: var(--warning); }
+        .info-box {
+            background: #ebf8ff; border: 1px solid #bee3f8; border-left: 4px solid var(--info);
+            padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 0.9rem;
+        }
+        .change-box {
+            background: #fff5f5; border: 1px solid #fed7d7; border-left: 4px solid var(--accent);
+            padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 0.9rem;
+        }
+        .change-box strong { color: var(--accent); }
+        .future-box {
+            background: #faf5ff; border: 1px solid #e9d8fd; border-left: 4px solid var(--purple);
+            padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 0.9rem;
+        }
+        .future-box strong { color: var(--purple); }
+        .api-box {
+            background: #e6fffa; border: 1px solid #b2f5ea; border-left: 4px solid var(--teal);
+            padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 0.9rem;
+        }
+        .api-box strong { color: var(--teal); }
+
+        ul.bullet-list { padding-left: 20px; margin: 8px 0; }
+        ul.bullet-list li { margin-bottom: 6px; font-size: 0.92rem; }
+
+        .status-flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin: 16px 0; }
+        .status-step { color: white; padding: 8px 18px; font-size: 0.82rem; font-weight: 600; white-space: nowrap; }
+        .status-step:first-child { border-radius: 6px 0 0 6px; }
+        .status-step:last-child { border-radius: 0 6px 6px 0; }
+        .status-arrow { width: 0; height: 0; border-top: 18px solid transparent; border-bottom: 18px solid transparent; margin-right: -1px; }
+
+        .example-data {
+            background: #f0fff4; border: 1px solid #c6f6d5; border-radius: 8px; padding: 20px; margin: 16px 0;
+        }
+        .example-data h4 { color: var(--success); margin-bottom: 12px; }
+
+        .pill { display:inline-block; background:#edf2f7; border:1px solid var(--border); padding:2px 10px; border-radius:12px; font-family:monospace; font-size:0.85rem; }
+        .method { display:inline-block; font-family:monospace; font-size:0.72rem; font-weight:700; padding:2px 8px; border-radius:4px; color:#fff; }
+        .method.get { background:#3182ce; }
+        .method.post { background:#38a169; }
+        .method.patch { background:#d69e2e; }
+        code { font-family: monospace; background:#edf2f7; padding:1px 6px; border-radius:4px; font-size:0.85rem; }
+
+        .diagram { background:#fff; border:1px solid var(--border); border-radius:8px; padding:24px; margin:16px 0; font-family:monospace; font-size:0.82rem; white-space:pre; overflow-x:auto; line-height:1.5; }
+
+        .footer { text-align: center; padding: 40px; color: var(--text-light); font-size: 0.85rem; }
+        @media print { .section { break-inside: avoid; } .toc ol { columns: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>DONDA ERP — Functional Specification</h1>
+    <div class="subtitle">Bidding Backend · Rough Purchase, Sales &amp; Logistics — Complete Functionality</div>
+    <div class="version">Version 2.1 (Draft) | June 2026 | UAT Feedback + Bidding-App Integration</div>
+</div>
+
+<div class="container">
+
+    <div class="toc">
+        <h2>Table of Contents</h2>
+        <ol>
+            <li><a href="#scope">1. Purpose &amp; Scope</a></li>
+            <li><a href="#changes">2. What Changed (Feedback &amp; Integration)</a></li>
+            <li><a href="#architecture">3. System Architecture &amp; Bidding-App Integration</a></li>
+            <li><a href="#actors">4. Companies, Actors &amp; Entities</a></li>
+            <li><a href="#lifecycle">5. End-to-End Lifecycle</a></li>
+            <li><a href="#bidding">6. Bidding Data Model (Expo · Lots · Bids · Wins)</a></li>
+            <li><a href="#api">7. Integration API Specification</a></li>
+            <li><a href="#m1">8. Module 1 — Won Lots (from Bid Wins)</a></li>
+            <li><a href="#m2">9. Module 2 — Inbound Logistics</a></li>
+            <li><a href="#m3">10. Module 3 — Purchase Invoice</a></li>
+            <li><a href="#roughlot">11. Rough Lot Master &amp; Numbering</a></li>
+            <li><a href="#m4">12. Module 4 — Sales Invoice &amp; Sub-Lots</a></li>
+            <li><a href="#interco">13. Inter-Company Transfer</a></li>
+            <li><a href="#m5">14. Module 5 — Outbound Logistics</a></li>
+            <li><a href="#accounting">15. Accounting Integration</a></li>
+            <li><a href="#status">16. Status Lifecycles</a></li>
+            <li><a href="#masters">17. Master Data</a></li>
+            <li><a href="#future">18. Future Scope</a></li>
+            <li><a href="#open">19. Open Questions for Review</a></li>
+        </ol>
+    </div>
+
+    <!-- 1. SCOPE -->
+    <div class="section" id="scope">
+        <h2>1. Purpose &amp; Scope</h2>
+        <p>This document specifies the complete functionality for the Donda ERP covering the <strong>expo bidding backend</strong> and the <strong>Rough Diamond Purchase, Sales &amp; Logistics</strong> flow. It consolidates the original business-understanding document, the client mockup feedback (late May – early June 2026), and the decision that the ERP will act as the <strong>system of record</strong> for an externally-built expo bidding mobile app.</p>
+        <h3>In Scope (Current Phase)</h3>
+        <ul class="bullet-list">
+            <li><strong>Bidding data backend &amp; API</strong> — the ERP stores all expo data (expo/tender, lot catalog ~600 lots, bids, wins, payments) and exposes a defined API so the bidding mobile app can store &amp; retrieve it <span class="badge api">API</span></li>
+            <li><strong>Won Lots</strong> — derived from bid wins coming through the API (manual entry also supported)</li>
+            <li><strong>Inbound logistics</strong> — shipments from expo to the buying company</li>
+            <li><strong>Purchase invoice</strong> (import) with expense allocation and auto-created rough lot inventory</li>
+            <li><strong>Rough Lot Master</strong> with group-level auto numbering and sub-lots</li>
+            <li><strong>Sales invoice</strong> — third-party sale or sister-company transfer, with sub-lot splitting</li>
+            <li><strong>Inter-company transfer</strong> — seller's price becomes buyer's cost</li>
+            <li><strong>Outbound logistics</strong> and auto <strong>accounting</strong> entries</li>
+        </ul>
+        <h3>Out of Scope (This Phase)</h3>
+        <ul class="bullet-list">
+            <li>The bidding mobile app <strong>UI itself</strong> — built by a separate team; the ERP only provides the data/API</li>
+            <li>Manufacturing / polishing module</li>
+            <li>Consignment &amp; Memo rough trading <span class="badge future">FUTURE</span></li>
+            <li>India local sales GST / HSN tax computation <span class="badge future">FUTURE</span></li>
+            <li>Live courier API integration (manual tracking entry for now)</li>
+        </ul>
+    </div>
+
+    <!-- 2. CHANGES -->
+    <div class="section" id="changes">
+        <h2>2. What Changed (Feedback &amp; Integration)</h2>
+        <p>Items marked <span class="tag-new">NEW</span> (rough-lot feedback) and <span class="tag-api">API</span> (bidding integration) throughout this document reflect the changes below.</p>
+        <h3>2.1 Client UAT Feedback — Rough Lot / Purchase / Sales</h3>
+        <table>
+            <thead><tr><th style="width:40px;">#</th><th>Requirement</th><th>Where it applies</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td><strong>Mining origin at line-item level</strong> — each rough lot line carries its own mining origin</td><td>Purchase Invoice lines, Rough Lot Master</td></tr>
+                <tr><td>2</td><td><strong>Rough Lot No auto-generated at Donda group level</strong>, with a manual-entry option</td><td>Rough Lot Master, Purchase Invoice</td></tr>
+                <tr><td>3</td><td><strong>Third-party rough purchases</strong> → rough lot number entered manually</td><td>Purchase Invoice</td></tr>
+                <tr><td>4</td><td><strong>Numbering pattern</strong> = <span class="pill">1-26</span> lot, <span class="pill">1-26-A</span> sub-lot</td><td>Rough Lot Master</td></tr>
+                <tr><td>5</td><td><strong>Sub-lot creation in the Sales Invoice</strong> — split a lot at the time of sale</td><td>Sales Invoice, Rough Lot Master</td></tr>
+                <tr><td>6</td><td><strong>Inter-company pricing</strong> — seller's sale price = buyer's purchase price (cost)</td><td>Inter-Company Transfer</td></tr>
+            </tbody>
+        </table>
+        <h3>2.2 Bidding-App Integration <span class="badge api">API</span></h3>
+        <table>
+            <thead><tr><th style="width:40px;">#</th><th>Requirement</th><th>Where it applies</th></tr></thead>
+            <tbody>
+                <tr><td>7</td><td><strong>ERP is the system of record for all expo data.</strong> The bidding mobile app (built by a separate team) stores &amp; retrieves expo catalog, bids, wins and payments in the ERP via API</td><td>§3, §6, §7</td></tr>
+                <tr><td>8</td><td><strong>ERP defines the API contract</strong> (REST/JSON, auth, versioning, idempotency). The app integrates against it</td><td>§7</td></tr>
+                <tr><td>9</td><td><strong>Won Lots are derived from bid wins</strong> received through the API (no double entry); manual entry remains available as a fallback</td><td>§8</td></tr>
+            </tbody>
+        </table>
+        <div class="note"><strong>Pending confirmation:</strong> The owner indicated a "little bit of change" on points 1–6 to be explained on a conference call. Treat this draft as the working baseline.</div>
+    </div>
+
+    <!-- 3. ARCHITECTURE -->
+    <div class="section" id="architecture">
+        <h2>3. System Architecture &amp; Bidding-App Integration <span class="badge api">API</span></h2>
+        <p>A separate team is building the <strong>expo bidding mobile app</strong>. It is a front-end only — the <strong>Donda ERP is the single backend and system of record</strong> for all bidding and post-bidding data. The app reads master data from the ERP and writes all expo activity (catalog, bids, wins, payments) back to the ERP through a defined API.</p>
+        <div class="diagram">   ┌───────────────────────────┐                         ┌──────────────────────────────────────────────┐
+   │   EXPO BIDDING MOBILE APP │   HTTPS / REST · JSON   │                 DONDA ERP                       │
+   │   (built by other team)   │ ─────────────────────▶  │            (System of Record)                   │
+   │                           │                         │                                                 │
+   │  • Browse expo lot catalog│   reads masters         │  Masters: companies, suppliers, expos, mines,   │
+   │  • Inspect & submit bids   │ ◀─────────────────────  │           currencies, HS codes                  │
+   │  • See win/loss results    │                         │                                                 │
+   │  • Record on-spot payment  │   writes bidding data   │  Bidding store: Expo · Lots · Bids · Wins ·     │
+   │                           │ ─────────────────────▶  │                 Payments                        │
+   └───────────────────────────┘                         │        │                                        │
+                                                          │        ▼  (a WON lot flows downstream)          │
+                                                          │  Won Lots ▶ Inbound ▶ Purchase ▶ Rough Stock ▶  │
+                                                          │  Sales / Transfer ▶ Outbound ▶ Accounting       │
+                                                          └──────────────────────────────────────────────┘
+        </div>
+        <div class="api-box">
+            <strong>Boundary decision (confirmed):</strong> The ERP stores <strong>full expo data</strong> — the bidding app does not keep its own database; everything (catalog, bids, results, payments) persists in the ERP. The <strong>ERP team defines the API contract</strong>; the app team integrates against it.
+        </div>
+        <h3>Integration Principles</h3>
+        <ul class="bullet-list">
+            <li><strong>Single source of truth</strong> — no duplicated data store on the app side; the app is online-first and reads/writes the ERP.</li>
+            <li><strong>Authentication</strong> — the app authenticates as a service client (OAuth2 client-credentials or signed API key); each bidder user is identified within the request.</li>
+            <li><strong>Versioned API</strong> — base path <code>/api/v1/…</code>; backward-compatible evolution.</li>
+            <li><strong>Idempotency</strong> — write endpoints accept an <code>Idempotency-Key</code> so flaky mobile connections don't create duplicates.</li>
+            <li><strong>Offline tolerance</strong> — the app may queue actions offline and replay them; idempotency + server-assigned IDs keep this safe.</li>
+            <li><strong>Webhooks / polling</strong> — the ERP can notify the app of status changes (e.g., a won lot becomes Invoiced), or the app polls <code>updated_since</code>.</li>
+        </ul>
+    </div>
+
+    <!-- 4. ACTORS -->
+    <div class="section" id="actors">
+        <h2>4. Companies, Actors &amp; Entities</h2>
+        <p>The "Donda group" consists of sister companies under the same ownership in different countries. Diamonds flow in from external suppliers and can move between the group companies (inter-company) or out to third parties.</p>
+        <table>
+            <thead><tr><th>Entity</th><th>Role</th><th>Example</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Bidding Mobile App</strong> <span class="tag-api">API</span></td><td>External front-end for expo bidding; reads/writes all bidding data via the ERP API.</td><td>Built by separate team</td></tr>
+                <tr><td><strong>Bidder / User</strong></td><td>Team member who inspects lots and submits bids in the app; identified on each bid.</td><td>Donda staff at expo</td></tr>
+                <tr><td><strong>Group Company</strong></td><td>A Donda-owned legal entity that buys, holds and sells rough. Shares one group-level lot numbering sequence.</td><td>Rainbow Gems (HK) Ltd, Donda Exports</td></tr>
+                <tr><td><strong>Expo / Tender Supplier</strong></td><td>External seller of rough at expos/tenders. Issues supplier invoice + KPC.</td><td>Bonas Couzyn (Antwerp) NV</td></tr>
+                <tr><td><strong>Third-Party Supplier / Buyer</strong></td><td>External rough seller or customer (not group, not expo). Lot numbers manual.</td><td>Various</td></tr>
+                <tr><td><strong>Transport / Courier</strong></td><td>Secure diamond logistics; issues airway bills, manages sealed parcels.</td><td>Ferrari Belgium BVBA, Malca-Amit, Brinks</td></tr>
+                <tr><td><strong>Mining Company / Origin</strong></td><td>Source mine &amp; country — drives KPC and origin tracking (per line item).</td><td>KAO (Lesotho), Gahcho Kué (Canada)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 5. LIFECYCLE -->
+    <div class="section" id="lifecycle">
+        <h2>5. End-to-End Lifecycle</h2>
+        <div class="diagram">  BIDDING (via app→API)          EXPO WIN        INBOUND        RECEIVE &amp;        ROUGH STOCK      SELL/TRANSFER     OUTBOUND
+  ─────────────────────          ────────        ────────       PURCHASE         ───────────      ─────────────     ────────
+  Expo ▶ Lots ▶ Bids ▶ Win  ──▶  Won Lot   ──▶   Inbound  ──▶   Purchase   ──▶   Rough Lot   ──▶  Sales Invoice ──▶  Outbound
+  (stored in ERP via API)        Register        Shipment       Invoice          Master            (split sub-lots)   Shipment
+                                                                                 1-26, 1-26-A
+                                                                                      │
+                                                            (inter-company)           └──▶  Sale price = Purchase cost ──▶ Sister co.
+                                                                                            auto Purchase Invoice          Rough Stock
+        </div>
+        <p>Bidding happens in the mobile app but persists in the ERP. The moment a lot is marked <strong>Won</strong>, it surfaces in the ERP's Won Lots Register and continues through logistics, purchase, inventory and sales.</p>
+    </div>
+
+    <!-- 6. BIDDING DATA MODEL -->
+    <div class="section" id="bidding">
+        <h2>6. Bidding Data Model — Expo · Lots · Bids · Wins <span class="badge api">API</span></h2>
+        <p>These entities are owned by the ERP and populated primarily by the bidding app through the API. They feed the Won Lots Register.</p>
+
+        <div class="entity-card">
+            <h4>Expo / Tender <span class="badge">HEADER</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Expo ID</strong></td><td><span class="field-auto">AUTO</span></td><td>System reference</td></tr>
+                    <tr><td><strong>Name</strong> <span class="field-required">*</span></td><td>Text</td><td>e.g., Bonas Antwerp March 2026</td></tr>
+                    <tr><td><strong>Supplier</strong> <span class="field-required">*</span></td><td>Lookup</td><td>Tender supplier (master)</td></tr>
+                    <tr><td><strong>Location / Country</strong></td><td>Text</td><td>Antwerp, Belgium</td></tr>
+                    <tr><td><strong>Start / End Date</strong></td><td>Date</td><td>Expo runs multiple weeks</td></tr>
+                    <tr><td><strong>Bidding Group Company</strong></td><td>Lookup</td><td>Which entity is bidding</td></tr>
+                    <tr><td><strong>Currency</strong></td><td>Lookup</td><td>Default USD</td></tr>
+                    <tr><td><strong>Status</strong></td><td>System</td><td>Upcoming → Active → Closed</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="entity-card">
+            <h4>Expo Lot (Catalog — ~600 per expo) <span class="badge">DETAIL</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Lot ID</strong></td><td><span class="field-auto">AUTO</span></td><td>System reference</td></tr>
+                    <tr><td><strong>Expo Lot / Parcel No</strong> <span class="field-required">*</span></td><td>Text</td><td>Expo label, e.g., KAO-2602-070</td></tr>
+                    <tr><td><strong>Stone Type</strong></td><td>Dropdown</td><td>Single / Parcel</td></tr>
+                    <tr><td><strong>Mining Origin</strong></td><td>Lookup</td><td>Country / mine (per lot)</td></tr>
+                    <tr><td><strong>Carats</strong> <span class="field-required">*</span></td><td>Decimal(2)</td><td>From expo label</td></tr>
+                    <tr><td><strong>Asking / Reserve Price/Ct</strong></td><td>Decimal(2)</td><td>If published by expo</td></tr>
+                    <tr><td><strong>Description</strong></td><td>Text</td><td>Supplier/tender description</td></tr>
+                    <tr><td><strong>Lot Status</strong></td><td>System</td><td>Available → Bid → Won / Lost / Withdrawn</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="entity-card">
+            <h4>Bid <span class="badge">per lot, per bidder</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Bid ID</strong></td><td><span class="field-auto">AUTO</span></td><td>System reference</td></tr>
+                    <tr><td><strong>Expo Lot Ref</strong> <span class="field-required">*</span></td><td>Lookup</td><td>Lot being bid on</td></tr>
+                    <tr><td><strong>Bidder / User</strong> <span class="field-required">*</span></td><td>Lookup</td><td>Who submitted the bid (from app)</td></tr>
+                    <tr><td><strong>Bid Price/Ct</strong> <span class="field-required">*</span></td><td>Decimal(2)</td><td>Submitted bid</td></tr>
+                    <tr><td><strong>Bid Date/Time</strong> <span class="field-required">*</span></td><td>DateTime</td><td>When submitted</td></tr>
+                    <tr><td><strong>Bid Status</strong></td><td>System</td><td>Submitted → Won / Lost / Withdrawn</td></tr>
+                    <tr><td><strong>Remarks</strong></td><td>Text</td><td>Notes from the floor</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="entity-card">
+            <h4>Win &amp; Payment <span class="badge">on-spot</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Winning Bid Ref</strong></td><td>Lookup</td><td>The bid that won</td></tr>
+                    <tr><td><strong>Win Date</strong> <span class="field-required">*</span></td><td>Date</td><td>Result announced</td></tr>
+                    <tr><td><strong>Win Price/Ct &amp; Amount</strong></td><td>Decimal</td><td>Final winning price → becomes Won Lot price</td></tr>
+                    <tr><td><strong>Payment Date / Reference / Method</strong></td><td>Mixed</td><td>On-spot payment at expo</td></tr>
+                </tbody>
+            </table>
+            <div class="info-box">When a bid is marked <strong>Won</strong>, the ERP creates (or links) a <strong>Won Lot</strong> automatically — carrying parcel, origin, carats and winning price into the post-bidding flow (§8).</div>
+        </div>
+    </div>
+
+    <!-- 7. API SPEC -->
+    <div class="section" id="api">
+        <h2>7. Integration API Specification <span class="badge api">API · ERP-defined</span></h2>
+        <p>REST/JSON over HTTPS, base path <code>/api/v1</code>. All requests authenticated; all write requests accept an <code>Idempotency-Key</code> header. Timestamps are ISO-8601 UTC. This is the proposed contract — to be finalised with the app team.</p>
+
+        <h3>7.1 Read — Master Data (app pulls)</h3>
+        <table>
+            <thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr></thead>
+            <tbody>
+                <tr><td><span class="method get">GET</span></td><td><code>/group-companies</code></td><td>List Donda entities</td></tr>
+                <tr><td><span class="method get">GET</span></td><td><code>/suppliers</code></td><td>Expo/tender &amp; third-party suppliers</td></tr>
+                <tr><td><span class="method get">GET</span></td><td><code>/expos</code></td><td>Expos/tenders (filter by status)</td></tr>
+                <tr><td><span class="method get">GET</span></td><td><code>/mines</code> · <code>/origins</code></td><td>Mines &amp; country origins</td></tr>
+                <tr><td><span class="method get">GET</span></td><td><code>/currencies</code></td><td>Currencies &amp; exchange rates</td></tr>
+            </tbody>
+        </table>
+
+        <h3>7.2 Write/Read — Bidding Data (app pushes, ERP stores)</h3>
+        <table>
+            <thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr></thead>
+            <tbody>
+                <tr><td><span class="method post">POST</span></td><td><code>/expos</code></td><td>Create an expo/tender</td></tr>
+                <tr><td><span class="method post">POST</span></td><td><code>/expos/{id}/lots</code></td><td>Upload lot catalog (bulk, ~600 lots)</td></tr>
+                <tr><td><span class="method get">GET</span></td><td><code>/expos/{id}/lots</code></td><td>Retrieve catalog (with <code>updated_since</code>)</td></tr>
+                <tr><td><span class="method post">POST</span></td><td><code>/bids</code></td><td>Submit a bid on a lot</td></tr>
+                <tr><td><span class="method patch">PATCH</span></td><td><code>/bids/{id}</code></td><td>Update bid (withdraw / result)</td></tr>
+                <tr><td><span class="method post">POST</span></td><td><code>/lots/{id}/result</code></td><td>Mark Won/Lost (Won → creates Won Lot)</td></tr>
+                <tr><td><span class="method post">POST</span></td><td><code>/lots/{id}/payment</code></td><td>Record on-spot payment</td></tr>
+                <tr><td><span class="method get">GET</span></td><td><code>/won-lots</code></td><td>App reads won lots &amp; downstream status</td></tr>
+            </tbody>
+        </table>
+
+        <h3>7.3 Example — Submit a Bid</h3>
+        <div class="diagram"><span class="method post">POST</span> /api/v1/bids
+Authorization: Bearer &lt;token&gt;
+Idempotency-Key: 7c0e1f8a-...
+
+{
+  "expo_lot_id": 4821,
+  "bidder_user": "rahul",
+  "bid_price_per_carat": 651.81,
+  "bid_datetime": "2026-03-12T09:14:00Z",
+  "remarks": "good colour, slightly included"
+}
+
+→ 201 Created
+{ "bid_id": 99213, "bid_status": "Submitted", "expo_lot_id": 4821 }
+        </div>
+
+        <h3>7.4 Example — Mark Lot Won (creates Won Lot)</h3>
+        <div class="diagram"><span class="method post">POST</span> /api/v1/lots/4821/result
+{
+  "result": "Won",
+  "winning_bid_id": 99213,
+  "win_date": "2026-03-12",
+  "win_price_per_carat": 651.81,
+  "payment": { "date": "2026-03-12", "reference": "TT-55129", "method": "Bank Transfer" }
+}
+
+→ 200 OK
+{ "lot_status": "Won", "won_lot_id": 1305, "won_lot_status": "Won" }
+        </div>
+        <div class="api-box"><strong>Note:</strong> Final field names, pagination, error format and webhook payloads to be agreed with the app team. The contract above is the ERP-proposed baseline.</div>
+    </div>
+
+    <!-- 8. MODULE 1 -->
+    <div class="section" id="m1">
+        <h2>8. Module 1 — Won Lots (from Bid Wins) <span class="badge api">API-fed</span></h2>
+        <p>Won Lots are the bridge between bidding and the post-bidding flow. They are normally <strong>created automatically when a bid is marked Won</strong> via the API (§7.4); manual entry remains available for exceptions or third-party deals.</p>
+        <div class="entity-card">
+            <h4>Won Lot — Header <span class="badge">HEADER</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Won Lot ID</strong></td><td><span class="field-auto">AUTO</span></td><td>System reference</td></tr>
+                    <tr><td><strong>Source</strong> <span class="tag-api">API</span></td><td>System</td><td>Bidding App / Manual</td></tr>
+                    <tr><td><strong>Buying Group Company</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Winning Donda entity</td></tr>
+                    <tr><td><strong>Expo / Tender</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>From bidding data</td></tr>
+                    <tr><td><strong>Supplier</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Tender supplier</td></tr>
+                    <tr><td><strong>Bid / Win / Payment Date</strong></td><td>Date</td><td>From win record</td></tr>
+                    <tr><td><strong>Payment Reference</strong></td><td>Text</td><td>From payment record</td></tr>
+                    <tr><td><strong>Currency</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Default USD</td></tr>
+                    <tr><td><strong>Status</strong></td><td><span class="field-auto">AUTO</span></td><td>Won → Handed to Courier → In Transit → Received → Invoiced</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="entity-card">
+            <h4>Won Lot — Lines <span class="badge">DETAIL</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Parcel No</strong> <span class="field-required">*</span></td><td>Text</td><td>From expo lot</td></tr>
+                    <tr><td><strong>Stone Type</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Single / Parcel</td></tr>
+                    <tr><td><strong>Mining Origin</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Per line — country / mine</td></tr>
+                    <tr><td><strong>Carats</strong> <span class="field-required">*</span></td><td>Decimal(2)</td><td>e.g., 170.43</td></tr>
+                    <tr><td><strong>Price / Carat</strong> <span class="field-required">*</span></td><td>Decimal(2)</td><td>Winning bid price</td></tr>
+                    <tr><td><strong>Total Amount</strong></td><td><span class="field-auto">CALC</span></td><td>Carats × Price/Carat</td></tr>
+                    <tr><td><strong>Description 1 / 2</strong></td><td>Text</td><td>Supplier / internal</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 9. MODULE 2 -->
+    <div class="section" id="m2">
+        <h2>9. Module 2 — Inbound Logistics</h2>
+        <p>Tracks physical movement of won diamonds from expo location to the buying company. One shipment can consolidate parcels from multiple won lots / supplier invoices / origins.</p>
+        <div class="entity-card">
+            <h4>Inbound Shipment — Header <span class="badge">HEADER</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Shipment ID</strong></td><td><span class="field-auto">AUTO</span></td><td>Type = Inbound</td></tr>
+                    <tr><td><strong>Courier / Transport Co.</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Ferrari, Malca-Amit, Brinks…</td></tr>
+                    <tr><td><strong>House / Master AWB No</strong> <span class="field-required">*</span></td><td>Text</td><td>e.g., 340567 / 724-87924664</td></tr>
+                    <tr><td><strong>KPC No &amp; Expiry</strong> <span class="field-required">*</span></td><td>Text / Date</td><td>Kimberley Process Certificate, e.g., EU 00979933</td></tr>
+                    <tr><td><strong>Origin Countries / Provenance</strong></td><td>Text</td><td>CA, LS, ZA / Belgium</td></tr>
+                    <tr><td><strong>Routing, Flights, Seals</strong></td><td>Text</td><td>From airway bill</td></tr>
+                    <tr><td><strong>Declared Value</strong></td><td>Decimal</td><td>For carriage</td></tr>
+                    <tr><td><strong>Total Carats / Weight (KG)</strong></td><td>CALC / Decimal</td><td>Carats summed from parcels</td></tr>
+                    <tr><td><strong>Shipment / Expected / Actual Delivery Date</strong></td><td>Date</td><td>Shipment date required</td></tr>
+                    <tr><td><strong>Received By</strong></td><td>Text</td><td>On delivery</td></tr>
+                    <tr><td><strong>Status</strong></td><td><span class="field-auto">AUTO</span></td><td>Booked → Picked Up → In Transit → Arrived → Delivered → Verified</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="entity-card">
+            <h4>Shipment Parcels <span class="badge">DETAIL — linked to Won Lots</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Source</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Won Lot Line Ref</strong></td><td>Lookup</td><td>Links to won lot line</td></tr>
+                    <tr><td><strong>Parcel No / Carats</strong></td><td><span class="field-auto">AUTO</span></td><td>From linked won lot</td></tr>
+                    <tr><td><strong>Mining Origin</strong> <span class="tag-new">NEW</span></td><td><span class="field-auto">AUTO</span></td><td>Carried from won lot line (per-parcel origin)</td></tr>
+                    <tr><td><strong>Supplier Invoice No</strong></td><td>Text</td><td>e.g., 20260645</td></tr>
+                    <tr><td><strong>Declared Value / HS Code / Weight</strong></td><td>Mixed</td><td>Customs &amp; KPC data</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 10. MODULE 3 -->
+    <div class="section" id="m3">
+        <h2>10. Module 3 — Purchase Invoice (Import)</h2>
+        <p>Created when diamonds are received &amp; verified. On confirmation it auto-creates Rough Lot Master records and accounting entries.</p>
+        <div class="entity-card">
+            <h4>Purchase Invoice — Header <span class="badge">HEADER</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Purchase Invoice No</strong></td><td><span class="field-auto">AUTO</span></td><td>System number</td></tr>
+                    <tr><td><strong>Buying Group Company</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Receiving Donda entity</td></tr>
+                    <tr><td><strong>Supplier</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Expo or third-party supplier (address auto-filled)</td></tr>
+                    <tr><td><strong>Supplier Invoice No &amp; Date</strong> <span class="field-required">*</span></td><td>Text / Date</td><td>From supplier doc</td></tr>
+                    <tr><td><strong>Received Date</strong> <span class="field-required">*</span></td><td>Date</td><td>Goods received</td></tr>
+                    <tr><td><strong>KPC No</strong></td><td>Text</td><td>Certificate no</td></tr>
+                    <tr><td><strong>Currency &amp; Exchange Rate</strong> <span class="field-required">*</span></td><td>Dropdown / Decimal</td><td>To base currency</td></tr>
+                    <tr><td><strong>Payment Terms / Due Date</strong></td><td>Dropdown / CALC</td><td>e.g., NET5 = 5 working days</td></tr>
+                    <tr><td><strong>Shipment Ref</strong></td><td>Lookup</td><td>Link to inbound shipment</td></tr>
+                </tbody>
+            </table>
+            <div class="change-box"><strong>Changed:</strong> The single header-level "Mining Origin" is <strong>removed</strong>. Mining origin is now captured per line item.</div>
+        </div>
+        <div class="entity-card">
+            <h4>Invoice Line Items <span class="badge">DETAIL</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Line No</strong></td><td><span class="field-auto">AUTO</span></td><td>Sequential</td></tr>
+                    <tr><td><strong>Parcel No</strong> <span class="field-required">*</span></td><td>Text</td><td>Supplier parcel, e.g., KAO-2602-070</td></tr>
+                    <tr><td><strong>Rough Lot No</strong> <span class="tag-new">NEW</span></td><td><span class="field-auto">AUTO</span> / Manual</td><td>Group-level auto number (<span class="pill">1-26</span>); editable; manual for third-party (§11)</td></tr>
+                    <tr><td><strong>Mining Origin</strong> <span class="tag-new">NEW</span></td><td>Dropdown</td><td>Per-line origin (country / mine)</td></tr>
+                    <tr><td><strong>Stone Type</strong></td><td>Dropdown</td><td>Single / Parcel</td></tr>
+                    <tr><td><strong>Description 1 / 2</strong></td><td>Text</td><td>Supplier / internal</td></tr>
+                    <tr><td><strong>Carats</strong> <span class="field-required">*</span></td><td>Decimal(2)</td><td>Weight</td></tr>
+                    <tr><td><strong>Price / Carat</strong> <span class="field-required">*</span></td><td>Decimal(2)</td><td>Invoice currency</td></tr>
+                    <tr><td><strong>Total Amount</strong></td><td><span class="field-auto">CALC</span></td><td>Carats × Price/Carat</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="entity-card">
+            <h4>Expenses <span class="badge">DYNAMIC</span></h4>
+            <p style="font-size:0.9rem;">Expense Type (Freight, Import Duty, Insurance, Brokerage, Other), Amount, Remarks. Add any number of rows.</p>
+            <div class="info-box"><strong>Expense Allocation:</strong> Expenses are allocated proportionally across line items by value. Each Rough Lot's inventory value = Line Amount + Proportional Expense Share.</div>
+        </div>
+        <div class="example-data">
+            <h4>Real Example — Invoice #20260645 (KAO Mine, Lesotho)</h4>
+            <table>
+                <thead><tr><th>Rough Lot</th><th>Parcel</th><th>Origin</th><th>Carats</th><th>Pr./Ct.</th><th>Amount</th><th>Exp. Share</th><th>Inv. Value</th></tr></thead>
+                <tbody>
+                    <tr><td>1-26</td><td>KAO-2602-070</td><td>Lesotho</td><td>170.43</td><td>651.81</td><td>111,087.97</td><td>126.00</td><td>111,213.97</td></tr>
+                    <tr><td>2-26</td><td>KAO-2602-085</td><td>Lesotho</td><td>82.31</td><td>108.00</td><td>8,889.48</td><td>10.09</td><td>8,899.57</td></tr>
+                    <tr><td>3-26</td><td>KAO-2602-086</td><td>Lesotho</td><td>4.60</td><td>561.00</td><td>2,580.60</td><td>2.93</td><td>2,583.53</td></tr>
+                    <tr style="font-weight:700;"><td colspan="3">Total</td><td>257.34</td><td></td><td>122,558.05</td><td>139.02</td><td>122,697.07</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 11. ROUGH LOT MASTER -->
+    <div class="section" id="roughlot">
+        <h2>11. Rough Lot Master &amp; Numbering <span class="badge new">KEY CHANGES</span></h2>
+        <p>The Rough Lot is the core inventory unit. One rough lot is auto-created per purchase invoice line on confirmation. Lots can later be split into sub-lots at the point of sale.</p>
+        <h3>11.1 Numbering Pattern</h3>
+        <div class="info-box">
+            <p style="margin-bottom:8px;">Lots are numbered <span class="pill">{sequence}-{year}</span>, e.g. <span class="pill">1-26</span> = lot 1 of 2026. Sub-lots append a letter:</p>
+            <table>
+                <thead><tr><th>Number</th><th>Meaning</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="pill">1-26</span></td><td>Parent rough lot, sequence 1, year 2026</td></tr>
+                    <tr><td><span class="pill">1-26-A</span></td><td>First sub-lot split from 1-26</td></tr>
+                    <tr><td><span class="pill">1-26-B</span></td><td>Second sub-lot split from 1-26</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <h3>11.2 Numbering Rules</h3>
+        <ul class="bullet-list">
+            <li><span class="tag-new">NEW</span> <strong>Auto-generated at Donda group level</strong> — one shared sequence across all group companies (unique group-wide).</li>
+            <li><span class="tag-new">NEW</span> <strong>Manual override allowed</strong> — user can type a lot number (warn on duplicates).</li>
+            <li><span class="tag-new">NEW</span> <strong>Third-party rough purchase</strong> → lot number entered manually.</li>
+            <li><span class="tag-new">NEW</span> <strong>Sub-lots</strong> created during a Sales Invoice (§12); suffix auto-assigned per parent.</li>
+        </ul>
+        <h3>11.3 Rough Lot Master — Fields</h3>
+        <div class="entity-card">
+            <h4>Rough Lot Master <span class="badge">AUTO-CREATED per purchase line</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Source</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Rough Lot No</strong></td><td>System / Manual</td><td>Pattern 1-26; group sequence; manual for third-party</td></tr>
+                    <tr><td><strong>Parent Lot No</strong> <span class="tag-new">NEW</span></td><td>System</td><td>Set on sub-lots (1-26 for 1-26-A); blank for parents</td></tr>
+                    <tr><td><strong>Owning Group Company</strong></td><td>Invoice</td><td>Which entity currently holds the lot</td></tr>
+                    <tr><td><strong>Parcel No</strong></td><td>Invoice Line</td><td>Supplier parcel</td></tr>
+                    <tr><td><strong>Mining Origin</strong> <span class="tag-new">NEW</span></td><td>Invoice Line</td><td>Per-lot origin (was header before)</td></tr>
+                    <tr><td><strong>Stone Type / Commodity</strong></td><td>Invoice / Fixed</td><td>Single / Parcel; Commodity = Diamond</td></tr>
+                    <tr><td><strong>KPC No</strong></td><td>Invoice Header</td><td>Certificate</td></tr>
+                    <tr><td><strong>Description 1 / 2</strong></td><td>Invoice Line</td><td>Supplier / internal</td></tr>
+                    <tr><td><strong>Supplier</strong></td><td>Invoice Header</td><td>Source supplier</td></tr>
+                    <tr><td><strong>Carats (Original)</strong></td><td>Invoice Line</td><td>As purchased</td></tr>
+                    <tr><td><strong>Carats (Balance)</strong> <span class="tag-new">NEW</span></td><td>System</td><td>Remaining after partial sales / splits</td></tr>
+                    <tr><td><strong>Purchase Price</strong></td><td>Invoice Line / Inter-co</td><td>Line total, or seller's price on transfer</td></tr>
+                    <tr><td><strong>Allocated Expenses</strong></td><td>Calculated</td><td>Proportional share</td></tr>
+                    <tr><td><strong>Inventory Value</strong></td><td>Calculated</td><td>Purchase Price + Allocated Expenses</td></tr>
+                    <tr><td><strong>Status</strong></td><td>System</td><td>In Stock → Partially Sold → Sold / Transferred / Split</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="note"><strong>Design implication:</strong> Because a lot can be partially sold (point 5), the Rough Lot Master needs <strong>balance-carat tracking</strong> and a "Partially Sold" status — confirm on the call.</div>
+    </div>
+
+    <!-- 12. MODULE 4 -->
+    <div class="section" id="m4">
+        <h2>12. Module 4 — Sales Invoice &amp; Sub-Lots</h2>
+        <p>Rough lots in stock can be sold outright to a third party or transferred to a sister company. Both produce a sales invoice. Sub-lots can be created here by splitting a parent lot.</p>
+        <div class="entity-card">
+            <h4>Sales Invoice — Header <span class="badge">HEADER</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Sales Invoice No</strong></td><td><span class="field-auto">AUTO</span></td><td>System number</td></tr>
+                    <tr><td><strong>Selling Group Company</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Entity making the sale</td></tr>
+                    <tr><td><strong>Invoice Type</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Inter-Company Transfer / Third-Party Sale</td></tr>
+                    <tr><td><strong>Customer / Buyer</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Sister company or third party (address auto-filled)</td></tr>
+                    <tr><td><strong>Invoice Date</strong> <span class="field-required">*</span></td><td>Date</td><td>Date of sale</td></tr>
+                    <tr><td><strong>Currency &amp; Exchange Rate</strong> <span class="field-required">*</span></td><td>Dropdown / Decimal</td><td>Sale currency</td></tr>
+                    <tr><td><strong>Payment Terms / Due Date</strong></td><td>Dropdown / CALC</td><td>Per buyer</td></tr>
+                    <tr><td><strong>KPC No</strong></td><td>Text</td><td>Export compliance</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="entity-card">
+            <h4>Sale Line Items — from Rough Stock, with Sub-Lot Split <span class="badge new">UPDATED</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Rough Lot No</strong> <span class="field-required">*</span></td><td>Lookup</td><td>Select an in-stock lot (shows balance carats)</td></tr>
+                    <tr><td><strong>Sell Full or Split?</strong> <span class="tag-new">NEW</span></td><td>Toggle</td><td>Full lot, or split a portion into a sub-lot</td></tr>
+                    <tr><td><strong>Sub-Lot No</strong> <span class="tag-new">NEW</span></td><td><span class="field-auto">AUTO</span></td><td>Generated as 1-26-A, 1-26-B… when splitting</td></tr>
+                    <tr><td><strong>Carats to Sell</strong> <span class="field-required">*</span> <span class="tag-new">NEW</span></td><td>Decimal</td><td>≤ balance carats of the lot</td></tr>
+                    <tr><td><strong>Parcel / Origin / Stone Type</strong></td><td><span class="field-auto">AUTO</span></td><td>From rough lot</td></tr>
+                    <tr><td><strong>Selling Price / Carat</strong> <span class="field-required">*</span></td><td>Decimal</td><td>Manual</td></tr>
+                    <tr><td><strong>Total Amount</strong></td><td><span class="field-auto">CALC</span></td><td>Carats × Selling Price</td></tr>
+                    <tr><td><strong>Cost Price</strong></td><td><span class="field-auto">AUTO</span></td><td>Proportional inventory value of carats sold</td></tr>
+                    <tr><td><strong>Margin</strong></td><td><span class="field-auto">CALC</span></td><td>Total Amount − Cost Price</td></tr>
+                </tbody>
+            </table>
+            <div class="info-box"><strong>Split behaviour:</strong> Selling part of <span class="pill">1-26</span> creates sub-lot <span class="pill">1-26-A</span> for the sold carats, reduces the parent's balance, and apportions cost by carat. Remaining balance stays in stock (optionally as <span class="pill">1-26-B</span> — confirm on call).</div>
+        </div>
+        <div class="entity-card">
+            <h4>Sales Expenses + Summary <span class="badge">DYNAMIC / CALC</span></h4>
+            <p style="font-size:0.9rem;">Expenses (Freight, Insurance, Commission, Brokerage). Summary: Total Carats · Sub Total · Total Expenses · Grand Total · Total Cost · <strong>Net Margin</strong> = Grand Total − Total Cost − Expenses.</p>
+        </div>
+    </div>
+
+    <!-- 13. INTER-COMPANY -->
+    <div class="section" id="interco">
+        <h2>13. Inter-Company Transfer <span class="badge new">POINT 6</span></h2>
+        <p>When one Donda group company transfers rough to a sister company, a single action drives both sides.</p>
+        <div class="diagram">  COMPANY A (Seller)                              COMPANY B (Buyer / Sister)
+  ──────────────────                              ──────────────────────────
+  Sales Invoice  (Type = Inter-Company)   ─────▶  Purchase Invoice  (auto-created)
+   • Rough Lot 1-26 / sub-lot 1-26-A              • Supplier = Company A
+   • Sale Price/Ct = X            ════════════▶   • Purchase Price/Ct = X   (= seller's price)
+   • Outbound Shipment                            • New Rough Lot in B's stock
+                                                    cost (inventory value) = X (+ any B-side expenses)
+                                                  • Source lineage = A's 1-26-A
+        </div>
+        <div class="change-box"><strong>Rule (point 6):</strong> The selling company's <strong>sale price becomes the buying company's purchase price / cost</strong>. The transfer auto-creates the purchase entry and a new rough lot in the receiving company's stock, valued at the seller's price.</div>
+        <ul class="bullet-list">
+            <li>The sold lot/sub-lot in Company A is marked <strong>Transferred</strong> (balance reduced).</li>
+            <li>Company B receives a new Rough Lot (lineage back to A's lot) at cost = A's selling price + any B-side inbound expenses.</li>
+            <li>Outbound shipment (A) and inbound receipt (B) track the physical movement.</li>
+            <li>Both sides post their own accounting entries (sale in A, purchase in B).</li>
+        </ul>
+        <div class="note"><strong>To confirm on call:</strong> Does B get a <em>new</em> group lot number or keep the source number for traceability? Are inter-company margins eliminated in a group/consolidated view?</div>
+    </div>
+
+    <!-- 14. MODULE 5 -->
+    <div class="section" id="m5">
+        <h2>14. Module 5 — Outbound Logistics</h2>
+        <p>Created when rough is sold/transferred, to track shipment to the buyer/consignee. Mirrors the inbound shipment structure.</p>
+        <div class="entity-card">
+            <h4>Outbound Shipment — Header <span class="badge">HEADER</span></h4>
+            <table>
+                <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Shipment ID</strong></td><td><span class="field-auto">AUTO</span></td><td>Type = Outbound</td></tr>
+                    <tr><td><strong>Sales Invoice Ref</strong></td><td>Lookup</td><td>Link to sales invoice</td></tr>
+                    <tr><td><strong>Courier / Transport Co.</strong> <span class="field-required">*</span></td><td>Dropdown</td><td>Transport company</td></tr>
+                    <tr><td><strong>Consignee Name / Address</strong></td><td><span class="field-auto">AUTO</span></td><td>From sales invoice buyer</td></tr>
+                    <tr><td><strong>Airway Bill No / KPC No</strong></td><td>Text</td><td>Export documents</td></tr>
+                    <tr><td><strong>Departure / Destination / Date</strong></td><td>Text / Date</td><td>Route</td></tr>
+                    <tr><td><strong>Status</strong></td><td><span class="field-auto">AUTO</span></td><td>Preparing → Shipped → In Transit → Delivered</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 15. ACCOUNTING -->
+    <div class="section" id="accounting">
+        <h2>15. Accounting Integration</h2>
+        <div class="entity-card">
+            <h4>On Purchase Invoice Confirm</h4>
+            <ul class="bullet-list">
+                <li><strong>Debit:</strong> Rough Diamond Purchase / Inventory (goods value)</li>
+                <li><strong>Debit:</strong> Expense accounts (freight, duty, insurance…)</li>
+                <li><strong>Credit:</strong> Supplier / Accounts Payable</li>
+            </ul>
+            <p style="font-size:0.9rem;">Inventory added to Rough Stock at Purchase Value + Allocated Expenses.</p>
+        </div>
+        <div class="entity-card">
+            <h4>On Sales Invoice Confirm</h4>
+            <ul class="bullet-list">
+                <li><strong>Debit:</strong> Customer / Accounts Receivable</li>
+                <li><strong>Credit:</strong> Diamond Sales</li>
+                <li><strong>Debit:</strong> Cost of Goods Sold (inventory value of carats sold)</li>
+                <li><strong>Credit:</strong> Rough Stock / Inventory</li>
+            </ul>
+        </div>
+        <div class="info-box">For inter-company transfers, Company A posts the sale set and Company B posts the purchase set; the linking goods value is the agreed transfer price (point 6).</div>
+    </div>
+
+    <!-- 16. STATUS -->
+    <div class="section" id="status">
+        <h2>16. Status Lifecycles</h2>
+        <h4>Expo Lot / Bid <span class="tag-api">API</span></h4>
+        <div class="status-flow">
+            <div class="status-step" style="background:#319795;">Available</div><div class="status-arrow" style="border-left-color:#319795;"></div>
+            <div class="status-step" style="background:#805ad5;">Bid Submitted</div><div class="status-arrow" style="border-left-color:#805ad5;"></div>
+            <div class="status-step" style="background:#38a169;">Won</div>
+            <div class="status-step" style="background:#e53e3e; margin-left:8px;">Lost</div>
+        </div>
+        <h4>Won Lot</h4>
+        <div class="status-flow">
+            <div class="status-step" style="background:#805ad5;">Won</div><div class="status-arrow" style="border-left-color:#805ad5;"></div>
+            <div class="status-step" style="background:#dd6b20;">Handed to Courier</div><div class="status-arrow" style="border-left-color:#dd6b20;"></div>
+            <div class="status-step" style="background:#d69e2e;">In Transit</div><div class="status-arrow" style="border-left-color:#d69e2e;"></div>
+            <div class="status-step" style="background:#38a169;">Received</div><div class="status-arrow" style="border-left-color:#38a169;"></div>
+            <div class="status-step" style="background:#1a365d;">Invoiced</div>
+        </div>
+        <h4>Inbound Shipment</h4>
+        <div class="status-flow">
+            <div class="status-step" style="background:#805ad5;">Booked</div><div class="status-arrow" style="border-left-color:#805ad5;"></div>
+            <div class="status-step" style="background:#dd6b20;">Picked Up</div><div class="status-arrow" style="border-left-color:#dd6b20;"></div>
+            <div class="status-step" style="background:#d69e2e;">In Transit</div><div class="status-arrow" style="border-left-color:#d69e2e;"></div>
+            <div class="status-step" style="background:#38a169;">Arrived</div><div class="status-arrow" style="border-left-color:#38a169;"></div>
+            <div class="status-step" style="background:#3182ce;">Delivered</div><div class="status-arrow" style="border-left-color:#3182ce;"></div>
+            <div class="status-step" style="background:#1a365d;">Verified</div>
+        </div>
+        <h4>Rough Lot <span class="tag-new">NEW (partial)</span></h4>
+        <div class="status-flow">
+            <div class="status-step" style="background:#38a169;">In Stock</div><div class="status-arrow" style="border-left-color:#38a169;"></div>
+            <div class="status-step" style="background:#d69e2e;">Partially Sold</div><div class="status-arrow" style="border-left-color:#d69e2e;"></div>
+            <div class="status-step" style="background:#e53e3e;">Sold / Transferred</div>
+        </div>
+        <h4>Sales Invoice → Outbound Shipment</h4>
+        <div class="status-flow">
+            <div class="status-step" style="background:#805ad5;">Draft</div><div class="status-arrow" style="border-left-color:#805ad5;"></div>
+            <div class="status-step" style="background:#3182ce;">Confirmed</div><div class="status-arrow" style="border-left-color:#3182ce;"></div>
+            <div class="status-step" style="background:#dd6b20;">Shipped</div><div class="status-arrow" style="border-left-color:#dd6b20;"></div>
+            <div class="status-step" style="background:#d69e2e;">In Transit</div><div class="status-arrow" style="border-left-color:#d69e2e;"></div>
+            <div class="status-step" style="background:#38a169;">Delivered</div>
+        </div>
+    </div>
+
+    <!-- 17. MASTERS -->
+    <div class="section" id="masters">
+        <h2>17. Master Data</h2>
+        <table>
+            <thead><tr><th>Master</th><th>Key Fields</th><th>Examples</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Group Company</strong> <span class="tag-new">NEW</span></td><td>Name, Country, Currency, Tax Reg (GST/VAT), Bank</td><td>Rainbow Gems HK, Donda Exports</td></tr>
+                <tr><td><strong>Bidder / App User</strong> <span class="tag-api">API</span></td><td>Name, Login, Group Company, Role</td><td>Expo team members</td></tr>
+                <tr><td><strong>Supplier</strong></td><td>Name, Address, Country, VAT, Bank, Payment Terms, Type (Expo / Third-party)</td><td>Bonas Couzyn (Antwerp) NV</td></tr>
+                <tr><td><strong>Customer</strong></td><td>Name, Address, Country, VAT, Type (Sister / Third-party), Bank</td><td>Donda Exports, third parties</td></tr>
+                <tr><td><strong>Expo / Tender</strong></td><td>Name, Location, Dates, Supplier</td><td>Bonas Antwerp March 2026</td></tr>
+                <tr><td><strong>Transport Company</strong></td><td>Name, Address, Contact, IATA</td><td>Ferrari Belgium BVBA, Malca-Amit</td></tr>
+                <tr><td><strong>Country / Origin</strong></td><td>Code, Name, Mines</td><td>CA, LS, ZA</td></tr>
+                <tr><td><strong>Mine</strong></td><td>Name, Country, Company</td><td>KAO (Lesotho), Gahcho Kué (Canada)</td></tr>
+                <tr><td><strong>Currency</strong></td><td>Code, Symbol, Exchange Rates</td><td>USD, EUR, HKD, INR</td></tr>
+                <tr><td><strong>Expense Type</strong></td><td>Name, Default Account</td><td>Freight, Import Duty, Insurance, Brokerage</td></tr>
+                <tr><td><strong>Payment Terms</strong></td><td>Code, Days</td><td>NET5 = 5 working days</td></tr>
+                <tr><td><strong>HS / HSN Code</strong></td><td>Code, Description, GST Rate <span class="badge future">FUTURE</span></td><td>7102.10, 7102.21, 7102.31</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 18. FUTURE -->
+    <div class="section" id="future">
+        <h2>18. Future Scope</h2>
+        <div class="future-box"><strong>Consignment / Memo trading.</strong> Not required now — Hong Kong buys rough outright only. Mumbai / Surat occasionally issue a rough <em>memo</em> for local rough sale. Later: memo issue/return, ownership-retained-until-sold tracking, memo-to-invoice conversion.</div>
+        <div class="future-box"><strong>India local sales — GST per HSN code.</strong> For the India entity, local rough sales must compute GST by HSN code. Requires HSN master with GST rates, tax breakup (CGST/SGST/IGST), and GST-compliant invoice output.</div>
+        <div class="future-box"><strong>Other planned modules:</strong> Manufacturing/Polishing, full Accounting ledgers, and live courier API integration. (Bidding is now in scope as the ERP-backed data store for the mobile app.)</div>
+    </div>
+
+    <!-- 19. OPEN QUESTIONS -->
+    <div class="section" id="open">
+        <h2>19. Open Questions for Review (Conference Call)</h2>
+        <ol style="padding-left:20px;">
+            <li style="margin-bottom:8px;">Lot numbering <span class="pill">1-26</span>: pure running sequence or scoped (per expo / origin / company)? Does it reset each year?</li>
+            <li style="margin-bottom:8px;">Sub-lots: should the <em>remaining</em> balance become a labelled sub-lot (<span class="pill">1-26-B</span>) or stay as parent <span class="pill">1-26</span> with reduced carats?</li>
+            <li style="margin-bottom:8px;">Can a sub-lot be split again on a later sale (multi-level: 1-26-A-1)?</li>
+            <li style="margin-bottom:8px;">Inter-company: new group lot number for the receiver, or inherit the source number for traceability?</li>
+            <li style="margin-bottom:8px;">Inter-company: eliminate inter-company margin in a group/consolidated view?</li>
+            <li style="margin-bottom:8px;">Manual lot numbers (third-party / override): how strictly to enforce uniqueness and pattern?</li>
+            <li style="margin-bottom:8px;">Partial sales: confirm Rough Lot needs balance-carat + "Partially Sold" status (assumed yes).</li>
+            <li style="margin-bottom:8px;"><span class="tag-api">API</span> Bidding app: confirm authentication model, whether the app needs real-time webhooks, and the agreed field names before we freeze the <code>/api/v1</code> contract.</li>
+            <li style="margin-bottom:8px;"><span class="tag-api">API</span> Should bidder users in the app map to ERP user accounts, or just be recorded as names on bids?</li>
+        </ol>
+    </div>
+
+</div>
+
+<div class="footer">
+    <p><strong>DONDA ERP</strong> — Functional Specification v2.1 (Draft)</p>
+    <p>UAT feedback (28 May – 03 Jun 2026) + bidding-app integration | Items marked NEW / API pending confirmation</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accounting Integration — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="12-accounting">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 12</div>
+      <h1>Accounting Integration</h1>
+      <p class="lead">Confirming a purchase or sales invoice auto-generates the journal entries below and updates Rough Stock valuation.</p>
+    </div>
+
+    <section id="purchase">
+      <h2>On Purchase Invoice Confirm</h2>
+      <div class="card">
+        <ul class="bullets">
+          <li><strong>Debit:</strong> Rough Diamond Purchase / Inventory (goods value)</li>
+          <li><strong>Debit:</strong> Expense accounts (freight, duty, insurance…)</li>
+          <li><strong>Credit:</strong> Supplier / Accounts Payable</li>
+        </ul>
+        <p style="margin:0;">Inventory added to Rough Stock at Purchase Value + Allocated Expenses.</p>
+      </div>
+    </section>
+
+    <section id="sales">
+      <h2>On Sales Invoice Confirm</h2>
+      <div class="card">
+        <ul class="bullets" style="margin:0;">
+          <li><strong>Debit:</strong> Customer / Accounts Receivable</li>
+          <li><strong>Credit:</strong> Diamond Sales</li>
+          <li><strong>Debit:</strong> Cost of Goods Sold (inventory value of carats sold)</li>
+          <li><strong>Credit:</strong> Rough Stock / Inventory</li>
+        </ul>
+      </div>
+      <div class="box info">For <a href="10-inter-company.html">inter-company transfers</a>, Company A posts the sale set and Company B posts the purchase set; the linking goods value is the agreed transfer price (point 6).</div>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purchase Entry — Design — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="17-purchase-entry-design">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Build · Phase 1 · NEW</div>
+      <h1>Purchase Entry — Build Design</h1>
+      <p class="lead">The first module being built: Won Lot → Purchase Invoice (BOM of rough sub-lots) → Rough Lot Master. This is the locked, build-ready design. See the interactive <a href="../../mockups/purchase-entry/purchase-invoice.html">purchase-invoice mockup</a>.</p>
+    </div>
+
+    <section id="model">
+      <h2>Model &amp; Hierarchy</h2>
+      <div class="diagram">  PURCHASE INVOICE  =  ONE winning lot   (parent rough lot  1-26)
+          │
+          └─ BOM line items  =  SUB-LOTS / stones   (1-26-A, 1-26-B, 1-26-C …)
+                                each = one rough-diamond item → one sub-lot stock unit</div>
+      <ul class="bullets">
+        <li><strong>One purchase invoice = one won lot.</strong> A supplier invoice with several parcels (e.g. #20260645 → 070/085/086) is <em>one lot</em> whose parcels are <strong>sub-lots</strong> 1-26-A/B/C.</li>
+        <li><strong>Inventory lives at the sub-lot level</strong> — each 1-26-A is the stock unit (own carats, value, balance, status). Parent lot 1-26 is a <strong>roll-up grouping</strong>.</li>
+        <li><strong>Expenses allocated by value</strong> (proportional to each sub-lot's goods amount).</li>
+        <li><strong>One sub-lot per parcel line</strong>, pieces kept together; split further at sale.</li>
+        <li><strong>Tagging:</strong> header tags the <a href="05-won-lots.html">won lot</a>; each line tags the won lot's <a href="03-bidding-data.html#stones">stone</a>. On confirm → won lot = <em>Invoiced</em>.</li>
+        <li><strong>Third-party rough</strong> (no won lot): lot &amp; sub-lot numbers entered manually; no tag.</li>
+      </ul>
+      <div class="box change"><strong>Supersedes:</strong> the v1 functional spec modelled each invoice parcel as a separate top-level lot (1-26, 2-26, 3-26). The build adopts <strong>one lot per invoice with sub-lots</strong> (1-26-A/B/C). Modules <a href="07-purchase-invoice.html">07</a> / <a href="08-rough-lot-master.html">08</a> describe the field-level detail.</div>
+    </section>
+
+    <section id="flow">
+      <h2>Entry Flow</h2>
+      <ol class="qlist">
+        <li><strong>Create Purchase Invoice</strong> → choose Buying Company + Supplier, currency &amp; exchange rate, supplier invoice no/date, received date.</li>
+        <li><strong>Pull from Won Lots</strong> → pick the won lot (filtered to that supplier/company, status <em>Received</em>). Its stones load as BOM sub-lot lines, pre-filled but editable against the real supplier invoice.</li>
+        <li>System assigns the <strong>lot number 1-26</strong> (group sequence) and <strong>sub-lot suffixes A/B/C…</strong>; per-line mining origin.</li>
+        <li>Add <strong>expenses</strong> (freight, duty, insurance…) → allocated by value.</li>
+        <li><strong>Confirm</strong> → creates parent Rough Lot 1-26 (roll-up) + sub-lot stock units 1-26-A/B/C, flips won lot to <em>Invoiced</em>, and (later) posts accounting.</li>
+      </ol>
+      <div class="flow">
+        <div class="step" style="background:#7c3aed;">Draft</div><div class="arrow" style="border-left:11px solid #7c3aed;"></div>
+        <div class="step" style="background:#0ea5e9;">Confirmed</div><div class="arrow" style="border-left:11px solid #0ea5e9;"></div>
+        <div class="step" style="background:#16a34a;">Posted (acctg)</div>
+      </div>
+    </section>
+
+    <section id="masters">
+      <h2>Masters (this slice)</h2>
+      <table>
+        <thead><tr><th>Priority</th><th>Master</th><th>Key fields</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge new">P1</span></td><td><strong>Group Company</strong></td><td>name, country, base currency, tax reg, bank</td></tr>
+          <tr><td><span class="badge new">P1</span></td><td><strong>Supplier</strong></td><td>name, address, country, type (expo/third-party), payment terms, bank</td></tr>
+          <tr><td><span class="badge new">P1</span></td><td><strong>Currency + Exchange Rate</strong></td><td>code, symbol, rate-to-base</td></tr>
+          <tr><td><span class="badge new">P1</span></td><td><strong>Mining Origin</strong> (Country + Mine)</td><td>code, country, mine</td></tr>
+          <tr><td><span class="badge new">P1</span></td><td><strong>Expense Type</strong></td><td>name, default account</td></tr>
+          <tr><td><span class="badge new">P1</span></td><td><strong>Payment Terms</strong></td><td>code, days</td></tr>
+          <tr><td><span class="badge new">P1</span></td><td><strong>Lot-Numbering config</strong></td><td>prefix/seq, year format, group-shared</td></tr>
+          <tr><td><span class="badge">P2</span></td><td>HS Code · Transport Co · Stone Type · Shape/Color/Clarity</td><td>customs, shipment link, grading</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="schema">
+      <h2>Schema Sketch</h2>
+      <div class="card">
+        <h4>purchase_invoice <span class="badge">header = lot</span></h4>
+        <table>
+          <thead><tr><th>Column</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>pi_no</strong></td><td>auto</td></tr>
+            <tr><td>buying_company_id <span class="req">*</span></td><td>FK group_company</td></tr>
+            <tr><td>supplier_id <span class="req">*</span></td><td>FK supplier</td></tr>
+            <tr><td>supplier_inv_no <span class="req">*</span> · supplier_inv_date <span class="req">*</span></td><td>from supplier doc</td></tr>
+            <tr><td>received_date <span class="req">*</span></td><td>goods in</td></tr>
+            <tr><td><strong>lot_no</strong> (1-26)</td><td>auto group seq; editable; manual for third-party</td></tr>
+            <tr><td><strong>won_lot_id</strong></td><td>FK won_lot — the tag (nullable)</td></tr>
+            <tr><td>currency · exchange_rate <span class="req">*</span></td><td>to base</td></tr>
+            <tr><td>payment_terms_id · due_date</td><td>due = calc</td></tr>
+            <tr><td>shipment_ref · kpc_no · remarks</td><td>optional</td></tr>
+            <tr><td>status</td><td>Draft → Confirmed → Posted</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h4>pi_line <span class="badge">BOM = sub-lot</span></h4>
+        <table>
+          <thead><tr><th>Column</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>line_no</td><td>auto</td></tr>
+            <tr><td><strong>sub_lot_no</strong> (1-26-A)</td><td>suffix auto per lot</td></tr>
+            <tr><td><strong>won_lot_stone_id</strong></td><td>FK — tags bidding-app stone (nullable)</td></tr>
+            <tr><td>parcel_no <span class="req">*</span> · mining_origin_id <span class="req">*</span></td><td>origin per line</td></tr>
+            <tr><td>stone_type · description_1 · description_2</td><td>Single / Parcel</td></tr>
+            <tr><td>carats <span class="req">*</span> · pieces</td><td>pieces default 1</td></tr>
+            <tr><td>price_per_ct <span class="req">*</span> · amount</td><td>amount = carats × price</td></tr>
+            <tr><td>allocated_expense · inventory_value</td><td>by value · amount + alloc</td></tr>
+            <tr><td>rough_lot_id</td><td>set on confirm</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h4>pi_expense · rough_lot</h4>
+        <table>
+          <thead><tr><th>Table</th><th>Columns</th></tr></thead>
+          <tbody>
+            <tr><td><strong>pi_expense</strong></td><td>expense_type_id, amount, remarks (→ allocated by value)</td></tr>
+            <tr><td><strong>rough_lot</strong> (on confirm)</td><td>rough_lot_no, parent_lot_no, owning_company_id, source_pi_line_id, parcel_no, mining_origin_id, commodity='Diamond', kpc_no, supplier_id, carats_original, <strong>carats_balance</strong>, pieces, purchase_price, allocated_expense, inventory_value, status='In Stock'</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="numbering">
+      <h2>Numbering</h2>
+      <ul class="bullets">
+        <li><strong>Lot No</strong> = <span class="pill">{seq}-{yy}</span> from a <strong>group-shared</strong> sequence (unique across all companies). Manual override for third-party.</li>
+        <li><strong>Sub-lot</strong> = parent + letter suffix <span class="pill">-A</span>, <span class="pill">-B</span>… auto-assigned per lot, one per BOM line.</li>
+        <li>Reservation timing (assign on Draft-create vs. on Confirm) is an <a href="#open">open item</a> — affects gaps in the sequence.</li>
+      </ul>
+    </section>
+
+    <section id="open">
+      <h2>Open Items (parked)</h2>
+      <ol class="qlist">
+        <li><strong>Carat variance</strong> — won/bid carats vs. actually-invoiced carats: received figure wins; show the delta as a flag.</li>
+        <li><strong>Lot-number reservation timing</strong> — on Draft-create (risk of gaps if cancelled) vs. on Confirm (no gaps, but number unknown while drafting).</li>
+        <li><strong>Multi-level split</strong> — can a sub-lot 1-26-A be split again at sale (1-26-A-1)? Carried from the sales module.</li>
+        <li><strong>Rough grading at receipt</strong> — do we capture shape/color/clarity on the purchase line, or only carats + description?</li>
+      </ol>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

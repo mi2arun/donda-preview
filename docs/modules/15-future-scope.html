@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Future Scope &amp; Open Questions — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="15-future-scope">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 15</div>
+      <h1>Future Scope &amp; Open Questions</h1>
+      <p class="lead">Deferred capabilities and the decisions still to confirm on the conference call.</p>
+    </div>
+
+    <section id="future">
+      <h2>Future Scope</h2>
+      <div class="box future"><strong>Consignment / Memo trading.</strong> Not required now — Hong Kong buys rough outright only. Mumbai / Surat occasionally issue a rough <em>memo</em> for local rough sale. Later: memo issue/return, ownership-retained-until-sold tracking, memo-to-invoice conversion.</div>
+      <div class="box future"><strong>India local sales — GST per HSN code.</strong> For the India entity, local rough sales must compute GST by HSN code. Requires HSN master with GST rates, tax breakup (CGST/SGST/IGST), and GST-compliant invoice output.</div>
+      <div class="box future"><strong>Other planned modules:</strong> Manufacturing/Polishing, full Accounting ledgers, and live courier API integration. (Bidding is now in scope as the ERP-backed data store for the mobile app.)</div>
+    </section>
+
+    <section id="open">
+      <h2>Open Questions for Review</h2>
+      <ol class="qlist">
+        <li>Lot numbering <span class="pill">1-26</span>: pure running sequence or scoped (per expo / origin / company)? Does it reset each year?</li>
+        <li>Sub-lots: should the <em>remaining</em> balance become a labelled sub-lot (<span class="pill">1-26-B</span>) or stay as parent <span class="pill">1-26</span> with reduced carats?</li>
+        <li>Can a sub-lot be split again on a later sale (multi-level: 1-26-A-1)?</li>
+        <li>Inter-company: new group lot number for the receiver, or inherit the source number for traceability?</li>
+        <li>Inter-company: eliminate inter-company margin in a group/consolidated view?</li>
+        <li>Manual lot numbers (third-party / override): how strictly to enforce uniqueness and pattern?</li>
+        <li>Partial sales: confirm Rough Lot needs balance-carat + "Partially Sold" status (assumed yes).</li>
+        <li><span class="tag-api">API</span> Bidding app: confirm authentication model, real-time webhooks vs polling, and agreed field names before freezing the <code>/api/v1</code> contract.</li>
+        <li><span class="tag-api">API</span> Should bidder users map to ERP user accounts, or just be recorded as names on bids?</li>
+      </ol>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

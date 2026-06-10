@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rough Lot Master — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="08-rough-lot-master">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 08 · KEY CHANGES</div>
+      <h1>Rough Lot Master &amp; Numbering</h1>
+      <p class="lead">The core inventory unit. One rough lot is auto-created per purchase invoice line on confirmation. Lots can later be split into sub-lots at the point of sale.</p>
+    </div>
+
+    <section id="pattern">
+      <h2>Numbering Pattern</h2>
+      <p>Lots are numbered <span class="pill">{sequence}-{year}</span>, e.g. <span class="pill">1-26</span> = lot 1 of 2026. Sub-lots append a letter:</p>
+      <table>
+        <thead><tr><th>Number</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill">1-26</span></td><td>Parent rough lot, sequence 1, year 2026</td></tr>
+          <tr><td><span class="pill">1-26-A</span></td><td>First sub-lot split from 1-26</td></tr>
+          <tr><td><span class="pill">1-26-B</span></td><td>Second sub-lot split from 1-26</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="rules">
+      <h2>Numbering Rules</h2>
+      <ul class="bullets">
+        <li><span class="tag-new">NEW</span> <strong>Auto-generated at Donda group level</strong> — one shared sequence across all group companies (unique group-wide).</li>
+        <li><span class="tag-new">NEW</span> <strong>Manual override allowed</strong> — user can type a lot number (warn on duplicates).</li>
+        <li><span class="tag-new">NEW</span> <strong>Third-party rough purchase</strong> → lot number entered manually.</li>
+        <li><span class="tag-new">NEW</span> <strong>Sub-lots</strong> created during a <a href="09-sales-invoice.html">Sales Invoice</a>; suffix auto-assigned per parent.</li>
+      </ul>
+    </section>
+
+    <section id="fields">
+      <h2>Fields</h2>
+      <div class="card">
+        <h4>Rough Lot Master <span class="badge">AUTO-CREATED per purchase line</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Source</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Rough Lot No</strong></td><td>System / Manual</td><td>Pattern 1-26; group sequence; manual for third-party</td></tr>
+            <tr><td><strong>Parent Lot No</strong> <span class="tag-new">NEW</span></td><td>System</td><td>Set on sub-lots (1-26 for 1-26-A); blank for parents</td></tr>
+            <tr><td><strong>Owning Group Company</strong></td><td>Invoice</td><td>Which entity currently holds the lot</td></tr>
+            <tr><td><strong>Parcel No</strong></td><td>Invoice Line</td><td>Supplier parcel</td></tr>
+            <tr><td><strong>Mining Origin</strong> <span class="tag-new">NEW</span></td><td>Invoice Line</td><td>Per-lot origin (was header before)</td></tr>
+            <tr><td><strong>Stone Type / Commodity</strong></td><td>Invoice / Fixed</td><td>Single / Parcel; Commodity = Diamond</td></tr>
+            <tr><td><strong>KPC No</strong></td><td>Invoice Header</td><td>Certificate</td></tr>
+            <tr><td><strong>Description 1 / 2</strong></td><td>Invoice Line</td><td>Supplier / internal</td></tr>
+            <tr><td><strong>Supplier</strong></td><td>Invoice Header</td><td>Source supplier</td></tr>
+            <tr><td><strong>Carats (Original)</strong></td><td>Invoice Line</td><td>As purchased</td></tr>
+            <tr><td><strong>Carats (Balance)</strong> <span class="tag-new">NEW</span></td><td>System</td><td>Remaining after partial sales / splits</td></tr>
+            <tr><td><strong>Purchase Price</strong></td><td>Invoice Line / Inter-co</td><td>Line total, or seller's price on transfer</td></tr>
+            <tr><td><strong>Allocated Expenses</strong></td><td>Calculated</td><td>Proportional share</td></tr>
+            <tr><td><strong>Inventory Value</strong></td><td>Calculated</td><td>Purchase Price + Allocated Expenses</td></tr>
+            <tr><td><strong>Status</strong></td><td>System</td><td>In Stock → Partially Sold → Sold / Transferred / Split</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="box note"><strong>Design implication:</strong> because a lot can be partially sold, the Rough Lot Master needs <strong>balance-carat tracking</strong> and a "Partially Sold" status — confirm on the call.</div>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

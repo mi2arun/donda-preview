@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Diamond Lot Entry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0c;--surface:#111114;--card:#17171c;--elevated:#1e1e24;--hover:#26262d;--input:#131318;
+  --accent:#d4a853;--accent-b:#f0c95e;--accent-d:#9a7a3a;--accent-g:rgba(212,168,83,0.12);--accent-gs:rgba(212,168,83,0.25);
+  --ok:#3ecf8e;--ok-g:rgba(62,207,142,0.1);
+  --err:#ef6161;
+  --t1:#e8e6e3;--t2:#86868e;--t3:#52525a;--t4:#2e2e34;
+  --border:#222228;
+  --r:10px;--r-sm:6px;--r-full:999px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --font:'Outfit',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html,body{font-family:var(--font);background:var(--bg);color:var(--t1);height:100%;overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none}
+button,input{font-family:inherit;outline:none!important}
+::-webkit-scrollbar{width:0;height:0}
+
+#app{width:100%;height:100%;max-width:412px;margin:0 auto;position:relative;overflow:hidden;background:var(--bg)}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;visibility:hidden;pointer-events:none;z-index:0}
+.screen.active{visibility:visible;pointer-events:all;z-index:2}
+
+/* ═══ HEADER ═══ */
+.hdr{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface)}
+.hdr-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--t2);background:transparent;border:none;border-radius:8px;font-size:15px;cursor:pointer;text-decoration:none;transition:all .15s ease;flex-shrink:0}
+.hdr-btn:active{background:var(--elevated);color:var(--accent)}
+.hdr-crumb{flex:1;min-width:0;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);cursor:pointer;font-family:var(--mono);letter-spacing:.2px;white-space:nowrap;overflow:hidden}
+.hdr-crumb .c-t{flex-shrink:0}
+.hdr-crumb .c-sep{color:var(--t4);flex-shrink:0;margin:0 1px}
+.hdr-crumb .c-lot{color:var(--accent);font-weight:600;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.hdr-crumb:active .c-t{color:var(--t1)}
+
+/* ═══ ENTRY BODY ═══ */
+.body{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
+
+/* Empty state: no lot */
+.empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 32px;gap:8px;animation:fade .3s ease}
+.empty .e-icon{font-size:48px;opacity:.5;margin-bottom:12px}
+.empty .e-title{font-size:18px;font-weight:600;color:var(--t1)}
+.empty .e-sub{font-size:12px;color:var(--t3);margin-bottom:24px}
+.empty .e-row{width:100%;display:flex;gap:8px;align-items:center}
+.empty .e-input{flex:1;padding:14px 16px;background:var(--input);border:1.5px solid var(--border);border-radius:var(--r);color:var(--t1);font-size:15px;font-family:var(--font)}
+.empty .e-input:focus{border-color:var(--accent)}
+.empty .e-go{width:46px;height:46px;border-radius:var(--r);background:var(--accent);color:var(--bg);border:none;font-size:18px;font-weight:700;cursor:pointer}
+.empty .e-go:active{transform:scale(.94)}
+
+/* Entry: inline numbers */
+.nums{display:flex;align-items:center;gap:6px;padding:12px 14px 6px;font-family:var(--mono);flex-wrap:wrap}
+.nums input{width:44px;background:none;border:none;border-bottom:1px solid var(--border);color:var(--t1);font-family:var(--mono);font-size:14px;font-weight:500;padding:4px 0;transition:border-color .15s ease}
+.nums input::-webkit-inner-spin-button,.nums input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.nums input{-moz-appearance:textfield}
+.nums .arrow{color:var(--accent);font-size:11px;margin:0 -2px}
+.nums input:focus{border-color:var(--accent)}
+.nums input::placeholder{color:var(--t3)}
+.nums .unit{color:var(--t3);font-size:12px}
+.nums .sep{color:var(--t4);font-size:12px}
+
+/* Input bar */
+.bar{display:flex;align-items:center;gap:8px;padding:4px 14px 10px}
+.bar-wrap{flex:1;display:flex;align-items:center;background:var(--input);border:1.5px solid var(--border);border-radius:var(--r);padding:0 6px 0 14px;transition:border-color .2s ease}
+.bar-wrap:focus-within{border-color:var(--accent)}
+.bar-wrap input{flex:1;background:none;border:none;color:var(--t1);font-family:var(--mono);font-size:15px;letter-spacing:1px;padding:12px 0;caret-color:var(--accent);min-width:0}
+.bar-wrap input::placeholder{color:var(--t3);letter-spacing:.5px;font-weight:400}
+.ico{width:34px;height:34px;border-radius:8px;background:transparent;border:none;color:var(--t2);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s ease}
+.ico:active{background:var(--hover);color:var(--accent)}
+.go{width:42px;height:42px;border-radius:var(--r);background:var(--accent);border:none;color:var(--bg);font-size:18px;font-weight:700;cursor:pointer;flex-shrink:0;transition:all .15s ease}
+.go:active{transform:scale(.94)}
+.go.pulse{box-shadow:0 0 0 0 var(--accent-gs);animation:pulse 1.2s ease infinite}
+
+/* Suggestions (only when typing) */
+.sugs{display:flex;gap:6px;padding:0 14px 10px;overflow-x:auto;flex-shrink:0;min-height:0}
+.sugs:empty{display:none}
+.sug{padding:6px 12px;background:var(--elevated);border:1px solid var(--border);border-radius:var(--r-full);font-family:var(--mono);font-size:12px;color:var(--t1);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s ease}
+.sug:active{background:var(--accent-gs);border-color:var(--accent);color:var(--accent-b)}
+.sug.more{color:var(--t3);background:transparent}
+
+/* Media pending */
+.media{display:flex;gap:6px;padding:0 14px 10px;overflow-x:auto;flex-shrink:0}
+.media:empty{display:none}
+.m-chip{width:44px;height:44px;border-radius:var(--r-sm);background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;font-size:16px}
+.m-chip .m-t{position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:var(--err);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;border:none}
+
+/* Feed — hierarchical view of all lots → (main | sub-lots) → stones */
+.feed{flex:1;overflow-y:auto;padding:0 12px 8px;-webkit-overflow-scrolling:touch}
+.feed-empty{text-align:center;padding:32px 20px;color:var(--t3);font-size:12px;line-height:1.6}
+.feed-empty .fe-icon{font-size:28px;margin-bottom:8px;opacity:.4}
+
+.f-lot{border-bottom:1px solid var(--border);padding:4px 0 8px}
+.f-lot:last-child{border-bottom:none}
+.f-lot-hd{display:flex;align-items:center;gap:8px;padding:10px 4px;cursor:pointer;transition:background .15s ease;border-radius:6px}
+.f-lot-hd:active{background:var(--hover)}
+.f-chev{font-size:9px;color:var(--t3);width:10px;text-align:center;transition:transform .2s ease}
+.f-lot.open .f-chev{color:var(--accent)}
+.f-lot-name{flex:1;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--t1);letter-spacing:.3px}
+.f-lot.active .f-lot-name{color:var(--accent-b)}
+.f-lot-meta{font-family:var(--mono);font-size:10px;color:var(--t3);margin-right:2px}
+.f-badge{padding:2px 8px;border-radius:var(--r-full);font-family:var(--mono);font-size:9px;font-weight:700;background:var(--accent-g);border:1px solid var(--accent-d);color:var(--accent-b);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;flex-shrink:0}
+.f-go{padding:2px 8px;border-radius:var(--r-full);font-family:var(--mono);font-size:9px;font-weight:600;background:var(--elevated);border:1px solid var(--border);color:var(--t2);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all .15s ease}
+.f-go:active{background:var(--accent-g);border-color:var(--accent-d);color:var(--accent-b)}
+.f-x{width:22px;height:22px;color:var(--t3);background:transparent;border:none;font-size:11px;cursor:pointer;flex-shrink:0}
+.f-x:active{color:var(--err)}
+
+.f-group-hd{display:flex;align-items:center;gap:6px;padding:6px 8px;margin:4px 0 2px 18px;cursor:pointer;border-left:2px solid var(--t4);transition:all .15s ease}
+.f-group-hd.active{border-left-color:var(--accent)}
+.f-group-hd:active{background:var(--hover)}
+.f-group-name{flex:1;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--t2);letter-spacing:.3px}
+.f-group-hd.active .f-group-name{color:var(--accent-b)}
+.f-group-count{font-family:var(--mono);font-size:10px;color:var(--t3)}
+
+.f-stones{padding-left:20px}
+.stone{display:flex;align-items:center;gap:12px;padding:10px 8px;border-bottom:1px solid var(--t4);cursor:pointer;transition:background .15s ease;animation:slideUp .25s ease}
+.stone:last-child{border-bottom:none}
+.stone:active{background:var(--hover)}
+.stone .s-n{font-family:var(--mono);font-size:11px;color:var(--t3);width:20px;text-align:right;flex-shrink:0}
+.stone .s-code{flex:1;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t1);letter-spacing:1px}
+.stone .s-meta{font-family:var(--mono);font-size:11px;color:var(--t2);text-align:right;flex-shrink:0}
+.stone .s-meta .s-wt{color:var(--t1)}
+.stone .s-meta .s-px{color:var(--accent)}
+.stone .s-meta .s-pcs{color:var(--accent-b);margin-left:6px;font-weight:600}
+.stone .s-meta .s-mm{color:var(--ok);margin-left:6px}
+.f-empty-grp{font-size:10px;color:var(--t3);padding:6px 8px 6px 26px;font-style:italic}
+
+/* Bottom actions */
+.acts{display:flex;gap:8px;padding:10px 14px;padding-bottom:calc(10px + var(--safe-b));background:var(--surface);border-top:1px solid var(--border);flex-shrink:0}
+.acts button{flex:1;padding:12px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--elevated);color:var(--t1);transition:all .15s ease}
+.acts button:active{transform:scale(.98)}
+.acts .a-sub{color:var(--t1)}
+.acts .a-sub:active{border-color:var(--accent-d);background:var(--accent-g)}
+.acts .a-next{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.acts .a-next:active{background:var(--accent-b)}
+
+/* ═══ GRID SCREEN ═══ */
+.grid-body{flex:1;overflow-y:auto;padding:14px;-webkit-overflow-scrolling:touch}
+.grid-stats{display:flex;gap:8px;margin-bottom:14px}
+.grid-stat{flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px;text-align:center}
+.grid-stat .v{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--t1)}
+.grid-stat .l{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+.g-tenders{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+.g-t{flex-shrink:0;padding:8px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--r-full);font-size:12px;color:var(--t2);cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.g-t.active{background:var(--accent-g);border-color:var(--accent-d);color:var(--accent-b)}
+.g-t:active{transform:scale(.97)}
+
+.g-sec-lbl{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1.4px;padding:6px 2px}
+
+.g-lot{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
+.g-lot-hd{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer}
+.g-lot-hd:active{background:var(--hover)}
+.g-lot-hd .g-chev{font-size:10px;color:var(--t3);transition:transform .2s ease;width:10px}
+.g-lot.open .g-chev{transform:rotate(90deg);color:var(--accent)}
+.g-lot-hd .g-name{flex:1;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent-b)}
+.g-lot-hd .g-meta{font-size:10px;color:var(--t3);font-family:var(--mono)}
+.g-lot-hd .g-x{width:24px;height:24px;color:var(--t3);background:transparent;border:none;font-size:13px;cursor:pointer}
+.g-lot-hd .g-x:active{color:var(--err)}
+.g-lot-bd{border-top:1px solid var(--border);padding:8px 10px;display:none}
+.g-lot.open .g-lot-bd{display:block;animation:fade .2s ease}
+
+.g-sub{padding:8px 6px;border-bottom:1px solid var(--border)}
+.g-sub:last-child{border-bottom:none}
+.g-sub-hd{display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer}
+.g-sub-hd:active{opacity:.7}
+.g-sub-hd .gs-name{flex:1;font-family:var(--mono);font-size:12px;color:var(--t1);font-weight:500}
+.g-sub-hd .gs-cnt{font-family:var(--mono);font-size:10px;color:var(--t3)}
+.g-sub-hd .gs-go{font-size:11px;color:var(--accent);padding:3px 8px;background:var(--accent-g);border-radius:var(--r-full);border:1px solid var(--accent-d);font-family:var(--mono);cursor:pointer}
+.g-sub-hd .gs-x{width:22px;height:22px;color:var(--t3);background:transparent;border:none;font-size:11px;cursor:pointer}
+.g-sub-hd .gs-x:active{color:var(--err)}
+.g-stones{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:4px}
+.g-st{aspect-ratio:1;background:var(--elevated);border:1px solid var(--border);border-radius:var(--r-sm);padding:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;position:relative;border-left:2px solid var(--ok);transition:all .15s ease}
+.g-st:active{transform:scale(.94);background:var(--hover)}
+.g-st .n{font-family:var(--mono);font-size:8px;color:var(--t3);position:absolute;top:2px;left:4px}
+.g-st .sh{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--t1)}
+.g-st .sp{font-family:var(--mono);font-size:9px;color:var(--t2)}
+.g-st .w{font-family:var(--mono);font-size:8px;color:var(--accent)}
+
+.g-empty{text-align:center;padding:32px 20px;color:var(--t3);font-size:12px}
+.g-empty .ge-i{font-size:32px;opacity:.3;margin-bottom:10px}
+
+/* ═══ SHEET (name prompt / attr picker / stone detail) ═══ */
+.sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:20;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.sheet-bg.show{opacity:1;pointer-events:all}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-top-left-radius:18px;border-top-right-radius:18px;z-index:21;transform:translateY(100%);transition:transform .32s cubic-bezier(.16,1,.3,1);max-height:75vh;display:flex;flex-direction:column}
+.sheet.show{transform:translateY(0)}
+.sh-h{width:36px;height:4px;background:var(--t4);border-radius:2px;margin:10px auto 0}
+.sh-hd{padding:10px 18px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.sh-hd h3{font-size:15px;font-weight:600}
+.sh-x{width:28px;height:28px;border-radius:50%;background:var(--elevated);border:none;color:var(--t2);font-size:13px;cursor:pointer}
+.sh-body{flex:1;overflow-y:auto;padding:14px 18px 18px}
+
+/* Verify (review) sheet */
+.rev-stats{display:flex;gap:6px;margin-bottom:14px}
+.rev-stat{flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 4px;text-align:center}
+.rev-v{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--accent-b);line-height:1}
+.rev-l{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.rev-grp{margin-bottom:12px}
+.rev-grp-hd{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--elevated);border-radius:var(--r-sm);margin-bottom:4px}
+.rev-grp-name{flex:1;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--t1);letter-spacing:.3px}
+.rev-grp-count{font-family:var(--mono);font-size:10px;color:var(--t3)}
+.rev-empty{font-size:11px;color:var(--t3);padding:6px 12px;font-style:italic}
+.rev-act{display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);position:sticky;bottom:-18px;background:var(--surface);padding-bottom:4px}
+.rev-act button{flex:1;padding:13px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;outline:none!important;font-family:var(--font)}
+.rev-back{background:var(--elevated);border:1px solid var(--border);color:var(--t1)}
+.rev-next{background:var(--accent);border:none;color:var(--bg)}
+.rev-back:active,.rev-next:active{transform:scale(.98)}
+
+/* Name prompt form */
+.name-form{display:flex;gap:8px;margin-bottom:4px}
+.name-form input{flex:1;padding:14px 16px;background:var(--input);border:1.5px solid var(--border);border-radius:var(--r);color:var(--t1);font-size:15px}
+.name-form input:focus{border-color:var(--accent)}
+.name-form button{width:48px;border-radius:var(--r);background:var(--accent);color:var(--bg);border:none;font-size:18px;font-weight:700;cursor:pointer}
+.name-form button:active{transform:scale(.94)}
+.name-hint{font-size:11px;color:var(--t3);padding:6px 2px}
+
+/* Attr picker tabs */
+.tabs{display:flex;border-bottom:1px solid var(--border);padding:0 4px}
+.tab{flex:1;padding:11px 4px;text-align:center;font-size:11px;font-weight:600;color:var(--t3);cursor:pointer;border:none;background:none;position:relative}
+.tab.active{color:var(--accent-b)}
+.tab.active::after{content:'';position:absolute;bottom:-1px;left:20%;right:20%;height:2px;background:var(--accent);border-radius:1px}
+.tab .dot{width:5px;height:5px;border-radius:50%;background:var(--ok);display:inline-block;margin-left:4px;vertical-align:middle}
+.tab-grp{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;padding:10px 0 6px}
+.tab-grp:first-child{padding-top:0}
+.tab-chips{display:flex;flex-wrap:wrap;gap:6px}
+.tab-chip{min-width:46px;min-height:44px;padding:8px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t1);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s ease}
+.tab-chip:active{transform:scale(.94)}
+.tab-chip.selected{background:var(--accent-gs);border-color:var(--accent);color:var(--accent-b)}
+.tab-chip.shape{flex-direction:column;gap:2px;min-width:54px}
+.tab-chip.shape svg{width:22px;height:22px;fill:none;stroke:var(--t2);stroke-width:1.5}
+.tab-chip.shape.selected svg{stroke:var(--accent-b)}
+.tab-chip .s-lbl{font-size:9px;font-weight:500}
+
+/* Stone detail */
+.det-grid{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.det-grid .dl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;padding:4px 0}
+.det-grid .dv{font-family:var(--mono);font-size:13px;padding:4px 0;text-align:right}
+.det-med{margin-bottom:12px}
+.det-med h4{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
+.det-med-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.det-thumb{aspect-ratio:1;background:var(--elevated);border:1px dashed var(--t4);border-radius:var(--r-sm);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px;color:var(--t3);cursor:pointer}
+.det-thumb.has{border-style:solid;border-color:var(--border);color:var(--t1)}
+.det-thumb .b{font-size:9px;color:var(--t2);margin-top:2px}
+.det-acts{display:flex;gap:8px}
+.det-acts button{flex:1;padding:12px;border-radius:var(--r);border:1px solid var(--border);background:var(--elevated);color:var(--t2);font-size:13px;font-weight:600;cursor:pointer}
+.det-acts .d-ed{color:var(--accent)}
+.det-acts .d-del{color:var(--err)}
+
+/* Toast */
+.toast{position:absolute;top:14px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--elevated);border:1px solid var(--border);border-radius:var(--r-full);padding:8px 16px;font-family:var(--mono);font-size:12px;color:var(--accent);opacity:0;pointer-events:none;transition:all .3s ease;z-index:30;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--accent-gs)}50%{box-shadow:0 0 0 6px transparent}}
+
+/* ═══════════════════════════════════════════
+   EXCEL GRID — replaces the old card feed
+   ═══════════════════════════════════════════ */
+
+/* Toolbar above the grid: bid-discount simulator + collapse-all */
+.grid-tb{display:flex;align-items:center;gap:6px;padding:6px 14px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.bid-pct-wrap{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(239,97,97,0.1);border:1px solid rgba(239,97,97,0.4);border-radius:6px;font-family:var(--mono)}
+.bid-pct-wrap .bp-l{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;font-family:var(--font);font-weight:700}
+.bid-pct-wrap input{width:26px;background:transparent;border:none;color:#ef8e8e;font-family:var(--mono);font-size:12px;font-weight:700;text-align:right;outline:none;padding:0}
+.bid-pct-wrap input::-webkit-inner-spin-button,.bid-pct-wrap input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.bid-pct-wrap .bp-pct{color:#ef8e8e;font-size:11px;font-weight:700}
+.bid-pct-wrap .bp-presets{display:inline-flex;gap:2px;margin-left:4px;padding-left:6px;border-left:1px solid var(--border)}
+.bid-pct-wrap .bp-preset{font-size:9px;color:var(--t3);background:transparent;border:none;cursor:pointer;padding:2px 5px;border-radius:3px;font-family:var(--mono);font-weight:600}
+.bid-pct-wrap .bp-preset.active{background:rgba(239,97,97,0.2);color:#ef8e8e}
+.g-toggle{padding:4px 10px;background:var(--elevated);color:var(--t1);border:1px solid var(--border);border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font)}
+.g-toggle:active{transform:scale(.96)}
+
+/* View-mode toggle: All lots vs Single lot */
+.view-toggle{display:inline-flex;background:var(--elevated);border:1px solid var(--border);border-radius:6px;padding:2px;font-family:var(--font);margin-left:auto}
+.view-toggle button{padding:4px 9px;background:transparent;border:none;color:var(--t3);cursor:pointer;border-radius:4px;font-weight:600;font-size:10px;letter-spacing:.4px;text-transform:uppercase;transition:all .12s ease}
+.view-toggle button.active{background:var(--card);color:var(--accent-b);box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.view-toggle button:not(.active):active{color:var(--t1)}
+
+/* Grid scroll wrapper + table */
+.grid-wrap{flex:1;overflow:auto;background:var(--bg);-webkit-overflow-scrolling:touch;min-height:0}
+.grid{border-collapse:separate;border-spacing:0;font-family:var(--mono);font-size:11px;min-width:1000px;table-layout:fixed}
+
+/* Headers (color-coded per client mockup) */
+.grid thead th{position:sticky;top:0;z-index:3;background:var(--surface);color:var(--t3);font-family:var(--font);font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:6px 5px;text-align:right;border-bottom:2px solid var(--border);white-space:nowrap;line-height:1.05;height:30px;box-sizing:border-box}
+.grid thead th.l{text-align:left}
+.grid thead th.cc{text-align:center}
+.grid thead th.h-edit{background:#1c3328;color:#7fdbb0;border-bottom-color:var(--ok)}
+.grid thead th.h-calc{background:#351e20;color:#ef8e8e;border-bottom-color:var(--err)}
+.grid thead th.h-bid-edit{background:#3a2f17;color:var(--accent-b);border-bottom-color:var(--accent);border-left:1px solid var(--accent-d)}
+.grid thead th.h-bid-calc{background:#351e20;color:#ef8e8e}
+
+/* Formula hint row (top) */
+.grid thead tr.formula-row th{position:sticky;top:0;z-index:3;background:var(--bg);color:var(--t4);font-family:var(--mono);font-size:8px;font-weight:500;text-transform:none;letter-spacing:0;padding:3px 5px;text-align:right;border-bottom:1px solid var(--border);font-style:italic;height:20px}
+.grid thead tr.header-row th{top:20px}
+
+/* Column widths (mobile-tight) */
+.grid .gc-lot{width:50px;min-width:50px}
+.grid .gc-desc{width:118px;min-width:118px;max-width:118px}
+.grid .gc-num{width:62px;min-width:62px}
+.grid .gc-pcs{width:38px;min-width:38px}
+.grid .gc-rough{width:68px;min-width:68px}
+.grid .gc-pwt{width:70px;min-width:70px}
+.grid .gc-total{width:82px;min-width:82px}
+.grid .gc-bid{width:82px;min-width:82px}
+.grid .gc-act{width:30px;min-width:30px;text-align:center}
+
+/* Sticky LOT (col 1) and COLOR (col 2) */
+.grid thead th:nth-child(1){position:sticky;left:0;z-index:5}
+.grid thead th:nth-child(2){position:sticky;left:50px;z-index:5}
+.grid tbody td:nth-child(1){position:sticky;left:0;z-index:1}
+.grid tbody td:nth-child(2){position:sticky;left:50px;z-index:1}
+.grid td:nth-child(2),.grid th:nth-child(2){border-right:1px solid var(--border)}
+
+/* Body cells */
+.grid tbody td{padding:0;border-bottom:1px solid var(--t4);vertical-align:middle;height:32px}
+.gcell{display:flex;align-items:center;justify-content:flex-end;padding:4px 5px;height:32px;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.gcell.l{justify-content:flex-start}
+.gcell.cc{justify-content:center}
+.gcell.editable{background:rgba(62,207,142,0.04);box-shadow:inset 2px 0 0 rgba(62,207,142,0.35)}
+.gcell.derived{color:var(--t2);font-style:italic;background:rgba(239,97,97,0.05);box-shadow:inset 2px 0 0 rgba(239,97,97,0.35)}
+.gcell.derived.strong{color:var(--t1);font-style:normal;font-weight:600;background:rgba(239,97,97,0.08)}
+.gcell.derived.bid-strong{color:var(--accent-b);font-style:normal;font-weight:700;background:rgba(239,97,97,0.10)}
+.gcell.empty{color:var(--t4)}
+.gcell.bid-divider{box-shadow:inset 1px 0 0 var(--accent-d), inset 2px 0 0 rgba(212,168,83,0.35)}
+
+/* BID/CT inline input on lot row */
+.gcell input.bid-inp{background:transparent;border:none;color:var(--accent-b);font:inherit;text-align:right;width:100%;padding:0;outline:none;font-weight:600;font-family:var(--mono);font-size:11px}
+.gcell input.bid-inp::placeholder{color:var(--t4)}
+.gcell input.bid-inp:focus{color:var(--accent-b);background:var(--input);box-shadow:inset 0 0 0 1.5px var(--accent);border-radius:3px}
+
+/* Row types */
+tr.glot-row td{background:var(--card)}
+tr.glot-row td:first-child{border-left:2px solid var(--accent-d);padding-left:4px}
+tr.glot-row.is-active td{background:rgba(212,168,83,0.10)}
+tr.glot-row.is-active td:first-child{border-left-color:var(--accent)}
+tr.glot-row.glot-collapsed td{background:var(--elevated)}
+tr.gsub-row td{background:var(--surface)}
+tr.gsub-row td:first-child{padding-left:8px}
+tr.gsub-row:active td{background:var(--hover)}
+tr.glot-row:active td{background:var(--hover)}
+
+/* LOT cell — chevron + lot # */
+.glot-cell{display:flex;align-items:center;gap:2px;height:32px;padding:0 2px;justify-content:center}
+.glot-chev{width:14px;height:22px;display:flex;align-items:center;justify-content:center;color:var(--t3);cursor:pointer;border-radius:2px;font-size:8px;flex-shrink:0;user-select:none;font-family:var(--mono)}
+.glot-chev:active{background:var(--elevated);color:var(--accent)}
+.glot-chev.expanded{color:var(--accent-d)}
+.glot-chev.disabled{color:var(--t4);cursor:default}
+.glot-num{color:var(--accent-b);font-weight:700;font-size:12px;font-family:var(--mono);flex:1;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr.glot-row.is-active .glot-num{color:var(--accent)}
+.gsub-tic{display:inline-block;width:6px;height:1px;background:var(--t4)}
+
+/* POLISH WT cell — value + yield badge */
+.gpwt{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;padding:2px 5px;height:32px;line-height:1.05;background:rgba(62,207,142,0.04);box-shadow:inset 2px 0 0 rgba(62,207,142,0.35)}
+.gpwt .pw-v{color:var(--t1);font-weight:500;font-size:11px}
+.gpwt .pw-y{color:var(--accent-d);font-size:8.5px;font-weight:600;margin-top:1px}
+.gpwt .pw-empty{color:var(--t4);font-style:italic}
+
+/* Row action button (delete) */
+.grow-act{display:flex;align-items:center;justify-content:center;height:32px}
+.grow-act button{width:20px;height:20px;background:transparent;border:1px solid transparent;color:var(--t3);cursor:pointer;border-radius:3px;font-size:10px;display:flex;align-items:center;justify-content:center;line-height:1}
+.grow-act .gdel:active{background:rgba(239,97,97,0.15);color:var(--err);border-color:var(--err)}
+
+/* Empty state */
+.grid-empty{padding:40px 16px;text-align:center;color:var(--t3);font-size:12px}
+.grid-empty .ge-i{font-size:32px;opacity:.3;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══ ENTRY SCREEN ═══ -->
+  <div id="screen-entry" class="screen active">
+    <div class="hdr">
+      <a href="index.html" class="hdr-btn">⌂</a>
+      <div class="hdr-crumb" onclick="openTenderSheet()">
+        <span class="c-t" id="c-tender">—</span>
+        <span class="c-sep" id="c-sep1" style="display:none">›</span>
+        <span class="c-lot" id="c-lot"></span>
+      </div>
+      <div style="width:32px;flex-shrink:0"></div>
+    </div>
+
+    <div class="body">
+      <!-- Empty hint (shown when no lots) -->
+      <div id="empty-hint" style="display:none;flex:1;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;color:var(--t3);font-size:13px;gap:6px">
+        <div style="font-size:40px;opacity:.35;margin-bottom:6px">💎</div>
+        <div style="font-weight:600;color:var(--t2)">No lots yet</div>
+        <div>Tap <span style="color:var(--accent);font-weight:600">New Lot</span> below to start</div>
+      </div>
+
+      <!-- Stone entry (top-input bar) -->
+      <div id="entry" style="display:none;flex-direction:column;flex-shrink:0">
+        <div class="nums">
+          <input type="number" id="inp-wt" placeholder="—" step="0.01" title="Rough weight (ct)"><span class="unit">ct</span>
+          <span class="arrow" title="yield">→</span>
+          <input type="number" id="inp-pwt" placeholder="—" step="0.1" title="Polish yield %"><span class="unit">%</span>
+          <span class="sep">·</span>
+          <span class="unit">×</span><input type="number" id="inp-pcs" placeholder="1" step="1" min="1" title="Pieces in this sub"><span class="unit">pc</span>
+          <span class="sep">·</span>
+          <span class="unit">$</span><input type="number" id="inp-px" placeholder="—"><span class="unit">/ct</span>
+        </div>
+        <div class="bar">
+          <div class="bar-wrap">
+            <input type="text" id="code-input" placeholder="RD G VS1" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" oninput="onInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();sendStone()}">
+            <button class="ico" onclick="addMedia('photo')">📷</button>
+            <button class="ico" onclick="addMedia('video')" style="font-size:13px">🎬</button>
+          </div>
+          <button class="go" id="go" onclick="sendStone()">↑</button>
+        </div>
+        <div class="sugs" id="sugs"></div>
+        <div class="media" id="media"></div>
+      </div>
+
+      <!-- Excel-style grid: shows ALL lots and subs for the active tender -->
+      <div class="grid-tb" id="grid-tb" style="display:none">
+        <div class="bid-pct-wrap" title="Bid discount %">
+          <span class="bp-l">bid −</span>
+          <input type="number" id="bid-pct-inp" min="0" max="100" step="1" value="15" onchange="setBidDiscount(this.value)" oninput="setBidDiscount(this.value)">
+          <span class="bp-pct">%</span>
+          <span class="bp-presets" id="bp-presets">
+            <button class="bp-preset" data-v="10" onclick="setBidDiscount(10)">10</button>
+            <button class="bp-preset" data-v="15" onclick="setBidDiscount(15)">15</button>
+            <button class="bp-preset" data-v="20" onclick="setBidDiscount(20)">20</button>
+            <button class="bp-preset" data-v="25" onclick="setBidDiscount(25)">25</button>
+          </span>
+        </div>
+        <div class="view-toggle" title="Show all lots in one grid, or just the active lot">
+          <button id="vm-all" class="active" onclick="setViewMode('all')">All lots</button>
+          <button id="vm-single" onclick="setViewMode('single')">Single</button>
+        </div>
+        <button class="g-toggle" id="toggle-all-btn" onclick="toggleAll()" title="Collapse / expand all">⇅</button>
+      </div>
+      <div class="grid-wrap" id="grid-wrap" style="display:none">
+        <table class="grid">
+          <thead>
+            <tr class="formula-row">
+              <th class="gc-lot cc"></th>
+              <th class="gc-desc l"></th>
+              <th class="gc-num">P.WT/PCS</th>
+              <th class="gc-num">R.WT/PCS</th>
+              <th class="gc-pcs"></th>
+              <th class="gc-rough"></th>
+              <th class="gc-pwt">R.WT × y</th>
+              <th class="gc-num"></th>
+              <th class="gc-total">P.WT × $</th>
+              <th class="gc-num">TOT/R.WT</th>
+              <th class="gc-num"><span id="bid-floor-formula">R-PRICE × 0.85</span></th>
+              <th class="gc-num"></th>
+              <th class="gc-bid">$ × R.WT</th>
+              <th class="gc-act"></th>
+            </tr>
+            <tr class="header-row">
+              <th class="gc-lot cc h-edit">LOT</th>
+              <th class="gc-desc l h-edit">COLOR</th>
+              <th class="gc-num h-calc">POL.SIZE</th>
+              <th class="gc-num h-calc">RGH.SIZE</th>
+              <th class="gc-pcs h-edit">PCS</th>
+              <th class="gc-rough h-edit">ROUGH WT</th>
+              <th class="gc-pwt h-edit">POLISH WT</th>
+              <th class="gc-num h-edit">PRICE</th>
+              <th class="gc-total h-calc">TOTAL</th>
+              <th class="gc-num h-calc">R-PRICE</th>
+              <th class="gc-num h-calc"><span id="bid-floor-label">15% LESS</span></th>
+              <th class="gc-num h-bid-edit">BID/CT</th>
+              <th class="gc-bid h-bid-calc">BID TOTAL</th>
+              <th class="gc-act"></th>
+            </tr>
+          </thead>
+          <tbody id="grid-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bottom action — adapts label based on state -->
+    <div class="acts" id="acts">
+      <button class="a-next" id="act-btn" onclick="actionBtnClick()">+ New Lot</button>
+    </div>
+  </div>
+
+  <div class="sheet-bg" id="sh-bg" onclick="closeSheet()"></div>
+  <div class="sheet" id="sh">
+    <div class="sh-h"></div>
+    <div class="sh-hd">
+      <h3 id="sh-title">—</h3>
+      <button class="sh-x" onclick="closeSheet()">✕</button>
+    </div>
+    <div class="sh-body" id="sh-body"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const TENDERS = [
+  {id:'t1', name:'Arctic Canadian', flag:'🇨🇦', origin:'Canada', mining:'Diavik'},
+  {id:'t2', name:'De Beers Sight',  flag:'🇧🇼', origin:'Botswana', mining:'Jwaneng'},
+  {id:'t3', name:'ALROSA Auction',  flag:'🇷🇺', origin:'Russia', mining:'Mirny'}
+];
+const ATTRS = ['shape','color','clarity'];
+const LABELS = {shape:'Shape',color:'Color',clarity:'Clarity'};
+const CODES = {
+  shape: {'RD':'Round','OV':'Oval','PR':'Pear','CU':'Cushion','PN':'Princess','EM':'Emerald','MQ':'Marquise','RN':'Radiant','HT':'Heart','AS':'Asscher','TR':'Trillion','BG':'Baguette','MC':'Macle','SW':'Sawable','MKE':'Makeable','IR':'Irregular'},
+  color: {'D':'D','E':'E','F':'F','G':'G','H':'H','I':'I','J':'J','K':'K','L':'L','M':'M','N':'N','O':'O','P':'P','Q':'Q','R':'R','S':'S','T':'T','U':'U','V':'V','W':'W','X':'X','Y':'Y','Z':'Z','FY':'F.Yellow','FP':'F.Pink','FB':'F.Blue','FBR':'F.Brown','FG':'F.Green','FO':'F.Orange'},
+  clarity: {'FL':'FL','IF':'IF','VVS1':'VVS1','VVS2':'VVS2','VS1':'VS1','VS2':'VS2','SI1':'SI1','SI2':'SI2','SI3':'SI3','I1':'I1','I2':'I2','I3':'I3'}
+};
+const GROUPS = {
+  shape: [{g:'Popular',items:['RD','OV','PR','CU','PN','EM']},{g:'Fancy',items:['MQ','RN','HT','AS','TR','BG']},{g:'Rough',items:['MC','SW','MKE','IR']}],
+  color: [{g:'Colorless',items:['D','E','F']},{g:'Near Colorless',items:['G','H','I','J']},{g:'Faint',items:['K','L','M']},{g:'Very Light',items:['N','O','P','Q','R']},{g:'Light',items:['S','T','U','V','W','X','Y','Z']},{g:'Fancy',items:['FY','FP','FB','FBR','FG','FO']}],
+  clarity: [{g:'Flawless',items:['FL','IF']},{g:'VV Slight',items:['VVS1','VVS2']},{g:'V Slight',items:['VS1','VS2']},{g:'Slight',items:['SI1','SI2','SI3']},{g:'Included',items:['I1','I2','I3']}]
+};
+const SVGS = {
+  RD:'<circle cx="14" cy="14" r="11"/>',OV:'<ellipse cx="14" cy="14" rx="8" ry="11"/>',
+  PR:'<path d="M14 3C14 3 5 11 5 17c0 4 4 7 9 7s9-3 9-7C23 11 14 3 14 3z"/>',
+  CU:'<rect x="3" y="3" width="22" height="22" rx="7"/>',PN:'<rect x="3" y="3" width="22" height="22" rx="1"/>',
+  EM:'<rect x="2" y="5" width="24" height="18" rx="3"/>',MQ:'<ellipse cx="14" cy="14" rx="7" ry="12"/>',
+  RN:'<rect x="3" y="3" width="22" height="22" rx="3"/>',
+  HT:'<path d="M14 24C14 24 3 17 3 10c0-3.5 2.5-6 5.5-6C11 4 14 7 14 7s3-3 5.5-3C22.5 4 25 6.5 25 10c0 7-11 14-11 14z"/>',
+  AS:'<rect x="4" y="4" width="20" height="20" rx="2"/>',TR:'<polygon points="14,3 25,25 3,25"/>',
+  BG:'<rect x="4" y="7" width="20" height="14" rx="1"/>',MC:'<polygon points="14,2 26,14 14,26 2,14"/>',
+  SW:'<polygon points="14,3 24,10 20,24 8,24 4,10"/>',MKE:'<polygon points="14,4 22,10 22,22 6,22 6,10"/>',
+  IR:'<polygon points="8,4 20,6 24,16 16,26 4,20"/>'
+};
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+const state = {
+  activeTenderId: 't1',
+  lots: [],
+  currentLotId: null,
+  parsed: {},
+  pendingMedia: [],
+  sheetTab: 'shape',
+  sheetMode: null,           // 'name-lot' | 'tender' | 'attr' | 'detail' | 'review'
+  collapsed: new Set(),      // lot IDs whose subs are hidden in the grid
+  bidDiscountPct: 15,        // drives the "% LESS" column
+  viewMode: 'all',           // 'all' = tree of every lot+sub · 'single' = only the active lot
+  detailStoneId: null
+};
+let mediaCtr = 0;
+const uid = () => Math.random().toString(36).slice(2,9);
+const PHOTO_ICONS = ['💎','🔷','✧','◈','⬥','◆','●'];
+
+const getTender = () => TENDERS.find(t=>t.id===state.activeTenderId);
+const tenderLots = () => state.lots.filter(l=>l.tenderId===state.activeTenderId);
+const getLot = (id) => state.lots.find(l=>l.id===id);
+const curLot = () => getLot(state.currentLotId);
+// Target = the current lot's subs array (each entry = one sub row with N pieces).
+const curTarget = () => {
+  const lot = curLot();
+  return lot ? { stones: lot.stones } : null;
+};
+const subPieces = (s) => parseInt(s.pieces) || 1;
+const lotSubCount   = (lot) => lot.stones.length;
+const lotPieceCount = (lot) => lot.stones.reduce((a,s)=>a+subPieces(s),0);
+
+function toggleLot(id) {
+  if (state.collapsed.has(id)) state.collapsed.delete(id);
+  else state.collapsed.add(id);
+  renderGridFeed();
+}
+
+function toggleAll() {
+  const lotsWithSubs = tenderLots().filter(l => l.stones.length > 0);
+  if (lotsWithSubs.length === 0) return;
+  const anyExpanded = lotsWithSubs.some(l => !state.collapsed.has(l.id));
+  if (anyExpanded) lotsWithSubs.forEach(l => state.collapsed.add(l.id));
+  else state.collapsed.clear();
+  renderGridFeed();
+}
+
+function activateLot(lotId) {
+  state.currentLotId = lotId;
+  state.collapsed.delete(lotId);
+  renderEntry();
+}
+
+// ═══════════════════════════════════════════
+// ENTRY RENDER
+// ═══════════════════════════════════════════
+function renderEntry() {
+  const t = getTender();
+  const lot = curLot();
+  const lots = tenderLots();
+  const hasAnyLot = lots.length > 0;
+
+  // Crumb (tender › active lot)
+  document.getElementById('c-tender').textContent = t ? `${t.flag} ${t.name}` : '—';
+  document.getElementById('c-sep1').style.display = lot ? '' : 'none';
+  document.getElementById('c-lot').textContent    = lot ? lot.name : '';
+
+  // Show empty hint only when the entire tender is empty
+  document.getElementById('empty-hint').style.display = hasAnyLot ? 'none' : 'flex';
+  // Top-input bar shows whenever there is an active lot to push stones into
+  document.getElementById('entry').style.display      = lot ? 'flex' : 'none';
+  // Grid + toolbar visible whenever the tender has any lots
+  document.getElementById('grid-tb').style.display    = hasAnyLot ? 'flex' : 'none';
+  document.getElementById('grid-wrap').style.display  = hasAnyLot ? 'block' : 'none';
+  document.getElementById('act-btn').textContent      = lot ? 'Next Lot →' : '+ New Lot';
+
+  renderGridFeed();
+  renderSuggestions();
+}
+
+// ─── Grid math helpers (derive grid columns from existing stone shape) ───
+const _polishCt = (s) => {
+  const r = parseFloat(s.weight) || 0;
+  const y = parseFloat(s.polishYield) || 0;
+  return r * y / 100;
+};
+function gridSubCompute(s) {
+  const rough = parseFloat(s.weight) || 0;
+  const yld   = parseFloat(s.polishYield) || 0;
+  const ppc   = parseFloat(s.price) || 0;
+  const pcs   = subPieces(s);
+  const polishWt = rough * yld / 100;
+  const total    = polishWt * ppc;
+  return {
+    pieces: pcs, roughTotal: rough, polishWt, total,
+    yieldPct: yld, pricePerCt: ppc,
+    avgPolish: pcs ? polishWt/pcs : 0,
+    avgRough:  pcs ? rough/pcs    : 0,
+    description: s.codeStr || ''
+  };
+}
+function gridLotCompute(lot) {
+  let pieces=0, roughTotal=0, polishWt=0, total=0;
+  lot.stones.forEach(s => {
+    const c = gridSubCompute(s);
+    pieces     += c.pieces;
+    roughTotal += c.roughTotal;
+    polishWt   += c.polishWt;
+    total      += c.total;
+  });
+  const rPrice  = roughTotal ? total/roughTotal : 0;
+  const factor  = 1 - ((parseFloat(state.bidDiscountPct)||0) / 100);
+  const bidPerCt = parseFloat(lot.bidPerCt) || 0;
+  return {
+    pieces, roughTotal, polishWt, total, rPrice,
+    avgPolish: pieces ? polishWt/pieces : 0,
+    avgRough:  pieces ? roughTotal/pieces : 0,
+    bidFloor:  rPrice * factor,
+    bidTotal:  bidPerCt * roughTotal
+  };
+}
+const _fmtCt2    = (n) => (n||0).toFixed(2);
+const _fmtMoney  = (n) => (n||0).toLocaleString(undefined, {maximumFractionDigits:2});
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+// Mobile POC stores lot identifier + description in a single `lot.name` field.
+// The grid needs them separated into LOT (col 1) and COLOR (col 2).
+// Convention: split on first separator (· - — |). Falls back to first word.
+function lotNumOf(lot) {
+  const n = String(lot.name || '').trim();
+  const m = n.match(/^([^·\-—|]+)[·\-—|]/);
+  if (m) return m[1].trim();
+  const num = n.match(/^(\S+)/);
+  return num ? num[1] : '—';
+}
+function lotDescOf(lot) {
+  const n = String(lot.name || '').trim();
+  const m = n.match(/^[^·\-—|]+[·\-—|]\s*(.+)$/);
+  return m ? m[1].trim() : n;
+}
+
+// ─── Grid renderer ───
+function renderGridFeed() {
+  const tbody = document.getElementById('grid-rows');
+  let lots = tenderLots();
+  // SINGLE mode: only the currently active lot. Falls back to the most-recent
+  // lot if none active so the screen never reads as empty.
+  if (state.viewMode === 'single') {
+    const id = state.currentLotId || (lots.length ? lots[lots.length-1].id : null);
+    lots = id ? lots.filter(l => l.id === id) : [];
+  }
+  if (lots.length === 0) { tbody.innerHTML = ''; return; }
+  // Newest first so user sees what they just added at top
+  tbody.innerHTML = [...lots].reverse().map(buildGridLotRow).join('');
+  renderBidFloorHeader();
+}
+
+function setViewMode(mode) {
+  if (mode !== 'all' && mode !== 'single') return;
+  state.viewMode = mode;
+  document.getElementById('vm-all').classList.toggle('active', mode === 'all');
+  document.getElementById('vm-single').classList.toggle('active', mode === 'single');
+  renderGridFeed();
+  toast(mode === 'single' ? 'Single-lot view' : 'All-lots view');
+}
+
+function buildGridLotRow(lot) {
+  const c = gridLotCompute(lot);
+  const isCurLot = lot.id === state.currentLotId;
+  const collapsed = state.collapsed.has(lot.id);
+  const hasSubs = lot.stones.length > 0;
+  const chevCls = !hasSubs ? 'disabled' : (collapsed ? 'collapsed' : 'expanded');
+  const chevGlyph = !hasSubs ? '·' : (collapsed ? '▶' : '▼');
+  const chevClick = hasSubs ? `onclick="event.stopPropagation();toggleLot('${lot.id}')"` : '';
+
+  let html = `<tr class="glot-row ${isCurLot?'is-active':''} ${collapsed?'glot-collapsed':''}" onclick="activateLot('${lot.id}')">`;
+  // LOT (sticky) — just the lot number / short identifier
+  html += `<td><div class="glot-cell">
+    <span class="glot-chev ${chevCls}" ${chevClick}>${chevGlyph}</span>
+    <span class="glot-num">${_esc(lotNumOf(lot))}</span>
+  </div></td>`;
+  // COLOR (sticky) — lot description (rest of name after the separator)
+  html += `<td><div class="gcell editable l">${_esc(lotDescOf(lot))}</div></td>`;
+  // POL.SIZE / RGH.SIZE — derived
+  html += `<td><div class="gcell derived">${c.avgPolish?_fmtCt2(c.avgPolish):'—'}</div></td>`;
+  html += `<td><div class="gcell derived">${c.avgRough ?_fmtCt2(c.avgRough) :'—'}</div></td>`;
+  // PCS / ROUGH WT — sums (read-only display on lot row in mobile)
+  html += `<td><div class="gcell">${c.pieces||'—'}</div></td>`;
+  html += `<td><div class="gcell">${c.roughTotal?_fmtCt2(c.roughTotal):'—'}</div></td>`;
+  // POLISH WT (sum of subs) — derived, no yield badge on lot row
+  html += `<td><div class="gcell derived strong">${c.polishWt?_fmtCt2(c.polishWt):'—'}</div></td>`;
+  // PRICE — blank on lot row
+  html += `<td><div class="gcell empty">—</div></td>`;
+  // TOTAL — derived
+  html += `<td><div class="gcell derived strong">${c.total?_fmtMoney(c.total):'—'}</div></td>`;
+  // R-PRICE / % LESS — derived
+  html += `<td><div class="gcell derived">${c.rPrice?_fmtMoney(c.rPrice):'—'}</div></td>`;
+  html += `<td><div class="gcell derived">${c.bidFloor?_fmtMoney(c.bidFloor):'—'}</div></td>`;
+  // BID/CT — inline editable on lot row
+  html += `<td><div class="gcell editable bid-divider"><input class="bid-inp" value="${valOrEmpty(lot.bidPerCt)}" placeholder="—" inputmode="decimal" onclick="event.stopPropagation()" onchange="setLotBid('${lot.id}', this.value)"></div></td>`;
+  // BID TOTAL — derived
+  html += `<td><div class="gcell derived bid-strong">${c.bidTotal?_fmtMoney(c.bidTotal):'—'}</div></td>`;
+  // Action
+  html += `<td><div class="grow-act"><button class="gdel" onclick="event.stopPropagation();deleteLot('${lot.id}')" title="Delete">✕</button></div></td>`;
+  html += `</tr>`;
+
+  // Sub rows (hidden when collapsed). Newest sub first.
+  if (!collapsed) {
+    [...lot.stones].reverse().forEach(s => { html += buildGridSubRow(lot, s); });
+  }
+  return html;
+}
+
+function buildGridSubRow(lot, sub) {
+  const c = gridSubCompute(sub);
+  const yieldDisp = c.yieldPct ? c.yieldPct.toFixed(0) + '%' : '—';
+  let html = `<tr class="gsub-row" onclick="openDetail('${sub.id}')">`;
+  // sub indicator (sticky col 1)
+  html += `<td><div class="gcell cc"><span class="gsub-tic"></span></div></td>`;
+  // COLOR (sticky col 2) — sub description (codeStr)
+  html += `<td><div class="gcell editable l">${_esc(c.description||'—')}</div></td>`;
+  html += `<td><div class="gcell derived">${c.avgPolish?_fmtCt2(c.avgPolish):'—'}</div></td>`;
+  html += `<td><div class="gcell derived">${c.avgRough ?_fmtCt2(c.avgRough) :'—'}</div></td>`;
+  html += `<td><div class="gcell">${c.pieces||'—'}</div></td>`;
+  html += `<td><div class="gcell">${c.roughTotal?_fmtCt2(c.roughTotal):'—'}</div></td>`;
+  // POLISH WT cell with yield badge
+  html += `<td><div class="gpwt">
+    ${c.polishWt ? `<span class="pw-v">${_fmtCt2(c.polishWt)}</span><span class="pw-y">${yieldDisp}</span>`
+                 : `<span class="pw-empty">—</span>`}
+  </div></td>`;
+  html += `<td><div class="gcell">${c.pricePerCt||'—'}</div></td>`;
+  html += `<td><div class="gcell derived strong">${c.total?_fmtMoney(c.total):'—'}</div></td>`;
+  // Lot-only cells: blank on subs
+  html += `<td><div class="gcell empty">—</div></td>`;
+  html += `<td><div class="gcell empty">—</div></td>`;
+  html += `<td><div class="gcell empty bid-divider">—</div></td>`;
+  html += `<td><div class="gcell empty">—</div></td>`;
+  html += `<td><div class="grow-act"><button class="gdel" onclick="event.stopPropagation();deleteStone('${sub.id}')" title="Delete">✕</button></div></td>`;
+  html += `</tr>`;
+  return html;
+}
+
+function valOrEmpty(v){ return (v === 0 || v === '' || v == null) ? '' : v; }
+
+function setLotBid(lotId, raw) {
+  const lot = state.lots.find(l => l.id === lotId);
+  if (!lot) return;
+  lot.bidPerCt = raw === '' ? '' : (parseFloat(raw) || 0);
+  renderGridFeed();
+}
+
+function setBidDiscount(v) {
+  let pct = parseFloat(v);
+  if (isNaN(pct)) pct = 0;
+  if (pct < 0) pct = 0;
+  if (pct > 100) pct = 100;
+  state.bidDiscountPct = pct;
+  const inp = document.getElementById('bid-pct-inp');
+  if (inp && document.activeElement !== inp) inp.value = pct;
+  renderGridFeed();
+}
+
+function renderBidFloorHeader() {
+  const pct = parseFloat(state.bidDiscountPct) || 0;
+  const factor = (1 - pct/100).toFixed(2);
+  const lbl = document.getElementById('bid-floor-label');
+  if (lbl) lbl.textContent = `${pct}% LESS`;
+  const fml = document.getElementById('bid-floor-formula');
+  if (fml) fml.textContent = `R-PRICE × ${factor}`;
+  document.querySelectorAll('#bp-presets .bp-preset').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.dataset.v) === pct);
+  });
+  // Update toggle-all label dynamically
+  const tBtn = document.getElementById('toggle-all-btn');
+  if (tBtn) {
+    const lotsWithSubs = tenderLots().filter(l => l.stones.length > 0);
+    if (lotsWithSubs.length === 0) { tBtn.style.display = 'none'; }
+    else {
+      tBtn.style.display = '';
+      const anyExpanded = lotsWithSubs.some(l => !state.collapsed.has(l.id));
+      tBtn.textContent = anyExpanded ? '⇡' : '⇣';
+      tBtn.title = anyExpanded ? 'Collapse all' : 'Expand all';
+    }
+  }
+}
+
+function renderParseChips() {
+  // Suggestions row acts as parse chips preview now — combined into renderSuggestions
+}
+
+function renderSuggestions() {
+  const strip = document.getElementById('sugs');
+  const lot = curLot();
+  if (!lot) { strip.innerHTML = ''; return; }
+  const next = ATTRS.find(a => !state.parsed[a]);
+  if (!next) {
+    strip.innerHTML = `<span class="sug" style="background:var(--ok-g);border-color:var(--ok);color:var(--ok)" onclick="sendStone()">✓ Add stone</span>`;
+    document.getElementById('go').classList.add('pulse');
+    return;
+  }
+  document.getElementById('go').classList.remove('pulse');
+  const items = Object.keys(CODES[next]).slice(0, 6);
+  strip.innerHTML = items.map(c => `<span class="sug" onclick="insertSug('${c}')">${c}</span>`).join('')
+    + `<span class="sug more" onclick="openAttrSheet('${next}')">${LABELS[next]} ▾</span>`;
+}
+
+function insertSug(code) {
+  const inp = document.getElementById('code-input');
+  inp.value = (inp.value.trim()+' '+code+' ').replace(/\s+/g,' ');
+  inp.focus(); onInput();
+}
+
+function onInput() {
+  const text = document.getElementById('code-input').value;
+  state.parsed = parseCode(text);
+  renderSuggestions();
+}
+
+function parseCode(text) {
+  const result = {};
+  const tokens = text.trim().toUpperCase().split(/\s+/);
+  const slots = [...ATTRS];
+  tokens.forEach(tok => {
+    if (!tok) return;
+    for (let i=0;i<slots.length;i++) {
+      if (CODES[slots[i]][tok]) { result[slots[i]]=tok; slots.splice(i,1); return; }
+    }
+  });
+  return result;
+}
+
+// ═══════════════════════════════════════════
+// STONE ACTIONS
+// ═══════════════════════════════════════════
+function sendStone() {
+  const inp = document.getElementById('code-input');
+  const text = inp.value.trim();
+  const target = curTarget();
+  if (!target) { toast('Create a lot first'); return; }
+
+  if (text.startsWith('..')) {
+    if (target.stones.length === 0) { toast('Nothing to duplicate'); return; }
+    const cnt = parseInt(text.substring(2)) || 1;
+    for (let i=0;i<cnt;i++) {
+      const dup = JSON.parse(JSON.stringify(target.stones[target.stones.length-1]));
+      dup.id = uid();
+      dup.num = target.stones.length + 1;
+      target.stones.push(dup);
+    }
+    clearStone();
+    renderEntry();
+    toast(`Duplicated ${cnt}`);
+    return;
+  }
+
+  const attrs = parseCode(text);
+  if (!attrs.shape) { toast('Enter at least a shape'); return; }
+
+  const photos = state.pendingMedia.filter(m=>m.type==='photo').length;
+  const videos = state.pendingMedia.filter(m=>m.type==='video').length;
+  const stone = {
+    id: uid(),
+    num: target.stones.length + 1,
+    attrs,
+    codeStr: ATTRS.map(a=>attrs[a]||'—').join(' '),
+    weight: document.getElementById('inp-wt').value || '',
+    polishYield: document.getElementById('inp-pwt').value || '',
+    price: document.getElementById('inp-px').value || '',
+    pieces: parseInt(document.getElementById('inp-pcs').value) || 1,
+    media: { photos, videos },
+    raw: text
+  };
+  target.stones.push(stone);
+  clearStone();
+  renderEntry();
+  toast(`Stone ${stone.num}`);
+}
+
+function clearStone() {
+  document.getElementById('code-input').value = '';
+  document.getElementById('inp-wt').value = '';
+  document.getElementById('inp-pwt').value = '';
+  document.getElementById('inp-pcs').value = '';
+  document.getElementById('inp-px').value = '';
+  state.parsed = {};
+  state.pendingMedia = [];
+  renderMedia();
+  document.getElementById('code-input').focus();
+}
+
+// ═══════════════════════════════════════════
+// MEDIA
+// ═══════════════════════════════════════════
+function addMedia(type) {
+  mediaCtr++;
+  const icon = type==='photo' ? PHOTO_ICONS[state.pendingMedia.length % PHOTO_ICONS.length] : '▶';
+  state.pendingMedia.push({id:'m'+mediaCtr, type, icon});
+  renderMedia();
+}
+function removeMedia(id) { state.pendingMedia = state.pendingMedia.filter(m=>m.id!==id); renderMedia(); }
+function renderMedia() {
+  const el = document.getElementById('media');
+  if (state.pendingMedia.length === 0) { el.innerHTML=''; return; }
+  el.innerHTML = state.pendingMedia.map(m =>
+    `<div class="m-chip">${m.icon}<button class="m-t" onclick="removeMedia('${m.id}')">✕</button></div>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════
+// LOT / SUB CREATION
+// ═══════════════════════════════════════════
+function actionBtnClick() {
+  if (!curLot()) openNameSheet('lot', 'Name your first lot', '');
+  else promptNextLot();
+}
+
+function createLot(name) {
+  const lot = { id:uid(), tenderId:state.activeTenderId, name, stones:[], bidPerCt:0 };
+  state.lots.push(lot);
+  state.currentLotId = lot.id;
+  state.collapsed.delete(lot.id);   // new lot starts expanded in the grid
+  renderEntry();
+}
+
+function promptNextLot() {
+  const lot = curLot();
+  if (!lot || lotSubCount(lot) === 0) { openNameSheet('lot', 'Name next lot', ''); return; }
+  openReviewSheet();
+}
+
+function openReviewSheet() {
+  const lot = curLot();
+  if (!lot) return;
+  state.sheetMode = 'review';
+  const subs = lotSubCount(lot);
+  const pcs  = lotPieceCount(lot);
+  let totalWt = 0, totalVal = 0;
+  lot.stones.forEach(s => {
+    const w = parseFloat(s.weight || 0);
+    const p = parseFloat(s.price || 0);
+    totalWt += w;
+    totalVal += w * p;
+  });
+
+  document.getElementById('sh-title').textContent = `Verify · ${lot.name}`;
+
+  const stoneRow = (s) => {
+    const mm = s.media.photos + s.media.videos;
+    const wt = _wtStr(s);
+    const sp = subPieces(s);
+    return `<div class="stone" onclick="openDetail('${s.id}')" style="padding:10px 12px">
+      <span class="s-n">${s.num}</span>
+      <span class="s-code">${s.codeStr}</span>
+      <span class="s-meta">
+        ${wt?`<span class="s-wt">${wt}</span>`:'—'}
+        ${s.price?` · <span class="s-px">$${s.price}</span>`:''}
+        ${sp>1?`<span class="s-pcs">×${sp}</span>`:''}
+        ${mm>0?`<span class="s-mm">⦿${mm}</span>`:''}
+      </span>
+    </div>`;
+  };
+
+  const list = lot.stones.length
+    ? `<div class="rev-grp">${lot.stones.map(stoneRow).join('')}</div>`
+    : `<div class="rev-empty">— no subs —</div>`;
+
+  const valueStr = totalVal >= 1000 ? `$${(totalVal/1000).toFixed(1)}k` : `$${totalVal.toFixed(0)}`;
+  document.getElementById('sh-body').innerHTML = `
+    <div class="rev-stats">
+      <div class="rev-stat"><div class="rev-v">${subs}</div><div class="rev-l">Subs</div></div>
+      <div class="rev-stat"><div class="rev-v">${pcs}</div><div class="rev-l">Pieces</div></div>
+      <div class="rev-stat"><div class="rev-v">${totalWt.toFixed(2)}</div><div class="rev-l">Total ct</div></div>
+      <div class="rev-stat"><div class="rev-v">${valueStr}</div><div class="rev-l">Value</div></div>
+    </div>
+    ${list}
+    <div class="rev-act">
+      <button class="rev-back" onclick="closeSheet()">Back to edit</button>
+      <button class="rev-next" onclick="confirmReview()">Confirm · Next Lot →</button>
+    </div>`;
+  openSheet();
+}
+
+function confirmReview() {
+  closeSheet();
+  setTimeout(() => openNameSheet('lot', 'Name next lot', ''), 200);
+}
+
+function openNameSheet(kind, title, suggested) {
+  state.sheetMode = 'name-'+kind;
+  document.getElementById('sh-title').textContent = title;
+  document.getElementById('sh-body').innerHTML = `
+    <form class="name-form" onsubmit="event.preventDefault();confirmName()">
+      <input type="text" id="name-inp" placeholder="${suggested || 'e.g. Lot-A13'}" autocomplete="off" autofocus>
+      <button type="submit">↑</button>
+    </form>
+    <div class="name-hint">Each entry under this lot becomes a sub (auto-numbered 1, 2, 3…) with its own piece count.</div>`;
+  openSheet();
+  setTimeout(()=>document.getElementById('name-inp').focus(), 150);
+}
+
+function confirmName() {
+  const v = document.getElementById('name-inp').value.trim();
+  if (!v) { toast('Enter a name'); return; }
+  if (state.sheetMode === 'name-lot') {
+    createLot(v);
+    closeSheet(); toast(`Lot "${v}"`);
+  }
+}
+
+// ═══════════════════════════════════════════
+// TENDER SHEET
+// ═══════════════════════════════════════════
+function openTenderSheet() {
+  state.sheetMode = 'tender';
+  document.getElementById('sh-title').textContent = 'Select Tender';
+  document.getElementById('sh-body').innerHTML = TENDERS.map(t => {
+    const act = t.id===state.activeTenderId ? 'style="background:var(--accent-g);border-color:var(--accent-d)"' : '';
+    return `<div onclick="pickTender('${t.id}')" ${act} style="display:flex;gap:12px;align-items:center;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;cursor:pointer">
+      <span style="font-size:22px">${t.flag}</span>
+      <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--t1)">${t.name}</div><div style="font-size:11px;color:var(--t3);font-family:var(--mono);margin-top:2px">${t.origin} · ${t.mining}</div></div>
+      ${t.id===state.activeTenderId?'<span style="color:var(--accent);font-size:14px">✓</span>':''}
+    </div>`;
+  }).join('');
+  openSheet();
+}
+
+function pickTender(tid) {
+  if (tid === state.activeTenderId) { closeSheet(); return; }
+  state.activeTenderId = tid;
+  const lots = tenderLots();
+  state.currentLotId = lots.length ? lots[lots.length-1].id : null;
+  closeSheet(); rerender(); toast(`Tender: ${getTender().name}`);
+}
+
+// ═══════════════════════════════════════════
+// ATTR SHEET
+// ═══════════════════════════════════════════
+function openAttrSheet(tab) {
+  state.sheetMode = 'attr';
+  state.sheetTab = tab || 'shape';
+  document.getElementById('sh-title').textContent = 'Pick attribute';
+  renderAttrSheet();
+  openSheet();
+}
+
+function renderAttrSheet() {
+  const tabs = ATTRS.map(a => {
+    const act = state.sheetTab===a ? 'active' : '';
+    const dot = state.parsed[a] ? '<span class="dot"></span>' : '';
+    return `<button class="tab ${act}" onclick="setAttrTab('${a}')">${LABELS[a]}${dot}</button>`;
+  }).join('');
+  let body = `<div class="tabs">${tabs}</div><div style="margin-top:12px">`;
+  const cat = state.sheetTab;
+  GROUPS[cat].forEach(g => {
+    body += `<div class="tab-grp">${g.g}</div><div class="tab-chips">`;
+    g.items.forEach(code => {
+      const sel = state.parsed[cat]===code ? 'selected' : '';
+      if (cat==='shape' && SVGS[code]) {
+        body += `<div class="tab-chip shape ${sel}" onclick="pickAttr('${cat}','${code}')"><svg viewBox="0 0 28 28">${SVGS[code]}</svg><span class="s-lbl">${code}</span></div>`;
+      } else {
+        body += `<div class="tab-chip ${sel}" onclick="pickAttr('${cat}','${code}')">${code}</div>`;
+      }
+    });
+    body += `</div>`;
+  });
+  body += '</div>';
+  document.getElementById('sh-body').innerHTML = body;
+}
+function setAttrTab(t) { state.sheetTab = t; renderAttrSheet(); }
+function pickAttr(cat, code) {
+  const inp = document.getElementById('code-input');
+  const oldVal = state.parsed[cat];
+  if (oldVal) inp.value = inp.value.replace(new RegExp('\\b'+oldVal+'\\b','i'), '').trim();
+  inp.value = (inp.value.trim()+' '+code+' ').replace(/\s+/g,' ');
+  onInput();
+  const nextUnfilled = ATTRS.find(a => !state.parsed[a] && a !== cat);
+  if (nextUnfilled) setAttrTab(nextUnfilled);
+  else closeSheet();
+}
+
+// ═══════════════════════════════════════════
+// STONE DETAIL
+// ═══════════════════════════════════════════
+function findStone(sid) {
+  for (const lot of state.lots) {
+    const m = lot.stones.find(x=>x.id===sid);
+    if (m) return {lot, stones:lot.stones, stone:m, idx:lot.stones.indexOf(m)};
+  }
+  return null;
+}
+
+function openDetail(sid) {
+  const r = findStone(sid); if (!r) return;
+  state.detailStoneId = sid;
+  state.sheetMode = 'detail';
+  const s = r.stone;
+  document.getElementById('sh-title').textContent = `Sub ${s.num}  ·  ${r.lot.name}`;
+  let html = '<div class="det-grid">';
+  ATTRS.forEach(a => {
+    const code = s.attrs[a];
+    html += `<span class="dl">${LABELS[a]}</span><span class="dv">${code?(code+' · '+(CODES[a][code]||code)):'—'}</span>`;
+  });
+  const pct = _polishCt(s);
+  const sp = subPieces(s);
+  html += `<span class="dl">Pieces</span><span class="dv">${sp}</span>`;
+  html += `<span class="dl">Rough wt</span><span class="dv">${s.weight?s.weight+' ct':'—'}</span>`;
+  html += `<span class="dl">Yield</span><span class="dv">${s.polishYield?s.polishYield+' %':'—'}</span>`;
+  html += `<span class="dl">Polish wt</span><span class="dv">${pct!=null?pct+' ct':'—'}</span>`;
+  html += `<span class="dl">Price</span><span class="dv">${s.price?'$'+s.price+'/ct':'—'}</span>`;
+  html += '</div>';
+  html += `<div class="det-med"><h4>Media</h4><div class="det-med-grid">`;
+  for (let i=0;i<s.media.photos;i++) html += `<div class="det-thumb has">💎<span class="b">IMG</span></div>`;
+  for (let i=0;i<s.media.videos;i++) html += `<div class="det-thumb has">▶<span class="b">VID</span></div>`;
+  html += `<div class="det-thumb" onclick="addDetailMedia('${s.id}','photo')">📷<span class="b">Add photo</span></div>`;
+  html += `<div class="det-thumb" onclick="addDetailMedia('${s.id}','video')">🎬<span class="b">Add video</span></div>`;
+  html += `</div></div>`;
+  html += `<div class="det-acts">
+    <button class="d-ed" onclick="editStone('${s.id}')">Edit</button>
+    <button class="d-del" onclick="deleteStone('${s.id}')">Delete</button>
+  </div>`;
+  document.getElementById('sh-body').innerHTML = html;
+  openSheet();
+}
+
+function addDetailMedia(sid, type) {
+  const r = findStone(sid); if (!r) return;
+  if (type==='photo') r.stone.media.photos++; else r.stone.media.videos++;
+  openDetail(sid); renderEntry();
+  toast(type==='photo'?'Photo added':'Video added');
+}
+
+function editStone(sid) {
+  const r = findStone(sid); if (!r) return;
+  closeSheet();
+  state.activeTenderId = r.lot.tenderId;
+  state.currentLotId = r.lot.id;
+  document.getElementById('code-input').value = r.stone.raw;
+  document.getElementById('inp-wt').value = r.stone.weight;
+  document.getElementById('inp-pwt').value = r.stone.polishYield || '';
+  document.getElementById('inp-pcs').value = (r.stone.pieces && r.stone.pieces > 1) ? r.stone.pieces : '';
+  document.getElementById('inp-px').value = r.stone.price;
+  r.stones.splice(r.idx, 1);
+  r.stones.forEach((s,i)=>s.num=i+1);
+  renderEntry(); onInput();
+  toast('Editing — modify and send');
+}
+
+function deleteStone(sid) {
+  const r = findStone(sid); if (!r) return;
+  r.stones.splice(r.idx, 1);
+  r.stones.forEach((s,i)=>s.num=i+1);
+  closeSheet(); renderEntry();
+  toast('Stone deleted');
+}
+
+// ═══════════════════════════════════════════
+// DELETE
+// ═══════════════════════════════════════════
+function rerender() {
+  renderEntry();
+}
+
+function deleteLot(id) {
+  if (!confirm('Delete this lot and all its data?')) return;
+  state.lots = state.lots.filter(l => l.id !== id);
+  if (state.currentLotId === id) {
+    const rem = tenderLots();
+    state.currentLotId = rem.length ? rem[rem.length-1].id : null;
+  }
+  rerender(); toast('Lot deleted');
+}
+
+// ═══════════════════════════════════════════
+// SHEET / TOAST
+// ═══════════════════════════════════════════
+function openSheet(){document.getElementById('sh-bg').classList.add('show');document.getElementById('sh').classList.add('show')}
+function closeSheet(){document.getElementById('sh-bg').classList.remove('show');document.getElementById('sh').classList.remove('show');state.sheetMode=null}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)}
+
+// ═══════════════════════════════════════════
+// SEED DEMO DATA — three real lots from FE FEB 2026 so the screen
+// opens with content. Lets the appraiser see the multi-lot grid +
+// the All-lots / Single-lot toggle without having to type anything.
+// ═══════════════════════════════════════════
+function seedDemo() {
+  const mkStone = (i, attrs, codeStr, weight, yieldPct, price, pieces) => ({
+    id: 'seed-s'+i, num: i, attrs, codeStr,
+    weight: String(weight), polishYield: String(yieldPct), price: String(price),
+    pieces, media: { photos: 0, videos: 0 }, raw: codeStr
+  });
+  state.lots = [
+    { id:'seed-l1', tenderId:'t1', name:'9  ·  COLOURED 8.53ct', bidPerCt: 1475, stones: [
+      mkStone(1, {shape:'RD',color:'FY',clarity:'VS1'},  'RD FY VS1',  8.53, 41, 4000, 1),
+      mkStone(2, {shape:'OV',color:'YZ',clarity:'VS1'},  'OV YZ VS1',  8.53, 12, 800,  1)
+    ]},
+    { id:'seed-l2', tenderId:'t1', name:'47  ·  FY+ SI1 24.45ct', bidPerCt: 3334, stones: [
+      mkStone(1, {shape:'RD',color:'FY',clarity:'VS1'},  'RD FY VS1', 24.45, 32, 8000,  1),
+      mkStone(2, {shape:'RD',color:'FY',clarity:'VS2'},  'RD FY VS2', 24.45, 24, 5500,  1)
+    ]},
+    { id:'seed-l3', tenderId:'t1', name:'412  ·  8-10GR LIGHT PINK', bidPerCt: 109, stones: [
+      mkStone(1, {shape:'RD',color:'FP',clarity:'VS1'},  'RD FP VS1',   3.52, 28, 3500,  1),
+      mkStone(2, {shape:'RD',color:'FP',clarity:'VS1'},  'RD FP VS1',   2.20, 15, 15000, 1),
+      mkStone(3, {shape:'RD',color:'FP',clarity:'VS1'},  'RD FP VS1',   1.30, 40, 3000,  1),
+      mkStone(4, {shape:'RD',color:'FP',clarity:'VS1'},  'RD FP VS1',   2.30, 30, 2000,  1),
+      mkStone(5, {shape:'RD',color:'FP',clarity:'VS1'},  'RD FP VS1',   2.26, 20, 1800,  1),
+      mkStone(6, {shape:'RD',color:'FP',clarity:'VS1'},  'RD FP VS1',   1.07, 28, 1200,  1),
+      mkStone(7, {shape:'RD',color:'FP',clarity:'VS2'},  'RD FP VS2', 139.31, 25, 200,  60)
+    ]}
+  ];
+  state.currentLotId = 'seed-l3';   // most-recent active by default
+}
+seedDemo();
+
+// ═══════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════
+renderEntry();
+if (!curLot()) setTimeout(() => openNameSheet('lot', 'Name your first lot', ''), 150);
+</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Invoice &amp; Sub-Lots — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="09-sales-invoice">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 09 (Module 4)</div>
+      <h1>Sales Invoice &amp; Sub-Lots</h1>
+      <p class="lead">Rough lots in stock can be sold outright to a third party or transferred to a sister company. Both produce a sales invoice. Sub-lots are created here by splitting a parent lot at the point of sale.</p>
+    </div>
+
+    <section id="header">
+      <h2>Header</h2>
+      <div class="card">
+        <h4>Sales Invoice — Header <span class="badge">HEADER</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Sales Invoice No</strong></td><td><span class="auto">AUTO</span></td><td>System number</td></tr>
+            <tr><td><strong>Selling Group Company</strong> <span class="req">*</span></td><td>Dropdown</td><td>Entity making the sale</td></tr>
+            <tr><td><strong>Invoice Type</strong> <span class="req">*</span></td><td>Dropdown</td><td>Inter-Company Transfer / Third-Party Sale</td></tr>
+            <tr><td><strong>Customer / Buyer</strong> <span class="req">*</span></td><td>Dropdown</td><td>Sister company or third party (address auto-filled)</td></tr>
+            <tr><td><strong>Invoice Date</strong> <span class="req">*</span></td><td>Date</td><td>Date of sale</td></tr>
+            <tr><td><strong>Currency &amp; Exchange Rate</strong> <span class="req">*</span></td><td>Dropdown / Decimal</td><td>Sale currency</td></tr>
+            <tr><td><strong>Payment Terms / Due Date</strong></td><td>Dropdown / CALC</td><td>Per buyer</td></tr>
+            <tr><td><strong>KPC No</strong></td><td>Text</td><td>Export compliance</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="lines">
+      <h2>Sale Lines (with Sub-Lot Split)</h2>
+      <div class="card">
+        <h4>Sale Line Items — from Rough Stock <span class="badge new">UPDATED</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Rough Lot No</strong> <span class="req">*</span></td><td>Lookup</td><td>Select an in-stock lot (shows balance carats)</td></tr>
+            <tr><td><strong>Sell Full or Split?</strong> <span class="tag-new">NEW</span></td><td>Toggle</td><td>Full lot, or split a portion into a sub-lot</td></tr>
+            <tr><td><strong>Sub-Lot No</strong> <span class="tag-new">NEW</span></td><td><span class="auto">AUTO</span></td><td>Generated as 1-26-A, 1-26-B… when splitting</td></tr>
+            <tr><td><strong>Carats to Sell</strong> <span class="req">*</span> <span class="tag-new">NEW</span></td><td>Decimal</td><td>≤ balance carats of the lot</td></tr>
+            <tr><td><strong>Parcel / Origin / Stone Type</strong></td><td><span class="auto">AUTO</span></td><td>From rough lot</td></tr>
+            <tr><td><strong>Selling Price / Carat</strong> <span class="req">*</span></td><td>Decimal</td><td>Manual</td></tr>
+            <tr><td><strong>Total Amount</strong></td><td><span class="auto">CALC</span></td><td>Carats × Selling Price</td></tr>
+            <tr><td><strong>Cost Price</strong></td><td><span class="auto">AUTO</span></td><td>Proportional inventory value of carats sold</td></tr>
+            <tr><td><strong>Margin</strong></td><td><span class="auto">CALC</span></td><td>Total Amount − Cost Price</td></tr>
+          </tbody>
+        </table>
+        <div class="box info"><strong>Split behaviour:</strong> selling part of <span class="pill">1-26</span> creates sub-lot <span class="pill">1-26-A</span> for the sold carats, reduces the parent's balance, and apportions cost by carat. Remaining balance stays in stock (optionally as <span class="pill">1-26-B</span> — confirm on call).</div>
+      </div>
+    </section>
+
+    <section id="summary">
+      <h2>Expenses &amp; Summary</h2>
+      <div class="card">
+        <h4>Sales Expenses + Summary <span class="badge">DYNAMIC / CALC</span></h4>
+        <p>Expenses (Freight, Insurance, Commission, Brokerage). Summary: Total Carats · Sub Total · Total Expenses · Grand Total · Total Cost · <strong>Net Margin</strong> = Grand Total − Total Cost − Expenses.</p>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

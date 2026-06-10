@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Won Lots — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="05-won-lots">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 05 (Module 1) · API-fed</div>
+      <h1>Won Lots Register</h1>
+      <p class="lead">The bridge between bidding and the post-bidding flow. Normally created automatically when a bid is marked Won via the API; manual entry remains for exceptions and third-party deals.</p>
+    </div>
+
+    <section id="header">
+      <h2>Header</h2>
+      <div class="card">
+        <h4>Won Lot — Header <span class="badge">HEADER</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Won Lot ID</strong></td><td><span class="auto">AUTO</span></td><td>System reference</td></tr>
+            <tr><td><strong>Source</strong> <span class="tag-api">API</span></td><td>System</td><td>Bidding App / Manual</td></tr>
+            <tr><td><strong>Buying Group Company</strong> <span class="req">*</span></td><td>Dropdown</td><td>Winning Donda entity</td></tr>
+            <tr><td><strong>Expo / Tender</strong> <span class="req">*</span></td><td>Dropdown</td><td>From bidding data</td></tr>
+            <tr><td><strong>Supplier</strong> <span class="req">*</span></td><td>Dropdown</td><td>Tender supplier</td></tr>
+            <tr><td><strong>Bid / Win / Payment Date</strong></td><td>Date</td><td>From win record</td></tr>
+            <tr><td><strong>Payment Reference</strong></td><td>Text</td><td>From payment record</td></tr>
+            <tr><td><strong>Currency</strong> <span class="req">*</span></td><td>Dropdown</td><td>Default USD</td></tr>
+            <tr><td><strong>Status</strong></td><td><span class="auto">AUTO</span></td><td>Won → Handed to Courier → In Transit → Received → Invoiced</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="lines">
+      <h2>Lines</h2>
+      <div class="card">
+        <h4>Won Lot — Lines <span class="badge">DETAIL</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Parcel No</strong> <span class="req">*</span></td><td>Text</td><td>From expo lot, e.g., KAO-2602-070</td></tr>
+            <tr><td><strong>Stone Type</strong> <span class="req">*</span></td><td>Dropdown</td><td>Single / Parcel</td></tr>
+            <tr><td><strong>Mining Origin</strong> <span class="req">*</span></td><td>Dropdown</td><td>Per line — country / mine</td></tr>
+            <tr><td><strong>Carats</strong> <span class="req">*</span></td><td>Decimal(2)</td><td>e.g., 170.43</td></tr>
+            <tr><td><strong>Price / Carat</strong> <span class="req">*</span></td><td>Decimal(2)</td><td>Winning bid price</td></tr>
+            <tr><td><strong>Total Amount</strong></td><td><span class="auto">CALC</span></td><td>Carats × Price/Carat</td></tr>
+            <tr><td><strong>Description 1 / 2</strong></td><td>Text</td><td>Supplier / internal</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="box note"><strong>UX shift:</strong> because won lots arrive via the API, this screen is primarily a <em>review/confirm</em> view rather than a data-entry form.</div>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

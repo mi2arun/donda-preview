@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purchase Invoice — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="07-purchase-invoice">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 07 (Module 3)</div>
+      <h1>Purchase Invoice (Import)</h1>
+      <p class="lead">Created when diamonds are received &amp; verified. On confirmation it auto-creates <a href="08-rough-lot-master.html">Rough Lot Master</a> records and <a href="12-accounting.html">accounting entries</a>.</p>
+    </div>
+
+    <div class="box change"><strong>Build model:</strong> one purchase invoice = <strong>one won lot</strong> (parent <span class="pill">1-26</span>); the lines below are its <strong>sub-lots</strong> <span class="pill">1-26-A/B/C</span>, each a stock unit. See <a href="17-purchase-entry-design.html">Purchase Entry — Design</a> for the build-ready detail.</div>
+
+    <section id="header">
+      <h2>Header</h2>
+      <div class="card">
+        <h4>Purchase Invoice — Header <span class="badge">HEADER</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Purchase Invoice No</strong></td><td><span class="auto">AUTO</span></td><td>System number</td></tr>
+            <tr><td><strong>Buying Group Company</strong> <span class="req">*</span></td><td>Dropdown</td><td>Receiving Donda entity</td></tr>
+            <tr><td><strong>Supplier</strong> <span class="req">*</span></td><td>Dropdown</td><td>Expo or third-party (address auto-filled)</td></tr>
+            <tr><td><strong>Supplier Invoice No &amp; Date</strong> <span class="req">*</span></td><td>Text / Date</td><td>From supplier doc</td></tr>
+            <tr><td><strong>Received Date</strong> <span class="req">*</span></td><td>Date</td><td>Goods received</td></tr>
+            <tr><td><strong>KPC No</strong></td><td>Text</td><td>Certificate no</td></tr>
+            <tr><td><strong>Currency &amp; Exchange Rate</strong> <span class="req">*</span></td><td>Dropdown / Decimal</td><td>To base currency</td></tr>
+            <tr><td><strong>Payment Terms / Due Date</strong></td><td>Dropdown / CALC</td><td>e.g., NET5 = 5 working days</td></tr>
+            <tr><td><strong>Shipment Ref</strong></td><td>Lookup</td><td>Link to inbound shipment</td></tr>
+          </tbody>
+        </table>
+        <div class="box change"><strong>Changed:</strong> the single header-level "Mining Origin" is <strong>removed</strong>. Mining origin is now captured per line item.</div>
+      </div>
+    </section>
+
+    <section id="lines">
+      <h2>Line Items</h2>
+      <div class="card">
+        <h4>Invoice Line Items <span class="badge">DETAIL</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Line No</strong></td><td><span class="auto">AUTO</span></td><td>Sequential</td></tr>
+            <tr><td><strong>Parcel No</strong> <span class="req">*</span></td><td>Text</td><td>Supplier parcel, e.g., KAO-2602-070</td></tr>
+            <tr><td><strong>Rough Lot No</strong> <span class="tag-new">NEW</span></td><td><span class="auto">AUTO</span> / Manual</td><td>Group auto number (<span class="pill">1-26</span>); editable; manual for third-party</td></tr>
+            <tr><td><strong>Mining Origin</strong> <span class="tag-new">NEW</span></td><td>Dropdown</td><td>Per-line origin (country / mine)</td></tr>
+            <tr><td><strong>Stone Type</strong></td><td>Dropdown</td><td>Single / Parcel</td></tr>
+            <tr><td><strong>Description 1 / 2</strong></td><td>Text</td><td>Supplier / internal</td></tr>
+            <tr><td><strong>Carats</strong> <span class="req">*</span></td><td>Decimal(2)</td><td>Weight</td></tr>
+            <tr><td><strong>Price / Carat</strong> <span class="req">*</span></td><td>Decimal(2)</td><td>Invoice currency</td></tr>
+            <tr><td><strong>Total Amount</strong></td><td><span class="auto">CALC</span></td><td>Carats × Price/Carat</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="expenses">
+      <h2>Expenses</h2>
+      <div class="card">
+        <h4>Expenses <span class="badge">DYNAMIC</span></h4>
+        <p>Expense Type (Freight, Import Duty, Insurance, Brokerage, Other), Amount, Remarks. Add any number of rows.</p>
+        <div class="box info"><strong>Expense allocation:</strong> expenses are allocated proportionally across line items by value. Each Rough Lot's inventory value = Line Amount + Proportional Expense Share.</div>
+      </div>
+    </section>
+
+    <section id="example">
+      <h2>Worked Example — Invoice #20260645 (KAO Mine, Lesotho)</h2>
+      <table>
+        <thead><tr><th>Sub-Lot</th><th>Parcel</th><th>Origin</th><th>Carats</th><th>Pr./Ct.</th><th>Amount</th><th>Exp. Share</th><th>Inv. Value</th></tr></thead>
+        <tbody>
+          <tr><td>1-26-A</td><td>KAO-2602-070</td><td>Lesotho</td><td>170.43</td><td>651.81</td><td>111,087.97</td><td>126.00</td><td>111,213.97</td></tr>
+          <tr><td>1-26-B</td><td>KAO-2602-085</td><td>Lesotho</td><td>82.31</td><td>108.00</td><td>8,889.48</td><td>10.09</td><td>8,899.57</td></tr>
+          <tr><td>1-26-C</td><td>KAO-2602-086</td><td>Lesotho</td><td>4.60</td><td>561.00</td><td>2,580.60</td><td>2.93</td><td>2,583.53</td></tr>
+          <tr style="font-weight:700;background:#f1f5f9;"><td colspan="3">Total</td><td>257.34</td><td></td><td>122,558.05</td><td>139.02</td><td>122,697.07</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

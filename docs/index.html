@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donda ERP — Documentation</title>
+<link rel="stylesheet" href="assets/theme.css">
+</head>
+<body data-page="">
+<main>
+  <div class="hero">
+    <h1>💎 Donda ERP — Documentation</h1>
+    <p>Functional documentation for the diamond-manufacturing ERP: the expo bidding backend and the Rough Diamond Purchase, Sales &amp; Logistics flow. Each module is a standalone, individually-maintainable reference page.</p>
+    <span class="ver">Version 2.1 · June 2026 · Draft for review</span>
+  </div>
+
+  <div class="hub">
+    <div class="box info">
+      <strong>How to use:</strong> start with <a href="modules/01-overview.html">Overview &amp; Scope</a>, then work through each module. The left sidebar lists every module — click the ▸ to expand a module's sub-sections. Tags: <span class="tag-new">NEW</span> client feedback, <span class="tag-api">API</span> bidding-app integration.
+    </div>
+
+    <h2>Modules</h2>
+    <div class="legend">
+      <span><span class="tag-new">NEW</span> rough-lot feedback (28 May – 3 Jun)</span>
+      <span><span class="tag-api">API</span> bidding-app integration</span>
+      <span><span class="badge future">FUTURE</span> deferred scope</span>
+    </div>
+
+    <div class="grid">
+      <a class="modcard" href="modules/01-overview.html"><div class="top"><span class="ic">📋</span><span class="num">01</span></div><h3>Overview &amp; Scope</h3><p>Business cycle, actors, lifecycle, and what changed in v2.1.</p></a>
+      <a class="modcard" href="modules/02-architecture.html"><div class="top"><span class="ic">🔗</span><span class="num">02 · API</span></div><h3>Architecture &amp; Integration</h3><p>ERP as system of record for the bidding mobile app.</p></a>
+      <a class="modcard" href="modules/03-bidding-data.html"><div class="top"><span class="ic">🧩</span><span class="num">03 · API</span></div><h3>Bidding Data Model</h3><p>Expo, lot catalog (~600), bids, wins &amp; payment.</p></a>
+      <a class="modcard" href="modules/04-api.html"><div class="top"><span class="ic">🔌</span><span class="num">04 · API</span></div><h3>Integration API</h3><p>ERP-defined REST/JSON contract, endpoints &amp; examples.</p></a>
+      <a class="modcard" href="modules/05-won-lots.html"><div class="top"><span class="ic">🏆</span><span class="num">05</span></div><h3>Won Lots</h3><p>Derived from bid wins; the bridge to purchasing.</p></a>
+      <a class="modcard" href="modules/06-inbound-logistics.html"><div class="top"><span class="ic">✈️</span><span class="num">06</span></div><h3>Inbound Logistics</h3><p>Shipment tracking, airway bill, KPC, seals.</p></a>
+      <a class="modcard" href="modules/07-purchase-invoice.html"><div class="top"><span class="ic">🧾</span><span class="num">07</span></div><h3>Purchase Invoice</h3><p>Import invoice, expense allocation, line-item origin.</p></a>
+      <a class="modcard" href="modules/08-rough-lot-master.html"><div class="top"><span class="ic">💎</span><span class="num">08 · NEW</span></div><h3>Rough Lot Master</h3><p>Group numbering (1-26 / 1-26-A), balance carats.</p></a>
+      <a class="modcard" href="modules/09-sales-invoice.html"><div class="top"><span class="ic">💰</span><span class="num">09 · NEW</span></div><h3>Sales Invoice &amp; Sub-Lots</h3><p>Third-party sale / transfer, split lots at sale.</p></a>
+      <a class="modcard" href="modules/10-inter-company.html"><div class="top"><span class="ic">🔄</span><span class="num">10 · NEW</span></div><h3>Inter-Company Transfer</h3><p>Seller's price becomes the sister company's cost.</p></a>
+      <a class="modcard" href="modules/11-outbound-logistics.html"><div class="top"><span class="ic">📦</span><span class="num">11</span></div><h3>Outbound Logistics</h3><p>Shipment to buyer/consignee, mirrors inbound.</p></a>
+      <a class="modcard" href="modules/12-accounting.html"><div class="top"><span class="ic">📒</span><span class="num">12</span></div><h3>Accounting</h3><p>Auto journal entries on purchase &amp; sales.</p></a>
+      <a class="modcard" href="modules/13-status-lifecycles.html"><div class="top"><span class="ic">🚦</span><span class="num">13</span></div><h3>Status Lifecycles</h3><p>State machines for every entity, bid to delivery.</p></a>
+      <a class="modcard" href="modules/14-master-data.html"><div class="top"><span class="ic">🗂️</span><span class="num">14</span></div><h3>Master Data</h3><p>Reference tables required before transactions run.</p></a>
+      <a class="modcard" href="modules/15-future-scope.html"><div class="top"><span class="ic">🔮</span><span class="num">15</span></div><h3>Future &amp; Open Questions</h3><p>Consignment/Memo, India GST/HSN, call items.</p></a>
+      <a class="modcard" href="modules/16-bidding-app-mapping.html"><div class="top"><span class="ic">🗺️</span><span class="num">16 · API</span></div><h3>Bidding-App Field Mapping</h3><p>App lot-capture fields → ERP entities, with gaps.</p></a>
+      <a class="modcard" href="modules/17-purchase-entry-design.html"><div class="top"><span class="ic">🏗️</span><span class="num">17 · BUILD</span></div><h3>Purchase Entry — Design</h3><p>Phase-1 build design: lot→sub-lots, masters, schema.</p></a>
+    </div>
+
+    <h2>Supporting Artifacts</h2>
+    <p style="color:var(--muted);font-size:.86rem;">Earlier design materials, kept for reference:</p>
+    <div class="grid">
+      <a class="modcard" href="../mockups/03-ui-mockups.html"><div class="top"><span class="ic">🖥️</span></div><h3>Interactive UI Mockups</h3><p>Clickable screen mockups for each module.</p></a>
+      <a class="modcard" href="../mockups/02-flow-diagram.html"><div class="top"><span class="ic">🔀</span></div><h3>Flow Diagrams</h3><p>Swim lanes, ERD, status lifecycles.</p></a>
+      <a class="modcard" href="../mockups/04-functional-spec.html"><div class="top"><span class="ic">📑</span></div><h3>Single-Page Spec</h3><p>The full v2.1 specification in one document.</p></a>
+      <a class="modcard" href="../mockups/bidding-app/lot-capture.html"><div class="top"><span class="ic">📱</span></div><h3>Bidding App — Lot Capture</h3><p>Mobile lot-capture mockup (for client approval).</p></a>
+      <a class="modcard" href="../mockups/purchase-entry/purchase-invoice.html"><div class="top"><span class="ic">🧾</span></div><h3>Purchase Invoice — Mockup</h3><p>Interactive purchase-entry screen (Phase 1 build).</p></a>
+      <a class="modcard" href="../mockups/megha-erp/masters.html"><div class="top"><span class="ic">📇</span></div><h3>Masters — Megha style</h3><p>15 individual master screens (company, supplier, currency, mine, grading…).</p></a>
+      <a class="modcard" href="../mockups/megha-erp/purchase-invoice.html"><div class="top"><span class="ic">🧾</span></div><h3>Purchase Invoice — Megha style</h3><p>Production-look purchase-entry screen.</p></a>
+    </div>
+
+    <div class="box note" style="margin-top:24px;">
+      <strong>Status:</strong> Draft. Points 1–6 (rough-lot feedback) await confirmation on a conference call; the bidding-app API is the ERP-proposed baseline to be finalised with the app team. See <a href="modules/15-future-scope.html">Open Questions</a>.
+    </div>
+  </div>
+</main>
+<script src="assets/layout.js"></script>
+</body>
+</html>

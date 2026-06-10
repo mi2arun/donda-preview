@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Status Lifecycles — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="13-status-lifecycles">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 13</div>
+      <h1>Status Lifecycles</h1>
+      <p class="lead">The state machine for every entity, from bid through delivery.</p>
+    </div>
+
+    <section id="lot">
+      <h2>Expo Lot / Bid <span class="tag-api">API</span></h2>
+      <div class="flow">
+        <div class="step" style="background:#0d9488;">Available</div><div class="arrow" style="border-left:11px solid #0d9488;"></div>
+        <div class="step" style="background:#7c3aed;">Bid Submitted</div><div class="arrow" style="border-left:11px solid #7c3aed;"></div>
+        <div class="step" style="background:#16a34a;">Won</div>
+        <div class="step" style="background:#dc2626;margin-left:8px;border-radius:6px;">Lost</div>
+      </div>
+    </section>
+
+    <section id="wonlot">
+      <h2>Won Lot</h2>
+      <div class="flow">
+        <div class="step" style="background:#7c3aed;">Won</div><div class="arrow" style="border-left:11px solid #7c3aed;"></div>
+        <div class="step" style="background:#ea580c;">Handed to Courier</div><div class="arrow" style="border-left:11px solid #ea580c;"></div>
+        <div class="step" style="background:#d97706;">In Transit</div><div class="arrow" style="border-left:11px solid #d97706;"></div>
+        <div class="step" style="background:#16a34a;">Received</div><div class="arrow" style="border-left:11px solid #16a34a;"></div>
+        <div class="step" style="background:#0f172a;">Invoiced</div>
+      </div>
+    </section>
+
+    <section id="inbound">
+      <h2>Inbound Shipment</h2>
+      <div class="flow">
+        <div class="step" style="background:#7c3aed;">Booked</div><div class="arrow" style="border-left:11px solid #7c3aed;"></div>
+        <div class="step" style="background:#ea580c;">Picked Up</div><div class="arrow" style="border-left:11px solid #ea580c;"></div>
+        <div class="step" style="background:#d97706;">In Transit</div><div class="arrow" style="border-left:11px solid #d97706;"></div>
+        <div class="step" style="background:#16a34a;">Arrived</div><div class="arrow" style="border-left:11px solid #16a34a;"></div>
+        <div class="step" style="background:#0ea5e9;">Delivered</div><div class="arrow" style="border-left:11px solid #0ea5e9;"></div>
+        <div class="step" style="background:#0f172a;">Verified</div>
+      </div>
+    </section>
+
+    <section id="rough">
+      <h2>Rough Lot <span class="tag-new">NEW (partial)</span></h2>
+      <div class="flow">
+        <div class="step" style="background:#16a34a;">In Stock</div><div class="arrow" style="border-left:11px solid #16a34a;"></div>
+        <div class="step" style="background:#d97706;">Partially Sold</div><div class="arrow" style="border-left:11px solid #d97706;"></div>
+        <div class="step" style="background:#dc2626;">Sold / Transferred</div>
+      </div>
+    </section>
+
+    <section id="salesout">
+      <h2>Sales Invoice → Outbound Shipment</h2>
+      <div class="flow">
+        <div class="step" style="background:#7c3aed;">Draft</div><div class="arrow" style="border-left:11px solid #7c3aed;"></div>
+        <div class="step" style="background:#0ea5e9;">Confirmed</div><div class="arrow" style="border-left:11px solid #0ea5e9;"></div>
+        <div class="step" style="background:#ea580c;">Shipped</div><div class="arrow" style="border-left:11px solid #ea580c;"></div>
+        <div class="step" style="background:#d97706;">In Transit</div><div class="arrow" style="border-left:11px solid #d97706;"></div>
+        <div class="step" style="background:#16a34a;">Delivered</div>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

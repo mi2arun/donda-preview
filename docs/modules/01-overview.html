@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Overview &amp; Scope — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="01-overview">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 01</div>
+      <h1>Overview &amp; Scope</h1>
+      <p class="lead">The diamond-trading business cycle Donda ERP supports, the actors involved, the end-to-end lifecycle, and what changed in version 2.1.</p>
+    </div>
+
+    <section id="overview">
+      <h2>Business Overview</h2>
+      <p>Donda ERP serves <strong>diamond manufacturers</strong> who buy rough diamonds at international expos/tenders, import them, and either process them in-house or transfer/sell them to sister companies or third parties. The "Donda group" is a set of sister companies under one owner in different countries (e.g. Rainbow Gems HK Ltd, Donda Exports).</p>
+      <p>Management attends expos (Belgium, Botswana, South Africa, Canada…) where each event showcases ~600 lots over several weeks. The team inspects and bids on hand-picked lots daily; winners pay on the spot, and the diamonds are handed to a secure courier for shipment to the buying company.</p>
+    </section>
+
+    <section id="scope">
+      <h2>Scope</h2>
+      <h3>In scope (current phase)</h3>
+      <ul class="bullets">
+        <li><strong>Bidding data backend &amp; API</strong> — the ERP stores all expo data and serves the bidding mobile app <span class="tag-api">API</span></li>
+        <li><strong>Won Lots</strong> — derived from bid wins (manual entry also supported)</li>
+        <li><strong>Inbound logistics</strong> — shipments from expo to the buying company</li>
+        <li><strong>Purchase invoice</strong> with expense allocation &amp; auto-created rough lots</li>
+        <li><strong>Rough Lot Master</strong> with group-level auto numbering and sub-lots</li>
+        <li><strong>Sales invoice</strong> — third-party sale or sister-company transfer, with sub-lot splitting</li>
+        <li><strong>Inter-company transfer</strong>, <strong>outbound logistics</strong>, and auto <strong>accounting</strong></li>
+      </ul>
+      <h3>Out of scope (this phase)</h3>
+      <ul class="bullets">
+        <li>The bidding mobile app <strong>UI</strong> — built by a separate team; ERP provides data/API only</li>
+        <li>Manufacturing / polishing module</li>
+        <li>Consignment &amp; Memo rough trading <span class="badge future">FUTURE</span></li>
+        <li>India local sales GST / HSN computation <span class="badge future">FUTURE</span></li>
+        <li>Live courier API integration (manual tracking entry for now)</li>
+      </ul>
+    </section>
+
+    <section id="actors">
+      <h2>Actors &amp; Entities</h2>
+      <table>
+        <thead><tr><th>Entity</th><th>Role</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Bidding Mobile App</strong> <span class="tag-api">API</span></td><td>External front-end for expo bidding; reads/writes all bidding data via the ERP API.</td><td>Built by separate team</td></tr>
+          <tr><td><strong>Bidder / User</strong></td><td>Team member who inspects lots and submits bids in the app.</td><td>Donda staff at expo</td></tr>
+          <tr><td><strong>Group Company</strong></td><td>Donda-owned entity that buys, holds and sells rough; shares one group lot sequence.</td><td>Rainbow Gems (HK) Ltd, Donda Exports</td></tr>
+          <tr><td><strong>Expo / Tender Supplier</strong></td><td>External rough seller at expos; issues supplier invoice + KPC.</td><td>Bonas Couzyn (Antwerp) NV</td></tr>
+          <tr><td><strong>Third-Party Supplier / Buyer</strong></td><td>External seller or customer (not group, not expo).</td><td>Various</td></tr>
+          <tr><td><strong>Transport / Courier</strong></td><td>Secure diamond logistics; airway bills, sealed parcels.</td><td>Ferrari Belgium BVBA, Malca-Amit, Brinks</td></tr>
+          <tr><td><strong>Mining Company / Origin</strong></td><td>Source mine &amp; country — drives KPC &amp; per-line origin.</td><td>KAO (Lesotho), Gahcho Kué (Canada)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="lifecycle">
+      <h2>End-to-End Lifecycle</h2>
+      <div class="diagram">  BIDDING (app→API)        EXPO WIN     INBOUND      RECEIVE &amp;     ROUGH STOCK    SELL/TRANSFER    OUTBOUND
+  ─────────────────        ────────     ───────      PURCHASE      ───────────    ─────────────    ────────
+  Expo▶Lots▶Bids▶Win  ──▶  Won Lot ──▶  Inbound ──▶  Purchase ──▶  Rough Lot ──▶  Sales Invoice ──▶ Outbound
+  (stored in ERP)          Register     Shipment     Invoice       1-26,1-26-A    (split sub-lots)  Shipment
+                                                                        │
+                                              (inter-company)           └─▶ Sale price = Purchase cost ─▶ Sister co.</div>
+    </section>
+
+    <section id="changes">
+      <h2>What Changed in v2.1</h2>
+      <h3>Client UAT feedback — rough lot / purchase / sales <span class="tag-new">NEW</span></h3>
+      <table>
+        <thead><tr><th style="width:34px;">#</th><th>Requirement</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Mining origin moves to <strong>line-item level</strong></td></tr>
+          <tr><td>2</td><td>Rough Lot No <strong>auto-generated at group level</strong>, with manual override</td></tr>
+          <tr><td>3</td><td><strong>Third-party</strong> rough → lot number entered manually</td></tr>
+          <tr><td>4</td><td>Numbering pattern <span class="pill">1-26</span> lot, <span class="pill">1-26-A</span> sub-lot</td></tr>
+          <tr><td>5</td><td><strong>Sub-lot split in the Sales Invoice</strong> at point of sale</td></tr>
+          <tr><td>6</td><td><strong>Inter-company pricing</strong> — seller's price = buyer's cost</td></tr>
+        </tbody>
+      </table>
+      <h3>Bidding-app integration <span class="tag-api">API</span></h3>
+      <table>
+        <thead><tr><th style="width:34px;">#</th><th>Requirement</th></tr></thead>
+        <tbody>
+          <tr><td>7</td><td>ERP is the <strong>system of record</strong> for all expo data</td></tr>
+          <tr><td>8</td><td><strong>ERP defines the API contract</strong>; the app integrates against it</td></tr>
+          <tr><td>9</td><td><strong>Won Lots derived from bid wins</strong> via API (no double entry)</td></tr>
+        </tbody>
+      </table>
+      <div class="box note"><strong>Pending confirmation:</strong> points 1–6 await a conference-call clarification; treat this as the working baseline.</div>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

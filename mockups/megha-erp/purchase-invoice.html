@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purchase Invoice — Megha ERP</title>
+<link rel="stylesheet" href="megha-ui.css">
+</head>
+<body>
+
+<!-- top bar -->
+<div class="topbar">
+  <div class="tb-grid">▦</div>
+  <div class="brand"><b>Megha</b><span>ERP</span></div>
+  <div class="tabs">
+    <div class="tab"><span class="ic">🛒</span> Trading <span class="x">✕</span></div>
+    <div class="tab active"><span class="ic">🧾</span> Purchase Invoice <span class="x">✕</span></div>
+  </div>
+  <div class="tb-spacer"></div>
+  <div class="tb-ico">⋯</div>
+  <div class="tb-search">🔍 <span>Search</span> <kbd>⌘K</kbd></div>
+  <div class="tb-ico">💎</div>
+  <div class="tb-ico">?</div>
+  <div class="tb-ico">✉</div>
+  <div class="avatar">SA</div>
+</div>
+
+<!-- module menu -->
+<div class="modnav">
+  <a><span class="ic">🏆</span> Won Lots <span class="cv">▾</span></a>
+  <a class="active"><span class="ic">🧾</span> Purchase Invoice <span class="cv">▾</span></a>
+  <a><span class="ic">💎</span> Rough Stock <span class="cv">▾</span></a>
+  <a><span class="ic">✈</span> Inbound Logistics <span class="cv">▾</span></a>
+  <a><span class="ic">💰</span> Sales Invoice <span class="cv">▾</span></a>
+  <a><span class="ic">📊</span> Reports <span class="cv">▾</span></a>
+</div>
+
+<div class="crumb">Trading <span class="sep">›</span> Purchase Invoice <span class="sep">›</span> <span class="cur">New</span></div>
+
+<div class="page">
+  <div class="page-head">
+    <div class="ph-icon">🧾</div>
+    <h1>Purchase Invoice (Import)</h1>
+    <span class="status-badge" id="status">Draft</span>
+    <div class="spacer"></div>
+    <button class="btn">Save Draft</button>
+    <button class="btn green" onclick="confirmInvoice()">✓ Confirm — create Rough Lots</button>
+  </div>
+
+  <!-- header = lot -->
+  <div class="card">
+    <div class="card-h"><h2>Invoice Header — Lot</h2><div class="spacer"></div>
+      <button class="btn sm primary" onclick="openWonLots()">⬇ Pull from Won Lots</button></div>
+    <div class="card-b">
+      <div class="fgrid">
+        <div class="fld"><label>Buying Company <span class="rq">*</span></label>
+          <select id="h-company"><option>Rainbow Gems (HK) Ltd</option><option>Donda Exports</option></select></div>
+        <div class="fld"><label>Supplier <span class="rq">*</span></label>
+          <select id="h-supplier"><option>Bonas Couzyn (Antwerp) NV</option><option>De Beers (third-party)</option><option>Other third-party</option></select></div>
+        <div class="fld"><label>Supplier Invoice No <span class="rq">*</span></label><input id="h-sinv" value="20260645"></div>
+        <div class="fld"><label>Supplier Invoice Date <span class="rq">*</span></label><input id="h-sdate" type="date" value="2026-02-26"></div>
+
+        <div class="fld"><label>Lot No <span class="mini">AUTO · GROUP</span></label><input id="h-lot" class="lot" value="1-26" oninput="renderLines()"></div>
+        <div class="fld"><label>Won Lot (tag)</label><input id="h-wonlot" value="—" readonly></div>
+        <div class="fld"><label>Received Date <span class="rq">*</span></label><input id="h-recv" type="date" value="2026-03-04" onchange="calcDue()"></div>
+        <div class="fld"><label>KPC No</label><input id="h-kpc" value="EU 00979933"></div>
+
+        <div class="fld"><label>Currency <span class="rq">*</span></label>
+          <select id="h-cur"><option>USD</option><option>EUR</option><option>HKD</option><option>INR</option></select></div>
+        <div class="fld"><label>Exchange Rate <span class="rq">*</span></label><input id="h-rate" value="1.0000"></div>
+        <div class="fld"><label>Payment Terms</label>
+          <select id="h-terms" onchange="calcDue()"><option value="5">NET5 — 5 days</option><option value="30">NET30 — 30 days</option><option value="0">On receipt</option></select></div>
+        <div class="fld"><label>Due Date <span class="mini">CALC</span></label><input id="h-due" readonly></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOM = sub-lots -->
+  <div class="card">
+    <div class="card-h"><h2>BOM — Rough Sub-Lots</h2><span class="chip blue" id="bom-count">0 lines</span>
+      <div class="spacer"></div><button class="btn sm" onclick="addLine()">＋ Add sub-lot line</button></div>
+    <div class="card-b" style="padding:0;overflow-x:auto">
+      <table class="editgrid" id="bom">
+        <thead><tr>
+          <th class="l">Sub-Lot</th><th class="l">Parcel No</th><th class="l">Mining Origin</th><th class="l">Stone Type</th>
+          <th>Carats</th><th>Pcs</th><th>Price/Ct</th><th>Amount</th><th>Exp. Share</th><th>Inventory Value</th><th></th>
+        </tr></thead>
+        <tbody id="bom-rows"></tbody>
+      </table>
+    </div>
+    <div class="summary" id="summary"></div>
+  </div>
+
+  <!-- expenses -->
+  <div class="card">
+    <div class="card-h"><h2>Expenses</h2><div class="spacer"></div><button class="btn sm" onclick="addExpense()">＋ Add expense</button></div>
+    <div class="card-b">
+      <div id="exrows"></div>
+      <div class="note"><b>Allocation:</b> expenses spread across sub-lots <b>by value</b> (share = expense × line amount ÷ goods subtotal). Inventory value = amount + allocated share.</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="note" id="confirm-hint"></span>
+    <div class="spacer"></div>
+    <button class="btn">Save Draft</button>
+    <button class="btn green" onclick="confirmInvoice()">✓ Confirm — create Rough Lots</button>
+  </div>
+
+  <div class="preview" id="preview">
+    <div class="ph">✓ Confirmed — Rough Lots created in stock</div>
+    <div class="pb" id="preview-body"></div>
+  </div>
+</div>
+
+<!-- status bar -->
+<div class="statusbar">
+  <div class="s">💠 <b>Megha ERP</b></div>
+  <div class="s">👤 SUPER_ADMIN</div>
+  <div class="s">🏢 Rainbow Gems (HK) Ltd</div>
+  <div class="s"><span class="dot"></span> Connected</div>
+  <div class="spacer"></div>
+  <div class="s">v0.1.0 (Build #10)</div>
+</div>
+
+<!-- won lots modal -->
+<div class="modal-bg" id="modal" onclick="if(event.target===this)closeWonLots()">
+  <div class="modal">
+    <div class="modal-h"><h3>Pull from Won Lots — Bonas Couzyn</h3><button class="x" onclick="closeWonLots()">✕</button></div>
+    <div class="modal-b" id="wonlist"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const ORIGINS = ['Lesotho — KAO','Canada — Gahcho Kué','South Africa — Cullinan','Botswana — Jwaneng','Russia — Mirny'];
+const STONE_TYPES = ['Parcel','Single'];
+const EXPENSE_TYPES = ['Freight Charges','Import Duty','Insurance','Brokerage','Other'];
+const WON_LOTS = [{
+  id:'WL-1305', name:'Lot 47 · KAO Lesotho', supplier:'Bonas Couzyn (Antwerp) NV', parcels:3, carats:257.34, sinv:'20260645',
+  stones:[
+    {parcel:'KAO-2602-070', origin:'Lesotho — KAO', type:'Parcel', carats:170.43, pcs:1, price:651.81},
+    {parcel:'KAO-2602-085', origin:'Lesotho — KAO', type:'Parcel', carats:82.31,  pcs:1, price:108.00},
+    {parcel:'KAO-2602-086', origin:'Lesotho — KAO', type:'Single', carats:4.60,   pcs:1, price:561.00}
+  ]
+}];
+const state = { lines:[], expenses:[{type:'Freight Charges', amount:139.02, remarks:''}], wonLotTag:'—' };
+const LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const num=v=>parseFloat(v)||0, money=n=>(n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}), ct=n=>(n||0).toFixed(2);
+
+const lineAmount=l=>num(l.carats)*num(l.price);
+const goodsSubtotal=()=>state.lines.reduce((a,l)=>a+lineAmount(l),0);
+const totalExpenses=()=>state.expenses.reduce((a,e)=>a+num(e.amount),0);
+const allocFor=l=>{const g=goodsSubtotal();return g?totalExpenses()*(lineAmount(l)/g):0;};
+const subLotNo=i=>(document.getElementById('h-lot').value||'1-26')+'-'+LETTERS[i];
+
+function renderLines(){
+  document.getElementById('bom-rows').innerHTML = state.lines.map((l,i)=>{
+    const amt=lineAmount(l), share=allocFor(l), inv=amt+share;
+    const origins=ORIGINS.map(o=>`<option ${o===l.origin?'selected':''}>${o}</option>`).join('');
+    const types=STONE_TYPES.map(t=>`<option ${t===l.type?'selected':''}>${t}</option>`).join('');
+    return `<tr>
+      <td class="l"><span class="sub">${subLotNo(i)}</span></td>
+      <td class="l"><input class="ci l" value="${l.parcel||''}" oninput="upd(${i},'parcel',this.value)" placeholder="parcel no"></td>
+      <td class="l"><select class="cs" onchange="upd(${i},'origin',this.value)">${origins}</select></td>
+      <td class="l"><select class="cs" onchange="upd(${i},'type',this.value)">${types}</select></td>
+      <td><input class="ci" value="${l.carats||''}" inputmode="decimal" oninput="upd(${i},'carats',this.value)" placeholder="0.00"></td>
+      <td><input class="ci" style="width:40px" value="${l.pcs||1}" inputmode="numeric" oninput="upd(${i},'pcs',this.value)"></td>
+      <td><input class="ci" value="${l.price||''}" inputmode="decimal" oninput="upd(${i},'price',this.value)" placeholder="0.00"></td>
+      <td><span class="der s">${amt?money(amt):'—'}</span></td>
+      <td><span class="exp">${share?money(share):'—'}</span></td>
+      <td><span class="inv">${inv?money(inv):'—'}</span></td>
+      <td><button class="del" onclick="delLine(${i})">✕</button></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('bom-count').textContent = state.lines.length+' line'+(state.lines.length===1?'':'s');
+  renderSummary();
+}
+function renderSummary(){
+  const carats=state.lines.reduce((a,l)=>a+num(l.carats),0);
+  const pcs=state.lines.reduce((a,l)=>a+(parseInt(l.pcs)||0),0);
+  const goods=goodsSubtotal(), exp=totalExpenses(), grand=goods+exp;
+  document.getElementById('summary').innerHTML=`
+    <div class="sm"><div class="l">Sub-lots</div><div class="v">${state.lines.length}</div></div>
+    <div class="sm"><div class="l">Total Carats</div><div class="v">${ct(carats)}</div></div>
+    <div class="sm"><div class="l">Pieces</div><div class="v">${pcs}</div></div>
+    <div class="sm"><div class="l">Goods Subtotal</div><div class="v">${money(goods)}</div></div>
+    <div class="sm"><div class="l">Total Expenses</div><div class="v">${money(exp)}</div></div>
+    <div class="sm grand"><div class="l">Grand Total</div><div class="v">${money(grand)}</div></div>`;
+  document.getElementById('confirm-hint').textContent = state.lines.length
+    ? `${state.lines.length} rough sub-lots will be created at inventory value ${money(goods+exp)}` : 'Add lines to confirm';
+}
+function renderExpenses(){
+  document.getElementById('exrows').innerHTML = state.expenses.map((e,i)=>{
+    const opts=EXPENSE_TYPES.map(t=>`<option ${t===e.type?'selected':''}>${t}</option>`).join('');
+    return `<div class="exrow">
+      <select onchange="updEx(${i},'type',this.value)">${opts}</select>
+      <input value="${e.amount||''}" inputmode="decimal" placeholder="0.00" oninput="updEx(${i},'amount',this.value)">
+      <input value="${e.remarks||''}" placeholder="remarks (optional)" oninput="updEx(${i},'remarks',this.value)">
+      <button class="del" onclick="delEx(${i})">✕</button></div>`;
+  }).join('');
+}
+function upd(i,k,v){state.lines[i][k]=v;renderLines();}
+function delLine(i){state.lines.splice(i,1);renderLines();}
+function addLine(){state.lines.push({parcel:'',origin:ORIGINS[0],type:'Parcel',carats:'',pcs:1,price:''});renderLines();}
+function updEx(i,k,v){state.expenses[i][k]=v;renderLines();renderExpenses();}
+function delEx(i){state.expenses.splice(i,1);renderLines();renderExpenses();}
+function addExpense(){state.expenses.push({type:EXPENSE_TYPES[0],amount:'',remarks:''});renderExpenses();renderLines();}
+function calcDue(){
+  const recv=document.getElementById('h-recv').value, days=parseInt(document.getElementById('h-terms').value)||0;
+  if(!recv){document.getElementById('h-due').value='';return;}
+  const d=new Date(recv); d.setDate(d.getDate()+days);
+  document.getElementById('h-due').value=d.toISOString().slice(0,10);
+}
+function openWonLots(){
+  document.getElementById('wonlist').innerHTML = WON_LOTS.map(w=>`
+    <div class="wl" onclick="pullWon('${w.id}')"><div class="t"><span class="nm">${w.name}</span><span class="chip blue">${w.id}</span></div>
+      <div class="sb">${w.supplier} · supplier inv ${w.sinv} · ${w.parcels} parcels · ${w.carats} ct</div></div>`).join('');
+  document.getElementById('modal').classList.add('show');
+}
+function closeWonLots(){document.getElementById('modal').classList.remove('show');}
+function pullWon(id){
+  const w=WON_LOTS.find(x=>x.id===id); if(!w)return;
+  state.lines=w.stones.map(s=>({parcel:s.parcel,origin:s.origin,type:s.type,carats:s.carats,pcs:s.pcs,price:s.price}));
+  state.wonLotTag=id;
+  document.getElementById('h-wonlot').value=`${id} · ${w.name}`;
+  document.getElementById('h-sinv').value=w.sinv;
+  closeWonLots(); renderLines(); toast(`Pulled ${w.stones.length} sub-lots from ${id}`);
+}
+function confirmInvoice(){
+  if(!state.lines.length){toast('Add at least one sub-lot line');return;}
+  const lot=document.getElementById('h-lot').value||'1-26';
+  const carats=state.lines.reduce((a,l)=>a+num(l.carats),0);
+  const inv=state.lines.reduce((a,l)=>a+lineAmount(l)+allocFor(l),0);
+  document.getElementById('status').textContent='Confirmed';
+  document.getElementById('status').style.background='#16a34a';
+  const rows=state.lines.map((l,i)=>{
+    const v=lineAmount(l)+allocFor(l);
+    return `<tr><td class="l"><span class="sub">${subLotNo(i)}</span></td><td class="l">${l.parcel||'—'}</td>
+      <td class="l">${l.origin}</td><td>${ct(num(l.carats))}</td><td>${l.pcs||1}</td>
+      <td><span class="inv">${money(v)}</span></td><td class="l"><span class="chip green">In Stock</span></td></tr>`;
+  }).join('');
+  document.getElementById('preview-body').innerHTML=`
+    <div class="rl-parent"><span class="no">${lot}</span><span class="chip blue">PARENT · roll-up</span>
+      <span class="meta">${state.lines.length} sub-lots · ${ct(carats)} ct · inventory value ${money(inv)}</span>
+      <span class="spacer"></span><span class="meta">Won lot ${state.wonLotTag} → Invoiced</span></div>
+    <table class="editgrid"><thead><tr><th class="l">Rough Lot</th><th class="l">Parcel</th><th class="l">Origin</th>
+      <th>Carats</th><th>Pcs</th><th>Inv. Value</th><th class="l">Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+  document.getElementById('preview').classList.add('show');
+  document.getElementById('preview').scrollIntoView({behavior:'smooth',block:'nearest'});
+  toast('Confirmed — rough lots created');
+}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+
+pullWon('WL-1305'); calcDue(); renderExpenses();
+</script>
+</body>
+</html>

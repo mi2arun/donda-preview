@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Master Data — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="14-master-data">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 14</div>
+      <h1>Master Data</h1>
+      <p class="lead">Reference tables that must be set up before transactions can be processed.</p>
+    </div>
+
+    <section id="masters">
+      <table>
+        <thead><tr><th>Master</th><th>Key Fields</th><th>Examples</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Group Company</strong> <span class="tag-new">NEW</span></td><td>Name, Country, Currency, Tax Reg (GST/VAT), Bank</td><td>Rainbow Gems HK, Donda Exports</td></tr>
+          <tr><td><strong>Bidder / App User</strong> <span class="tag-api">API</span></td><td>Name, Login, Group Company, Role</td><td>Expo team members</td></tr>
+          <tr><td><strong>Shape</strong> <span class="tag-api">API</span></td><td>Code, Name, Group (Popular/Fancy/Rough)</td><td>RD=Round, OV=Oval, MC=Macle</td></tr>
+          <tr><td><strong>Color</strong> <span class="tag-api">API</span></td><td>Code, Name, Group</td><td>D–Z, FY=Fancy Yellow, FP=Fancy Pink</td></tr>
+          <tr><td><strong>Clarity</strong> <span class="tag-api">API</span></td><td>Code, Name, Group</td><td>FL, IF, VVS1…I3</td></tr>
+          <tr><td><strong>Supplier</strong></td><td>Name, Address, Country, VAT, Bank, Payment Terms, Type (Expo / Third-party)</td><td>Bonas Couzyn (Antwerp) NV</td></tr>
+          <tr><td><strong>Customer</strong></td><td>Name, Address, Country, VAT, Type (Sister / Third-party), Bank</td><td>Donda Exports, third parties</td></tr>
+          <tr><td><strong>Expo / Tender</strong></td><td>Name, Location, Dates, Supplier</td><td>Bonas Antwerp March 2026</td></tr>
+          <tr><td><strong>Transport Company</strong></td><td>Name, Address, Contact, IATA</td><td>Ferrari Belgium BVBA, Malca-Amit</td></tr>
+          <tr><td><strong>Country / Origin</strong></td><td>Code, Name, Mines</td><td>CA, LS, ZA</td></tr>
+          <tr><td><strong>Mine</strong></td><td>Name, Country, Company</td><td>KAO (Lesotho), Gahcho Kué (Canada)</td></tr>
+          <tr><td><strong>Currency</strong></td><td>Code, Symbol, Exchange Rates</td><td>USD, EUR, HKD, INR</td></tr>
+          <tr><td><strong>Expense Type</strong></td><td>Name, Default Account</td><td>Freight, Import Duty, Insurance, Brokerage</td></tr>
+          <tr><td><strong>Payment Terms</strong></td><td>Code, Days</td><td>NET5 = 5 working days</td></tr>
+          <tr><td><strong>HS / HSN Code</strong></td><td>Code, Description, GST Rate <span class="badge future">FUTURE</span></td><td>7102.10, 7102.21, 7102.31</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

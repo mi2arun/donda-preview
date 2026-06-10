@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inter-Company Transfer — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="10-inter-company">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 10 · POINT 6</div>
+      <h1>Inter-Company Transfer</h1>
+      <p class="lead">When one Donda group company transfers rough to a sister company, a single action drives both sides of the trade.</p>
+    </div>
+
+    <section id="flow">
+      <h2>Transfer Flow</h2>
+      <div class="diagram">  COMPANY A (Seller)                              COMPANY B (Buyer / Sister)
+  ──────────────────                              ──────────────────────────
+  Sales Invoice  (Type = Inter-Company)   ─────▶  Purchase Invoice  (auto-created)
+   • Rough Lot 1-26 / sub-lot 1-26-A              • Supplier = Company A
+   • Sale Price/Ct = X            ════════════▶   • Purchase Price/Ct = X   (= seller's price)
+   • Outbound Shipment                            • New Rough Lot in B's stock
+                                                    cost (inventory value) = X (+ any B-side expenses)
+                                                  • Source lineage = A's 1-26-A</div>
+      <div class="box change"><strong>Rule (point 6):</strong> the selling company's <strong>sale price becomes the buying company's purchase price / cost</strong>. The transfer auto-creates the purchase entry and a new rough lot in the receiving company's stock, valued at the seller's price.</div>
+    </section>
+
+    <section id="how">
+      <h2>How It Works</h2>
+      <ul class="bullets">
+        <li>The sold lot/sub-lot in Company A is marked <strong>Transferred</strong> (balance reduced).</li>
+        <li>Company B receives a new Rough Lot (lineage back to A's lot) at cost = A's selling price + any B-side inbound expenses.</li>
+        <li>An <a href="11-outbound-logistics.html">outbound shipment</a> (A) and inbound receipt (B) track the physical movement.</li>
+        <li>Both sides post their own <a href="12-accounting.html">accounting entries</a> (sale in A, purchase in B).</li>
+      </ul>
+      <div class="box note"><strong>To confirm on call:</strong> does B get a <em>new</em> group lot number or keep the source number for traceability? Are inter-company margins eliminated in a group/consolidated view?</div>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

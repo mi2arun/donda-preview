@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture &amp; Integration — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="02-architecture">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 02 · API</div>
+      <h1>System Architecture &amp; Bidding-App Integration</h1>
+      <p class="lead">A separate team builds the expo bidding mobile app; the Donda ERP is the single backend and system of record for all bidding and post-bidding data.</p>
+    </div>
+
+    <section id="bigpicture">
+      <h2>The Big Picture</h2>
+      <p>The bidding app is a front-end only. It reads master data from the ERP and writes all expo activity (catalog, bids, wins, payments) back to the ERP through a defined API. The ERP then carries a won lot downstream through logistics, purchase, inventory and sales.</p>
+      <div class="diagram"> ┌──────────────────────────┐                         ┌─────────────────────────────────────────────┐
+ │  EXPO BIDDING MOBILE APP │   HTTPS / REST · JSON   │                DONDA ERP                       │
+ │  (built by other team)   │ ─────────────────────▶  │           (System of Record)                   │
+ │                          │                         │                                                │
+ │ • Browse expo lot catalog│   reads masters         │ Masters: companies, suppliers, expos, mines,   │
+ │ • Inspect &amp; submit bids   │ ◀─────────────────────  │          currencies, HS codes                  │
+ │ • See win/loss results    │                         │                                                │
+ │ • Record on-spot payment  │   writes bidding data   │ Bidding store: Expo · Lots · Bids · Wins ·     │
+ │                          │ ─────────────────────▶  │                Payments                        │
+ └──────────────────────────┘                         │       │                                        │
+                                                       │       ▼  (a WON lot flows downstream)          │
+                                                       │ Won Lots ▶ Inbound ▶ Purchase ▶ Rough Stock ▶  │
+                                                       │ Sales / Transfer ▶ Outbound ▶ Accounting       │
+                                                       └─────────────────────────────────────────────┘</div>
+      <div class="box api"><strong>Boundary decision (confirmed):</strong> the ERP stores <strong>full expo data</strong> — the app keeps no separate database. The <strong>ERP team defines the API contract</strong>; the app team integrates against it.</div>
+    </section>
+
+    <section id="principles">
+      <h2>Integration Principles</h2>
+      <ul class="bullets">
+        <li><strong>Single source of truth</strong> — no duplicated data store on the app side; the app is online-first.</li>
+        <li><strong>Authentication</strong> — the app authenticates as a service client (OAuth2 client-credentials or signed API key); each bidder user is identified in the request.</li>
+        <li><strong>Versioned API</strong> — base path <code>/api/v1/…</code>, backward-compatible evolution.</li>
+        <li><strong>Idempotency</strong> — write endpoints accept an <code>Idempotency-Key</code> so flaky mobile connections don't create duplicates.</li>
+        <li><strong>Offline tolerance</strong> — the app may queue actions offline and replay; idempotency + server IDs keep this safe.</li>
+        <li><strong>Webhooks / polling</strong> — the ERP notifies the app of status changes, or the app polls <code>updated_since</code>.</li>
+      </ul>
+      <div class="box note"><strong>To finalise with the app team:</strong> authentication model, whether real-time webhooks are needed, and final field names before the <code>/api/v1</code> contract is frozen. See <a href="04-api.html">Integration API</a>.</div>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

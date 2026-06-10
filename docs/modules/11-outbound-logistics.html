@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outbound Logistics — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="11-outbound-logistics">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">Module 11 (Module 5)</div>
+      <h1>Outbound Logistics / Shipment</h1>
+      <p class="lead">Created when rough is sold/transferred, to track shipment to the buyer/consignee. Mirrors the inbound shipment structure.</p>
+    </div>
+
+    <section id="header">
+      <h2>Shipment Header</h2>
+      <div class="card">
+        <h4>Outbound Shipment — Header <span class="badge">HEADER</span></h4>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Shipment ID</strong></td><td><span class="auto">AUTO</span></td><td>Type = Outbound</td></tr>
+            <tr><td><strong>Sales Invoice Ref</strong></td><td>Lookup</td><td>Link to sales invoice</td></tr>
+            <tr><td><strong>Courier / Transport Co.</strong> <span class="req">*</span></td><td>Dropdown</td><td>Transport company</td></tr>
+            <tr><td><strong>Consignee Name / Address</strong></td><td><span class="auto">AUTO</span></td><td>From sales invoice buyer</td></tr>
+            <tr><td><strong>Airway Bill No / KPC No</strong></td><td>Text</td><td>Export documents</td></tr>
+            <tr><td><strong>Departure / Destination / Date</strong></td><td>Text / Date</td><td>Route</td></tr>
+            <tr><td><strong>Status</strong></td><td><span class="auto">AUTO</span></td><td>Preparing → Shipped → In Transit → Delivered</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="../assets/layout.js"></script>
+</body>
+</html>

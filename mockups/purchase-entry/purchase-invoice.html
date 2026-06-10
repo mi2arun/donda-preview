@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purchase Invoice — Donda ERP Mockup</title>
+<style>
+:root{
+  --font:'Inter','Segoe UI',system-ui,-apple-system,Arial,sans-serif;
+  --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --bg:#f6f8fb;--card:#fff;--ink:#0f172a;--text:#334155;--muted:#64748b;
+  --border:#e6eaf1;--border-soft:#eef2f7;--accent:#0ea5e9;--accent-ink:#0369a1;--accent-soft:#e0f2fe;
+  --ok:#16a34a;--ok-soft:#dcfce7;--warn:#d97706;--danger:#dc2626;--danger-soft:#fee2e2;--purple:#7c3aed;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-ink);text-decoration:none}
+.topbar{background:#0f172a;color:#fff;padding:11px 22px;display:flex;align-items:center;gap:12px}
+.topbar .logo{font-size:1.1rem}
+.topbar b{font-size:.95rem;letter-spacing:.4px}
+.topbar .crumb{color:#94a3b8;font-size:.82rem;margin-left:6px}
+.topbar .spacer{flex:1}
+.topbar .pill{font-size:.7rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);padding:3px 11px;border-radius:20px;color:#cbd5e1}
+.wrap{max-width:1180px;margin:0 auto;padding:22px}
+
+/* page head */
+.phead{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+.phead h1{font-size:1.4rem;color:var(--ink);letter-spacing:-.3px}
+.phead .sub{color:var(--muted);font-size:.86rem;margin-top:2px}
+.phead .spacer{flex:1}
+.status{font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:20px;background:var(--purple);color:#fff;text-transform:uppercase;letter-spacing:.6px}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 22px rgba(15,23,42,.05);margin-bottom:16px;overflow:hidden}
+.card-h{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);background:#fbfcfe}
+.card-h h2{font-size:.95rem;color:var(--ink)}
+.card-h .spacer{flex:1}
+.card-b{padding:16px 18px}
+
+/* header form grid */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px 16px}
+.fld{display:flex;flex-direction:column;gap:4px}
+.fld.col2{grid-column:span 2}
+.fld label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.fld .req{color:var(--danger)}
+.fld input,.fld select{padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:.86rem;color:var(--ink);background:#fff;outline:none}
+.fld input:focus,.fld select:focus{border-color:var(--accent)}
+.fld input[readonly]{background:#f8fafc;color:var(--muted)}
+.fld .lotno{font-family:var(--mono);font-weight:700;color:var(--accent-ink);background:var(--accent-soft);border-color:#bae6fd}
+.tag-auto{font-size:.6rem;font-weight:700;color:var(--ok);background:var(--ok-soft);padding:1px 5px;border-radius:5px;margin-left:4px}
+
+/* buttons */
+.btn{padding:8px 14px;border-radius:8px;font-size:.84rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--ink);font-family:var(--font);display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent-ink)}
+.btn.ghost{background:transparent;border-style:dashed}
+.btn.sm{padding:5px 10px;font-size:.78rem}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+thead th{background:#f1f5f9;color:#475569;text-align:right;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:8px 9px;border-bottom:1px solid var(--border);white-space:nowrap}
+thead th.l{text-align:left}
+tbody td{padding:3px 6px;border-bottom:1px solid var(--border-soft);text-align:right;vertical-align:middle}
+tbody td.l{text-align:left}
+tbody tr:hover{background:#f8fafc}
+.cellinp{width:100%;border:1px solid transparent;background:transparent;font-family:var(--mono);font-size:.82rem;text-align:right;padding:6px 7px;border-radius:6px;color:var(--ink);outline:none}
+.cellinp:hover{border-color:var(--border)}
+.cellinp:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+.cellinp.l{text-align:left}
+td .cellsel{width:100%;border:1px solid transparent;background:transparent;font-size:.82rem;padding:5px 6px;border-radius:6px;color:var(--ink);outline:none}
+td .cellsel:hover{border-color:var(--border)}
+td .cellsel:focus{border-color:var(--accent);background:#fff}
+.sublot{font-family:var(--mono);font-weight:700;color:var(--accent-ink);font-size:.82rem;white-space:nowrap}
+.derived{font-family:var(--mono);color:var(--muted)}
+.derived.strong{color:var(--ink);font-weight:600}
+.expshare{font-family:var(--mono);color:#b45309}
+.invval{font-family:var(--mono);color:var(--ink);font-weight:600}
+.delbtn{width:22px;height:22px;border:none;background:transparent;color:#cbd5e1;cursor:pointer;border-radius:5px;font-size:.8rem}
+.delbtn:hover{background:var(--danger-soft);color:var(--danger)}
+.tag{font-size:.6rem;font-weight:700;padding:1px 5px;border-radius:5px;white-space:nowrap}
+.tag.won{background:var(--accent-soft);color:var(--accent-ink)}
+
+/* summary */
+.summary{display:flex;gap:0;flex-wrap:wrap;background:#fbfcfe;border-top:1px solid var(--border)}
+.sm{flex:1;min-width:120px;padding:12px 16px;border-right:1px solid var(--border)}
+.sm:last-child{border-right:none}
+.sm .l{font-size:.66rem;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600}
+.sm .v{font-family:var(--mono);font-size:1.05rem;font-weight:700;color:var(--ink);margin-top:2px}
+.sm.grand{background:var(--accent-soft)}
+.sm.grand .v{color:var(--accent-ink)}
+
+/* expense row */
+.exrow{display:grid;grid-template-columns:1fr 140px 1fr 32px;gap:10px;align-items:center;margin-bottom:8px}
+.exrow select,.exrow input{padding:7px 9px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--font);font-size:.84rem;outline:none}
+.exrow input{font-family:var(--mono);text-align:right}
+.exrow select:focus,.exrow input:focus{border-color:var(--accent)}
+
+.note{font-size:.8rem;color:var(--muted);padding:8px 0 0}
+.note b{color:var(--accent-ink)}
+
+/* footer actions */
+.foot{display:flex;gap:10px;align-items:center;margin-top:6px}
+.foot .spacer{flex:1}
+
+/* rough-lot preview */
+.preview{border:1px solid var(--ok);background:var(--ok-soft);border-radius:12px;padding:0;margin-top:16px;overflow:hidden;display:none}
+.preview.show{display:block;animation:fade .25s ease}
+.preview .ph{padding:11px 18px;background:#dcfce7;border-bottom:1px solid #bbf7d0;display:flex;align-items:center;gap:8px;font-weight:600;color:#15803d}
+.preview .pb{padding:14px 18px;background:#fff}
+.rl-parent{display:flex;gap:14px;align-items:center;padding:8px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;margin-bottom:8px}
+.rl-parent .rl-no{font-family:var(--mono);font-weight:700;color:#15803d;font-size:.95rem}
+.rl-parent .rl-meta{font-size:.78rem;color:var(--muted)}
+.rl-parent .spacer{flex:1}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:14px;max-width:560px;width:100%;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.modal-h{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center}
+.modal-h h3{font-size:1rem;color:var(--ink)}
+.modal-h .x{margin-left:auto;border:none;background:#f1f5f9;width:28px;height:28px;border-radius:50%;cursor:pointer;color:var(--muted)}
+.modal-b{padding:16px 18px;max-height:60vh;overflow-y:auto}
+.wonlot{border:1.5px solid var(--border);border-radius:10px;padding:13px 15px;cursor:pointer;margin-bottom:10px}
+.wonlot:hover{border-color:var(--accent);background:var(--accent-soft)}
+.wonlot .wl-top{display:flex;align-items:center;gap:8px}
+.wonlot .wl-name{font-family:var(--mono);font-weight:700;color:var(--ink)}
+.wonlot .wl-sub{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#0f172a;color:#fff;padding:11px 20px;border-radius:10px;font-size:.86rem;opacity:0;pointer-events:none;transition:.3s;z-index:60}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span class="logo">💎</span><b>DONDA ERP</b>
+  <span class="crumb">Purchases › Purchase Invoice › New</span>
+  <span class="spacer"></span>
+  <span class="pill">Mockup · Phase 1</span>
+</div>
+
+<div class="wrap">
+  <div class="phead">
+    <div>
+      <h1>Purchase Invoice (Import)</h1>
+      <div class="sub">One winning lot → BOM of rough sub-lots → rough-lot inventory on confirm.</div>
+    </div>
+    <div class="spacer"></div>
+    <span class="status" id="status">Draft</span>
+  </div>
+
+  <!-- HEADER (the lot) -->
+  <div class="card">
+    <div class="card-h">
+      <h2>Invoice Header — Lot</h2>
+      <span class="spacer"></span>
+      <button class="btn sm primary" onclick="openWonLots()">⬇ Pull from Won Lots</button>
+    </div>
+    <div class="card-b">
+      <div class="grid">
+        <div class="fld"><label>Buying Company <span class="req">*</span></label>
+          <select id="h-company"><option>Rainbow Gems (HK) Ltd</option><option>Donda Exports</option></select></div>
+        <div class="fld"><label>Supplier <span class="req">*</span></label>
+          <select id="h-supplier"><option>Bonas Couzyn (Antwerp) NV</option><option>De Beers (third-party)</option><option>Other third-party</option></select></div>
+        <div class="fld"><label>Supplier Invoice No <span class="req">*</span></label>
+          <input id="h-sinv" value="20260645"></div>
+        <div class="fld"><label>Supplier Invoice Date <span class="req">*</span></label>
+          <input id="h-sdate" type="date" value="2026-02-26"></div>
+
+        <div class="fld"><label>Lot No <span class="tag-auto">AUTO · GROUP</span></label>
+          <input id="h-lot" class="lotno" value="1-26" oninput="renderLines()"></div>
+        <div class="fld"><label>Won Lot (tag)</label>
+          <input id="h-wonlot" value="—" readonly></div>
+        <div class="fld"><label>Received Date <span class="req">*</span></label>
+          <input id="h-recv" type="date" value="2026-03-04" onchange="calcDue()"></div>
+        <div class="fld"><label>KPC No</label>
+          <input id="h-kpc" value="EU 00979933"></div>
+
+        <div class="fld"><label>Currency <span class="req">*</span></label>
+          <select id="h-cur"><option>USD</option><option>EUR</option><option>HKD</option><option>INR</option></select></div>
+        <div class="fld"><label>Exchange Rate <span class="req">*</span></label>
+          <input id="h-rate" value="1.0000"></div>
+        <div class="fld"><label>Payment Terms</label>
+          <select id="h-terms" onchange="calcDue()"><option value="5">NET5 — 5 days</option><option value="30">NET30 — 30 days</option><option value="0">On receipt</option></select></div>
+        <div class="fld"><label>Due Date <span class="tag-auto">CALC</span></label>
+          <input id="h-due" readonly></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOM = sub-lots -->
+  <div class="card">
+    <div class="card-h">
+      <h2>BOM — Rough Sub-Lots</h2>
+      <span class="tag won" id="bom-count">0 lines</span>
+      <span class="spacer"></span>
+      <button class="btn sm ghost" onclick="addLine()">+ Add sub-lot line</button>
+    </div>
+    <div class="card-b" style="padding:0;overflow-x:auto">
+      <table id="bom">
+        <thead><tr>
+          <th class="l">Sub-Lot</th><th class="l">Parcel No</th><th class="l">Mining Origin</th>
+          <th class="l">Stone Type</th><th>Carats</th><th>Pcs</th><th>Price/Ct</th>
+          <th>Amount</th><th>Exp. Share</th><th>Inventory Value</th><th></th>
+        </tr></thead>
+        <tbody id="bom-rows"></tbody>
+      </table>
+    </div>
+    <div class="summary" id="summary"></div>
+  </div>
+
+  <!-- expenses -->
+  <div class="card">
+    <div class="card-h"><h2>Expenses</h2><span class="spacer"></span>
+      <button class="btn sm ghost" onclick="addExpense()">+ Add expense</button></div>
+    <div class="card-b">
+      <div id="exrows"></div>
+      <div class="note"><b>Allocation:</b> expenses are spread across sub-lots <b>by value</b> (each line's share = expense × line amount ÷ goods subtotal). Inventory value = amount + allocated share.</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <button class="btn">Save Draft</button>
+    <span class="spacer"></span>
+    <span class="note" id="confirm-hint"></span>
+    <button class="btn ok" onclick="confirmInvoice()">✓ Confirm — create Rough Lots</button>
+  </div>
+
+  <!-- rough lot preview -->
+  <div class="preview" id="preview">
+    <div class="ph">✓ Confirmed — Rough Lots created in stock</div>
+    <div class="pb" id="preview-body"></div>
+  </div>
+</div>
+
+<!-- won lots modal -->
+<div class="modal-bg" id="modal" onclick="if(event.target===this)closeWonLots()">
+  <div class="modal">
+    <div class="modal-h"><h3>Pull from Won Lots — Bonas Couzyn</h3><button class="x" onclick="closeWonLots()">✕</button></div>
+    <div class="modal-b" id="wonlist"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════ DATA ════════════
+const ORIGINS = ['Lesotho — KAO','Canada — Gahcho Kué','South Africa — Cullinan','Botswana — Jwaneng','Russia — Mirny'];
+const STONE_TYPES = ['Parcel','Single'];
+const EXPENSE_TYPES = ['Freight Charges','Import Duty','Insurance','Brokerage','Other'];
+
+// A won lot (from the bidding app) — its stones become BOM sub-lot lines
+const WON_LOTS = [{
+  id:'WL-1305', name:'Lot 47 · KAO Lesotho', supplier:'Bonas Couzyn (Antwerp) NV',
+  parcels:3, carats:257.34, sinv:'20260645',
+  stones:[
+    {parcel:'KAO-2602-070', origin:'Lesotho — KAO', type:'Parcel', carats:170.43, pcs:1, price:651.81},
+    {parcel:'KAO-2602-085', origin:'Lesotho — KAO', type:'Parcel', carats:82.31,  pcs:1, price:108.00},
+    {parcel:'KAO-2602-086', origin:'Lesotho — KAO', type:'Single', carats:4.60,   pcs:1, price:561.00}
+  ]
+}];
+
+// ════════════ STATE ════════════
+const state = {
+  lines: [],
+  expenses: [{type:'Freight Charges', amount:139.02, remarks:''}],
+  wonLotTag: '—'
+};
+const uid = () => Math.random().toString(36).slice(2,8);
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const num = v => parseFloat(v)||0;
+const money = n => (n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const ct = n => (n||0).toFixed(2);
+
+// ════════════ COMPUTE ════════════
+function lineAmount(l){ return num(l.carats)*num(l.price); }
+function goodsSubtotal(){ return state.lines.reduce((a,l)=>a+lineAmount(l),0); }
+function totalExpenses(){ return state.expenses.reduce((a,e)=>a+num(e.amount),0); }
+function allocFor(l){
+  const goods = goodsSubtotal();
+  if(!goods) return 0;
+  return totalExpenses() * (lineAmount(l)/goods);
+}
+
+// ════════════ RENDER ════════════
+function subLotNo(i){ return (document.getElementById('h-lot').value||'1-26') + '-' + LETTERS[i]; }
+
+function renderLines(){
+  const tb = document.getElementById('bom-rows');
+  tb.innerHTML = state.lines.map((l,i)=>{
+    const amt = lineAmount(l), share = allocFor(l), inv = amt+share;
+    const origins = ORIGINS.map(o=>`<option ${o===l.origin?'selected':''}>${o}</option>`).join('');
+    const types = STONE_TYPES.map(t=>`<option ${t===l.type?'selected':''}>${t}</option>`).join('');
+    return `<tr>
+      <td class="l"><span class="sublot">${subLotNo(i)}</span></td>
+      <td class="l"><input class="cellinp l" value="${l.parcel||''}" oninput="upd(${i},'parcel',this.value)" placeholder="parcel no"></td>
+      <td class="l"><select class="cellsel" onchange="upd(${i},'origin',this.value)">${origins}</select></td>
+      <td class="l"><select class="cellsel" onchange="upd(${i},'type',this.value)">${types}</select></td>
+      <td><input class="cellinp" value="${l.carats||''}" inputmode="decimal" oninput="upd(${i},'carats',this.value)" placeholder="0.00"></td>
+      <td><input class="cellinp" style="width:42px" value="${l.pcs||1}" inputmode="numeric" oninput="upd(${i},'pcs',this.value)"></td>
+      <td><input class="cellinp" value="${l.price||''}" inputmode="decimal" oninput="upd(${i},'price',this.value)" placeholder="0.00"></td>
+      <td><span class="derived strong">${amt?money(amt):'—'}</span></td>
+      <td><span class="expshare">${share?money(share):'—'}</span></td>
+      <td><span class="invval">${inv?money(inv):'—'}</span></td>
+      <td><button class="delbtn" onclick="delLine(${i})" title="Remove">✕</button></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('bom-count').textContent = state.lines.length + ' line' + (state.lines.length===1?'':'s');
+  renderSummary();
+}
+
+function renderSummary(){
+  const carats = state.lines.reduce((a,l)=>a+num(l.carats),0);
+  const pcs = state.lines.reduce((a,l)=>a+(parseInt(l.pcs)||0),0);
+  const goods = goodsSubtotal(), exp = totalExpenses(), grand = goods+exp;
+  document.getElementById('summary').innerHTML = `
+    <div class="sm"><div class="l">Sub-lots</div><div class="v">${state.lines.length}</div></div>
+    <div class="sm"><div class="l">Total Carats</div><div class="v">${ct(carats)}</div></div>
+    <div class="sm"><div class="l">Pieces</div><div class="v">${pcs}</div></div>
+    <div class="sm"><div class="l">Goods Subtotal</div><div class="v">${money(goods)}</div></div>
+    <div class="sm"><div class="l">Total Expenses</div><div class="v">${money(exp)}</div></div>
+    <div class="sm grand"><div class="l">Grand Total</div><div class="v">${money(grand)}</div></div>`;
+  document.getElementById('confirm-hint').textContent =
+    state.lines.length ? `${state.lines.length} rough sub-lots will be created at inventory value ${money(goods+exp)}` : 'Add lines to confirm';
+}
+
+function renderExpenses(){
+  document.getElementById('exrows').innerHTML = state.expenses.map((e,i)=>{
+    const opts = EXPENSE_TYPES.map(t=>`<option ${t===e.type?'selected':''}>${t}</option>`).join('');
+    return `<div class="exrow">
+      <select onchange="updEx(${i},'type',this.value)">${opts}</select>
+      <input value="${e.amount||''}" inputmode="decimal" placeholder="0.00" oninput="updEx(${i},'amount',this.value)">
+      <input value="${e.remarks||''}" placeholder="remarks (optional)" oninput="updEx(${i},'remarks',this.value)">
+      <button class="delbtn" onclick="delEx(${i})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ════════════ ACTIONS ════════════
+function upd(i,k,v){ state.lines[i][k]=v; renderLines(); }
+function delLine(i){ state.lines.splice(i,1); renderLines(); }
+function addLine(){ state.lines.push({parcel:'',origin:ORIGINS[0],type:'Parcel',carats:'',pcs:1,price:''}); renderLines(); }
+
+function updEx(i,k,v){ state.expenses[i][k]=v; renderLines(); renderExpenses(); }
+function delEx(i){ state.expenses.splice(i,1); renderLines(); renderExpenses(); }
+function addExpense(){ state.expenses.push({type:EXPENSE_TYPES[0],amount:'',remarks:''}); renderExpenses(); renderLines(); }
+
+function calcDue(){
+  const recv = document.getElementById('h-recv').value;
+  const days = parseInt(document.getElementById('h-terms').value)||0;
+  if(!recv){ document.getElementById('h-due').value=''; return; }
+  const d = new Date(recv); d.setDate(d.getDate()+days);
+  document.getElementById('h-due').value = d.toISOString().slice(0,10);
+}
+
+// won lots modal
+function openWonLots(){
+  document.getElementById('wonlist').innerHTML = WON_LOTS.map(w=>`
+    <div class="wonlot" onclick="pullWon('${w.id}')">
+      <div class="wl-top"><span class="wl-name">${w.name}</span><span class="tag won">${w.id}</span></div>
+      <div class="wl-sub">${w.supplier} · supplier inv ${w.sinv} · ${w.parcels} parcels · ${w.carats} ct</div>
+    </div>`).join('');
+  document.getElementById('modal').classList.add('show');
+}
+function closeWonLots(){ document.getElementById('modal').classList.remove('show'); }
+function pullWon(id){
+  const w = WON_LOTS.find(x=>x.id===id); if(!w) return;
+  state.lines = w.stones.map(s=>({parcel:s.parcel,origin:s.origin,type:s.type,carats:s.carats,pcs:s.pcs,price:s.price}));
+  state.wonLotTag = id;
+  document.getElementById('h-wonlot').value = `${id} · ${w.name}`;
+  document.getElementById('h-sinv').value = w.sinv;
+  closeWonLots(); renderLines();
+  toast(`Pulled ${w.stones.length} sub-lots from ${id}`);
+}
+
+function confirmInvoice(){
+  if(!state.lines.length){ toast('Add at least one sub-lot line'); return; }
+  const lot = document.getElementById('h-lot').value||'1-26';
+  const carats = state.lines.reduce((a,l)=>a+num(l.carats),0);
+  const inv = state.lines.reduce((a,l)=>a+lineAmount(l)+allocFor(l),0);
+  document.getElementById('status').textContent='Confirmed';
+  document.getElementById('status').style.background='var(--ok)';
+  const rows = state.lines.map((l,i)=>{
+    const v = lineAmount(l)+allocFor(l);
+    return `<tr>
+      <td class="l"><span class="sublot">${subLotNo(i)}</span></td>
+      <td class="l">${l.parcel||'—'}</td><td class="l">${l.origin}</td>
+      <td>${ct(num(l.carats))}</td><td>${l.pcs||1}</td>
+      <td><span class="invval">${money(v)}</span></td>
+      <td><span class="tag" style="background:var(--ok-soft);color:#15803d">In Stock</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('preview-body').innerHTML = `
+    <div class="rl-parent">
+      <span class="rl-no">${lot}</span>
+      <span class="tag won">PARENT · roll-up</span>
+      <span class="rl-meta">${state.lines.length} sub-lots · ${ct(carats)} ct · inventory value ${money(inv)}</span>
+      <span class="spacer"></span>
+      <span class="rl-meta">Won lot ${state.wonLotTag} → Invoiced</span>
+    </div>
+    <table>
+      <thead><tr><th class="l">Rough Lot</th><th class="l">Parcel</th><th class="l">Origin</th><th>Carats</th><th>Pcs</th><th>Inv. Value</th><th class="l">Status</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  document.getElementById('preview').classList.add('show');
+  document.getElementById('preview').scrollIntoView({behavior:'smooth',block:'nearest'});
+  toast('Confirmed — rough lots created');
+}
+
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
+
+// ════════════ BOOT ════════════
+pullWon('WL-1305');   // start pre-filled from the KAO won lot so the screen has content
+calcDue();
+renderExpenses();
+</script>
+</body>
+</html>
