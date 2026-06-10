@@ -132,16 +132,26 @@
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="masters-data.js"></script>
 <script>
-const ORIGINS = ['Lesotho — KAO','Canada — Gahcho Kué','South Africa — Cullinan','Botswana — Jwaneng','Russia — Mirny'];
-const STONE_TYPES = ['Parcel','Single'];
-const EXPENSE_TYPES = ['Freight Charges','Import Duty','Insurance','Brokerage','Other'];
+// ── dropdowns derived from the master registry (masters-data.js) ──
+const M = {}; MASTER_GROUPS.forEach(g => g.masters.forEach(m => { M[m.key] = m; }));
+const _ci = (k,l) => M[k].columns.findIndex(c => c.l === l);
+const _vals = (k,l) => { const i = _ci(k,l); return M[k].rows.map(r => r[i]); };
+const COMPANIES = _vals('group-company','Company Name');
+const SUPPLIERS = _vals('supplier','Supplier Name');
+const CUR_CODES = _vals('currency','Code'), CUR_RATES = _vals('currency','Rate → USD');
+const TERM_CODES = _vals('payment-terms','Code'), TERM_DESCS = _vals('payment-terms','Description'), TERM_DAYS = _vals('payment-terms','Days');
+const ORIGINS = M['mine'].rows.map(r => r[_ci('mine','Country')] + ' — ' + r[_ci('mine','Mine Name')]);
+const STONE_TYPES = _vals('stone-type','Name');
+const EXPENSE_TYPES = _vals('expense-type','Name');
+const curRate = code => { const i = CUR_CODES.indexOf(code); return i >= 0 ? CUR_RATES[i] : '1.0000'; };
 const WON_LOTS = [{
   id:'WL-1305', name:'Lot 47 · KAO Lesotho', supplier:'Bonas Couzyn (Antwerp) NV', parcels:3, carats:257.34, sinv:'20260645',
   stones:[
-    {parcel:'KAO-2602-070', origin:'Lesotho — KAO', type:'Parcel', carats:170.43, pcs:1, price:651.81},
-    {parcel:'KAO-2602-085', origin:'Lesotho — KAO', type:'Parcel', carats:82.31,  pcs:1, price:108.00},
-    {parcel:'KAO-2602-086', origin:'Lesotho — KAO', type:'Single', carats:4.60,   pcs:1, price:561.00}
+    {parcel:'KAO-2602-070', origin:'Lesotho — KAO Mine', type:'Parcel', carats:170.43, pcs:1, price:651.81},
+    {parcel:'KAO-2602-085', origin:'Lesotho — KAO Mine', type:'Parcel', carats:82.31,  pcs:1, price:108.00},
+    {parcel:'KAO-2602-086', origin:'Lesotho — KAO Mine', type:'Single', carats:4.60,   pcs:1, price:561.00}
   ]
 }];
 const state = { lines:[], expenses:[{type:'Freight Charges', amount:139.02, remarks:''}], wonLotTag:'—' };
@@ -252,7 +262,18 @@ function confirmInvoice(){
 }
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
 
-pullWon('WL-1305'); calcDue(); renderExpenses();
+function fillSel(id,html){document.getElementById(id).innerHTML=html;}
+function initHeader(){
+  fillSel('h-company', COMPANIES.map(c=>`<option>${c}</option>`).join(''));
+  fillSel('h-supplier', SUPPLIERS.map(s=>`<option>${s}</option>`).join(''));
+  fillSel('h-cur', CUR_CODES.map(c=>`<option>${c}</option>`).join(''));
+  fillSel('h-terms', TERM_CODES.map((c,i)=>`<option value="${parseInt(TERM_DAYS[i])||0}">${c} — ${TERM_DESCS[i]}</option>`).join(''));
+  document.getElementById('h-cur').addEventListener('change', setCurRate);
+  setCurRate();
+}
+function setCurRate(){ document.getElementById('h-rate').value = curRate(document.getElementById('h-cur').value); }
+
+initHeader(); pullWon('WL-1305'); calcDue(); renderExpenses();
 </script>
 </body>
 </html>
