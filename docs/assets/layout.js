@@ -66,6 +66,12 @@
         { t: 'Masters', a: 'masters' }, { t: 'Schema Sketch', a: 'schema' },
         { t: 'Numbering', a: 'numbering' }, { t: 'Open Items', a: 'open' } ] },
     ]},
+    { group: 'MeghaOS · MCP', items: [
+      { id: '18-meghaos-mcp-masters', icon: '🔌', title: 'Creating Masters via MCP', tag: 'NEW', sub: [
+        { t: 'Overview & Status', a: 'overview' }, { t: 'Call Convention', a: 'convention' },
+        { t: 'Creation Order', a: 'order' }, { t: 'Master Payloads', a: 'reference' },
+        { t: 'Open Items', a: 'open' } ] },
+    ]},
   ];
 
   const VERSION = 'v2.1';

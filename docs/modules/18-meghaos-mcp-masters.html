@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creating Masters via MeghaOS MCP — Donda ERP Docs</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body data-page="18-meghaos-mcp-masters">
+<main>
+  <div class="doc">
+    <div class="doc-head">
+      <div class="eyebrow">MeghaOS · MCP</div>
+      <h1>Creating Masters via the MeghaOS MCP</h1>
+      <p class="lead">Runbook for creating Donda's master records by driving the <strong>MeghaOS MCP</strong>. The <em>what</em> (fields per master) is locked; the <em>how</em> (exact MCP tool calls) is provisional until the MCP is live.</p>
+    </div>
+
+    <section id="overview">
+      <h2>Overview &amp; Status</h2>
+      <div class="box note"><strong>⚠ Provisional — MeghaOS MCP not yet deployed to production.</strong> The call convention and tool names below are <strong>placeholders</strong> to be confirmed by introspecting the real MCP once it's connected. The <strong>field/payload data is final</strong> — sourced live from the master registry (<code>mockups/megha-erp/masters-data.js</code>), so it always matches the mockups.</div>
+      <p>The Donda ERP is built on the <strong>MeghaOS platform</strong>; masters are created through its MCP rather than hand-built screens. This page documents, per master: the entity key, every field (with its payload key), a sample record, the order to create them in, and the open questions for the MCP team.</p>
+    </section>
+
+    <section id="convention">
+      <h2>Call Convention <span class="tag-new">PLACEHOLDER</span></h2>
+      <p>Assumed shape — replace with the real MeghaOS MCP tool once available. Two likely forms:</p>
+      <ul class="bullets">
+        <li><strong>Generic:</strong> one tool taking an <code>entity</code> + <code>data</code> object.</li>
+        <li><strong>Per-entity:</strong> a dedicated <code>create_&lt;entity&gt;</code> tool. (To confirm by introspection.)</li>
+      </ul>
+      <h3>Worked example — create a Supplier (generic form)</h3>
+      <div class="codeblock">// PLACEHOLDER call — confirm tool name, auth &amp; response against the live MCP
+meghaos.master.create({
+  "entity": "supplier",
+  "data": {
+    "name": "Bonas Couzyn (Antwerp) NV",
+    "display_name": "Bonas Couzyn",
+    "country": "Belgium",
+    "type": "Expo / Tender",
+    "payment_terms": "NET5",     // FK → payment-terms master
+    "currency": "USD",           // FK → currency master
+    "status": "Active"
+  }
+})
+
+→ expected: { "id": "&lt;assigned-by-meghaos&gt;", "entity": "supplier", "status": "created" }</div>
+      <div class="box info"><strong>Conventions used here:</strong> payload keys are the column label lowercased with non-alphanumerics → <code>_</code> (e.g. "Company Name" → <code>company_name</code>, "Rate → USD" → <code>rate_usd</code>). FK-style fields reference other masters by their code/name — create the referenced master first (see Creation Order).</div>
+    </section>
+
+    <section id="order">
+      <h2>Creation Order (dependencies)</h2>
+      <p>Create independent masters first, then the ones that reference them, so foreign keys resolve.</p>
+      <div class="diagram">  TIER 1 — no dependencies (create first)
+    currency · country · payment-terms · expense-type · hs-code
+    stone-type · shape · color · clarity · lot-numbering
+
+  TIER 2 — reference Tier 1
+    mine            → country
+    group-company   → currency
+    transport       → country
+
+  TIER 3 — reference Tiers 1–2
+    supplier        → payment-terms, currency
+    customer        → currency
+                     (+ won-lot stones use shape/color/clarity)</div>
+      <div class="box info">Idempotency: re-running creation should not duplicate. Until the MCP's behaviour is known, key each master by its natural <strong>code</strong> (or name) and check-before-create.</div>
+    </section>
+
+    <section id="reference">
+      <h2>Master Payloads</h2>
+      <p>Generated from the live registry — one block per master: entity key, field→payload-key table, and a sample <code>data</code> object (first record).</p>
+      <div id="payloads"><em style="color:var(--muted)">Loading from masters-data.js…</em></div>
+    </section>
+
+    <section id="open">
+      <h2>Open Items (confirm once MCP is live)</h2>
+      <ol class="qlist">
+        <li><strong>Tool surface</strong> — generic <code>create(entity, data)</code> vs per-entity <code>create_&lt;entity&gt;</code>? Exact tool name(s)?</li>
+        <li><strong>Auth</strong> — how the MCP authenticates (token/company scope) and which Donda company context masters are created under.</li>
+        <li><strong>Required vs optional</strong> — which fields MeghaOS enforces; default values; server-side validation rules.</li>
+        <li><strong>IDs &amp; references</strong> — does MeghaOS return an ID? Are FK fields passed by code, name, or ID?</li>
+        <li><strong>Idempotency / upsert</strong> — is there an upsert, or must we check-before-create by code?</li>
+        <li><strong>Bulk create</strong> — can we create many rows in one call (e.g. all currencies/grading codes)?</li>
+        <li><strong>Entity keys</strong> — confirm MeghaOS's entity identifiers map to our keys (supplier, mine, currency, …).</li>
+      </ol>
+    </section>
+  </div>
+</main>
+
+<script src="../../mockups/megha-erp/masters-data.js"></script>
+<script>
+// payload key = column label → lowercase, non-alphanumerics collapsed to "_"
+const keyOf = l => l.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const host = document.getElementById('payloads');
+host.innerHTML = MASTER_GROUPS.flatMap(g => g.masters).map(m => {
+  const r0 = m.rows[0] || [];
+  const fieldRows = m.columns.map((c,i) =>
+    `<tr><td>${esc(c.l)}</td><td><span class="pill">${keyOf(c.l)}</span></td><td><span class="mono">${esc(r0[i] ?? '')}</span></td></tr>`).join('');
+  const sample = '{\n' + m.columns.map((c,i) => `  "${keyOf(c.l)}": ${JSON.stringify(r0[i] ?? '')}`).join(',\n') + '\n}';
+  return `<div class="card">
+    <h4>${m.icon} ${esc(m.title)} <span class="badge">entity: <code>${m.key}</code></span> <span class="badge">${m.rows.length} records</span></h4>
+    <table><thead><tr><th>Field</th><th>Payload key</th><th>Sample (row 1)</th></tr></thead><tbody>${fieldRows}</tbody></table>
+    <div class="codeblock">// ${m.key} — sample data object\n${esc(sample)}</div>
+  </div>`;
+}).join('');
+</script>
+<script src="../assets/layout.js"></script>
+</body>
+</html>
