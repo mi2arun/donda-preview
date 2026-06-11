@@ -70,6 +70,7 @@
       { id: '18-meghaos-mcp-masters', icon: '🔌', title: 'Creating Masters via MCP', tag: 'NEW', sub: [
         { t: 'Overview & Status', a: 'overview' }, { t: 'Call Convention', a: 'convention' },
         { t: 'Creation Order', a: 'order' }, { t: 'Master Payloads', a: 'reference' },
+        { t: 'Creation Script', a: 'script' }, { t: 'Change Management', a: 'changes' },
         { t: 'Open Items', a: 'open' } ] },
     ]},
   ];

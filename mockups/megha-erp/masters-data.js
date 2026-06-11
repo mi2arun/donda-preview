@@ -4,6 +4,7 @@
    render: 'text' (default) | 'mono' | 'chip' | 'status'
    Grouped to match the production module menu.
    ===================================================================== */
+const MASTERS_VERSION = '1.0.0';
 const MASTER_GROUPS = [
   { group:'Organization', icon:'🏢', masters:[
     { key:'group-company', title:'Group Company', singular:'Company', icon:'🏢',
@@ -147,3 +148,8 @@ const MASTER_GROUPS = [
       ]}
   ]}
 ];
+
+// Node usage (creation script) — harmless in the browser
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { MASTER_GROUPS, MASTERS_VERSION };
+}

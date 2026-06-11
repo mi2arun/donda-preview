@@ -72,6 +72,50 @@ meghaos.master.create({
       <div id="payloads"><em style="color:var(--muted)">Loading from masters-data.js…</em></div>
     </section>
 
+    <section id="script">
+      <h2>Creation Script</h2>
+      <p>A single script creates all 15 masters <strong>in dependency order</strong> by iterating the registry. Until the MCP is live it runs as a <strong>dry-run</strong> (prints each call); when the MCP is deployed, flip <code>DRY_RUN</code> and swap the one <code>createMaster()</code> body for the real tool call — a one-line change.</p>
+      <p>File: <code>mockups/megha-erp/create-masters.js</code> · run: <code>node mockups/megha-erp/create-masters.js</code> · creates <strong>91 records</strong> across 15 masters.</p>
+      <div class="codeblock">// dependency tiers — created top → bottom so foreign keys resolve
+const ORDER = [
+  // Tier 1 — no deps
+  'currency','country','payment-terms','expense-type','hs-code',
+  'stone-type','shape','color','clarity','lot-numbering',
+  // Tier 2 — ref Tier 1
+  'mine','group-company','transport',
+  // Tier 3 — ref Tiers 1–2
+  'supplier','customer'
+];
+
+async function createMaster(entity, data) {
+  // TODO(MeghaOS MCP): replace with the real create call, e.g.
+  //   return await meghaos.master.create({ entity, data });
+  if (DRY_RUN) { console.log(`create ${entity}`, data); return { id: '…' }; }
+}</div>
+      <div class="box info">It <code>require()</code>s <code>masters-data.js</code>, so it creates exactly what the mockups define — one source of truth, no drift. A built-in check warns if any registry master is missing from <code>ORDER</code>.</div>
+    </section>
+
+    <section id="changes">
+      <h2>Change Management</h2>
+      <p>How master changes are recorded and rolled out from here on.</p>
+      <ul class="bullets">
+        <li><strong>Single source of truth</strong> — <code>masters-data.js</code>. The screens, this doc's payloads, and the creation script all derive from it; never hand-edit the derived files.</li>
+        <li><strong>Versioned</strong> — <code>MASTERS_VERSION</code> (semver): <strong>patch</strong> = data/options change · <strong>minor</strong> = field added · <strong>major</strong> = field renamed/removed or master added/removed.</li>
+        <li><strong>Changelog</strong> — every change recorded in <code>mockups/megha-erp/MASTERS-CHANGELOG.md</code> (date · version · master · change · migration note).</li>
+        <li><strong>Roll-out</strong> — edit registry → bump version → add changelog entry → apply to MeghaOS (re-run the script for new rows; MCP update for changed/removed rows).</li>
+      </ul>
+      <table>
+        <thead><tr><th>Step</th><th>What you do</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Change the master definition / data</td><td><code>masters-data.js</code></td></tr>
+          <tr><td>2</td><td>Bump <code>MASTERS_VERSION</code> (patch / minor / major)</td><td><code>masters-data.js</code></td></tr>
+          <tr><td>3</td><td>Record date · version · master · change · migration</td><td><code>MASTERS-CHANGELOG.md</code></td></tr>
+          <tr><td>4</td><td>Apply to MeghaOS (script for new rows · MCP update for changes)</td><td>MeghaOS MCP</td></tr>
+        </tbody>
+      </table>
+      <div class="box note"><strong>Major changes</strong> (rename/remove a field) require a <strong>MeghaOS data migration</strong> for existing records — always call it out in the changelog entry so nothing breaks silently.</div>
+    </section>
+
     <section id="open">
       <h2>Open Items (confirm once MCP is live)</h2>
       <ol class="qlist">
